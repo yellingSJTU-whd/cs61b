@@ -101,17 +101,6 @@ public class Planet {
     }
 
     public void draw() {
-        StdDraw.picture(xxPos, yyPos, imgFileName);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (null == obj) {
-            return false;
-        }
-        if (!(obj instanceof Planet p)) {
-            return false;
-        }
-        return xxPos == p.xxPos && yyPos == p.yyPos && xxVel == p.xxVel && yyVel == p.yyPos && mass == p.mass && imgFileName.equals(p.imgFileName);
+        StdDraw.picture(xxPos, yyPos, "images/" + imgFileName);
     }
 }
