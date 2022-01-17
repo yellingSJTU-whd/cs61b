@@ -79,7 +79,7 @@ public class Planet {
         double aX = fX / mass;
         double aY = fY / mass;
         xxVel += aX * dt;
-        yyVel += aX * dt;
+        yyVel += aY * dt;
         xxPos += xxVel * dt;
         yyPos += yyVel * dt;
     }
