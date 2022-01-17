@@ -1,10 +1,10 @@
 public class Planet {
-    double xxPos;
-    double yyPos;
-    double xxVel;
-    double yyVel;
-    double mass;
-    String imgFileName;
+    public double xxPos;
+    public double yyPos;
+    public double xxVel;
+    public double yyVel;
+    public double mass;
+    public String imgFileName;
     private static final double G = 6.67e-11;
 
     public Planet(double xP, double yP, double xV, double yV, double m, String img) {
@@ -35,34 +35,18 @@ public class Planet {
         if (xxPos == p.xxPos) {
             return 0;
         }
-        double xDist;
-        double xForce = G * p.mass * mass;
-        boolean sign = p.xxPos > xxPos;
-        if (sign) {
-            xDist = p.xxPos - xxPos;
-            xForce /= (xDist * xDist);
-        } else {
-            xDist = xxPos - p.xxPos;
-            xForce = -xForce / (xDist * xDist);
-        }
-        return xForce;
+        double dist = calcDistance(p);
+        double force = calcForceExertedBy(p);
+        return (p.xxPos - xxPos) / dist * force;
     }
 
     public double calcForceExertedByY(Planet p) {
         if (yyPos == p.yyPos) {
             return 0;
         }
-        double yDist;
-        double yForce = G * p.mass * mass;
-        boolean sign = p.yyPos > yyPos;
-        if (sign) {
-            yDist = p.yyPos - yyPos;
-            yForce /= (yDist * yDist);
-        } else {
-            yDist = yyPos - p.yyPos;
-            yForce = -yForce / (yDist * yDist);
-        }
-        return yForce;
+        double dist = calcDistance(p);
+        double force = calcForceExertedBy(p);
+        return (p.yyPos - yyPos) / dist * force;
     }
 
     public double calcNetForceExertedByX(Planet[] planets) {

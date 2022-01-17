@@ -1,23 +1,21 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class NBody {
 
     public static Planet[] readPlanets(String planetsTxtPath) {
         In in = new In(planetsTxtPath);
-        List<Planet> planets = new ArrayList<>(5);
-        in.readInt();
+        int degree = in.readInt();
+        Planet[] planets = new Planet[degree];
         in.readDouble();
-        while (in.hasNextLine()) {
-            double xP = Double.parseDouble(in.readString());
-            double yP = Double.parseDouble(in.readString());
-            double xV = Double.parseDouble(in.readString());
-            double yV = Double.parseDouble(in.readString());
-            double m = Double.parseDouble(in.readString());
+
+        for (int i = 0; i < degree; i++) {
+            double xP = in.readDouble();
+            double yP = in.readDouble();
+            double xV = in.readDouble();
+            double yV = in.readDouble();
+            double m = in.readDouble();
             String img = in.readString();
-            planets.add(new Planet(xP, yP, xV, yV, m, img));
+            planets[i] = new Planet(xP, yP, xV, yV, m, img);
         }
-        return planets.toArray(new Planet[5]);
+        return planets;
     }
 
 
