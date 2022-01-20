@@ -24,7 +24,7 @@ public class ArrayDeque<T> {
      * @param item the item to add
      */
     public void addFirst(T item) {
-        if (size == items.length) {
+        if (isFull()) {
             resize(items.length * RESIZE_FACTOR_UPPER);
         }
         if (front == -1) {
@@ -41,13 +41,13 @@ public class ArrayDeque<T> {
      * @param item the item to add
      */
     public void addLast(T item) {
-        if (size == items.length) {
+        if (isFull()) {
             resize(items.length * RESIZE_FACTOR_UPPER);
         }
-        if (front == -1)
-            rear++;
-        while (rear > size - 1) {
-            rear -= (size - 1);
+        if (front == -1) {
+            front = rear = 0;
+        } else {
+            rear = (rear + 1) % size;
         }
         items[rear] = item;
     }
@@ -58,7 +58,10 @@ public class ArrayDeque<T> {
      * @return null if deque is empty, the removing item otherwise
      */
     public T removeFirst() {
-        return null;
+        if (front == -1) {
+            return null;
+        }
+        if ()
     }
 
     public T removeLast() {
