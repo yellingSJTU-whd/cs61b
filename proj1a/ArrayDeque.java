@@ -44,7 +44,8 @@ public class ArrayDeque<T> {
         if (size == items.length) {
             resize(items.length * RESIZE_FACTOR_UPPER);
         }
-        rear++;
+        if (front == -1)
+            rear++;
         while (rear > size - 1) {
             rear -= (size - 1);
         }
@@ -93,5 +94,13 @@ public class ArrayDeque<T> {
 
     private void resize(int newSize) {
 
+    }
+
+    private boolean isFull() {
+        return ((rear + 1) % size == front);
+    }
+
+    private boolean isEmpty() {
+        return front == -1;
     }
 }
