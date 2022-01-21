@@ -19,34 +19,34 @@ class ArrayDequeTest {
     }
 
     @Test
-    void addFront() {
-        deque.addFront("three");
-        deque.addFront("two");
-        deque.addFront("one");
+    void addFirst() {
+        deque.addFirst("three");
+        deque.addFirst("two");
+        deque.addFirst("one");
 
         deque.printDeque();
         assertEquals(3, deque.size());
     }
 
     @Test
-    void addRear() {
-        deque.addRear("one");
-        deque.addRear("two");
+    void addLast() {
+        deque.addLast("one");
+        deque.addLast("two");
         deque.printDeque();
 
         assertEquals(2, deque.size());
     }
 
     @Test
-    void removeFront() {
-        String removeFromEmptyDeque = deque.removeFront();
+    void removeFirst() {
+        String removeFromEmptyDeque = deque.removeFirst();
         assertNull(removeFromEmptyDeque);
 
-        deque.addRear("one");
-        deque.addRear("two");
-        deque.addRear("three");
+        deque.addLast("one");
+        deque.addLast("two");
+        deque.addLast("three");
 
-        String removed = deque.removeFront();
+        String removed = deque.removeFirst();
         deque.printDeque();
 
         assertEquals(2, deque.size());
@@ -54,15 +54,15 @@ class ArrayDequeTest {
     }
 
     @Test
-    void removeRear() {
-        String removeFromEmptyDeque = deque.removeRear();
+    void removeLast() {
+        String removeFromEmptyDeque = deque.removeLast();
         assertNull(removeFromEmptyDeque);
 
-        deque.addRear("one");
-        deque.addRear("two");
-        deque.addRear("three");
+        deque.addLast("one");
+        deque.addLast("two");
+        deque.addLast("three");
 
-        String removed = deque.removeRear();
+        String removed = deque.removeLast();
         deque.printDeque();
 
         assertEquals(2, deque.size());
@@ -74,9 +74,9 @@ class ArrayDequeTest {
         String getFromEmpty = deque.getFront();
         assertNull(getFromEmpty);
 
-        deque.addRear("one");
-        deque.addRear("two");
-        deque.addRear("three");
+        deque.addLast("one");
+        deque.addLast("two");
+        deque.addLast("three");
         deque.printDeque();
 
         String front = deque.getFront();
@@ -89,9 +89,9 @@ class ArrayDequeTest {
         String getFromEmpty = deque.getRear();
         assertNull(getFromEmpty);
 
-        deque.addRear("one");
-        deque.addRear("two");
-        deque.addRear("three");
+        deque.addLast("one");
+        deque.addLast("two");
+        deque.addLast("three");
         deque.printDeque();
 
         String rear = deque.getRear();
@@ -101,9 +101,9 @@ class ArrayDequeTest {
 
     @Test
     void size() {
-        deque.addRear("one");
-        deque.addRear("two");
-        deque.addRear("three");
+        deque.addLast("one");
+        deque.addLast("two");
+        deque.addLast("three");
         deque.printDeque();
 
         assertEquals(3, deque.size());
