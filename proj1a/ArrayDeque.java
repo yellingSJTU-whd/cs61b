@@ -1,3 +1,6 @@
+import static java.lang.System.arraycopy;
+import static java.util.Arrays.copyOf;
+
 public class ArrayDeque<T> {
 
     /**
@@ -6,7 +9,7 @@ public class ArrayDeque<T> {
     public ArrayDeque() {
         size = 0;
         front = -1;
-        rear = 0;
+        rear = -1;
         items = (T[]) new Object[DEFAULT_SIZE];
     }
 
@@ -16,14 +19,19 @@ public class ArrayDeque<T> {
      * @param other the ArrayDeque to be copied
      */
     public ArrayDeque(ArrayDeque other) {
+        size = other.size;
+        front = other.front;
+        rear = other.rear;
+        T[] items = (T[]) copyOf(other.items, other.items.length);
+
     }
 
     /**
-     * Add an item to the head of deque.
+     * Add an item to the front of deque.
      *
      * @param item the item to add
      */
-    public void addFirst(T item) {
+    public void addFront(T item) {
         if (isFull()) {
             resize(items.length * RESIZE_FACTOR_UPPER);
         }
@@ -31,57 +39,107 @@ public class ArrayDeque<T> {
             front = rear = 0;
         } else if (front == 0) {
             front = size - 1;
-        } else front--;
+        } else {
+            front--;
+        }
         items[front] = item;
+        size++;
     }
 
     /**
-     * Add an item to the end of deque.
+     * Add an item to the rear of deque.
      *
      * @param item the item to add
      */
-    public void addLast(T item) {
+    public void addRear(T item) {
         if (isFull()) {
             resize(items.length * RESIZE_FACTOR_UPPER);
         }
-        if (front == -1) {
+        if (rear == -1) {
             front = rear = 0;
         } else {
             rear = (rear + 1) % size;
         }
         items[rear] = item;
+        size++;
     }
 
     /**
-     * Remove the first item in deque
+     * Remove the item at the front.
      *
-     * @return null if deque is empty, the removing item otherwise
+     * @return null if deque was empty, the removing item otherwise
      */
-    public T removeFirst() {
-        if (front == -1) {
+    public T removeFront() {
+        if (isEmpty()) {
             return null;
         }
-        if ()
-    }
-
-    public T removeLast() {
-        return null;
+        T item = items[front];
+        if (front == rear) {
+            front = rear = -1;
+        } else {
+            front = (front + 1) % size;
+        }
+        size--;
+        if ((double) size / items.length < RESIZE_FACTOR_LOWER) {
+            resize((int) (items.length * 0.5));
+        }
+        return item;
     }
 
     /**
-     * Get the item at specified index from the ArrayDeque.
+     * Remove the item at the rear.
      *
-     * @param index zero-based index
-     * @return null if no such item exists, the item at specified index otherwise
+     * @return null if deque was empty, the removing item otherwise
      */
-    public T get(int index) {
-        return null;
+    public T removeRear() {
+        if (isEmpty()) {
+            return null;
+        }
+        T item = items[rear];
+        if (front == rear) {
+            front = rear = -1;
+        } else if (rear == 0) {
+            rear = size - 1;
+        } else {
+            rear--;
+        }
+        size--;
+        if ((double) size / items.length < RESIZE_FACTOR_LOWER) {
+            resize((int) (items.length * 0.5));
+        }
+        return item;
     }
 
     /**
-     * Get the number of items in the ArrayDeque.
+     * Get the item at the front.
      *
-     * @return size of the ArrayDeque
+     * @return null if deque was empty, the item at the front of deque otherwise
+     */
+    public T getFront() {
+        if (isEmpty()) {
+            return null;
+        } else {
+            return items[front];
+        }
+    }
+
+    /**
+     * Get the item at the rear.
+     *
+     * @return null if deque was empty, the item at the rear of deque otherwise
+     */
+    public T getRear() {
+        if (isEmpty()) {
+            return null;
+        } else {
+            return items[rear];
+        }
+    }
+
+    /**
+     * Get the number of items in deque.
+     *
+     * @return size of deque
      */
     public int size() {
         return size;
@@ -96,7 +154,9 @@ public class ArrayDeque<T> {
     private static final int DEFAULT_SIZE = 8;
 
     private void resize(int newSize) {
-
+        T[] newItems = (T[]) new Object[newSize];
+        arraycopy(items, 0, newItems, 0, items.length);
+        items = newItems;
     }
 
     private boolean isFull() {
