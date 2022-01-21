@@ -157,7 +157,11 @@ public class ArrayDeque<T> {
         return size() == items.length - 1;
     }
 
-    private boolean isEmpty() {
+    /**
+     * Returns whether this deque is empty.
+     * @return true if deque is empty, false otherwise
+     */
+    public boolean isEmpty() {
         return front == rear;
     }
 }
