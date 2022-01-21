@@ -7,9 +7,7 @@ public class ArrayDeque<T> {
      * Creates an empty deque.
      */
     public ArrayDeque() {
-        size = 0;
-        front = -1;
-        rear = -1;
+        front = rear = 0;
         items = (T[]) new Object[DEFAULT_SIZE];
     }
 
@@ -19,7 +17,6 @@ public class ArrayDeque<T> {
      * @param other the ArrayDeque to be copied
      */
     public ArrayDeque(ArrayDeque other) {
-        size = other.size;
         front = other.front;
         rear = other.rear;
         T[] items = (T[]) copyOf(other.items, other.items.length);
@@ -35,15 +32,8 @@ public class ArrayDeque<T> {
         if (isFull()) {
             resize(items.length * RESIZE_FACTOR_UPPER);
         }
-        if (front == -1) {
-            front = rear = 0;
-        } else if (front == 0) {
-            front = size - 1;
-        } else {
-            front--;
-        }
+        front = (front - 1 + items.length) % items.length;
         items[front] = item;
-        size++;
     }
 
     /**
@@ -55,13 +45,9 @@ public class ArrayDeque<T> {
         if (isFull()) {
             resize(items.length * RESIZE_FACTOR_UPPER);
         }
-        if (rear == -1) {
-            front = rear = 0;
-        } else {
-            rear = (rear + 1) % size;
-        }
+
         items[rear] = item;
-        size++;
+        rear = (rear + 1 + items.length) % items.length;
     }
 
     /**
@@ -74,13 +60,8 @@ public class ArrayDeque<T> {
             return null;
         }
         T item = items[front];
-        if (front == rear) {
-            front = rear = -1;
-        } else {
-            front = (front + 1) % size;
-        }
-        size--;
-        if ((double) size / items.length < RESIZE_FACTOR_LOWER) {
+        front = (front + 1) % items.length;
+        if (lowUsageRate()) {
             resize((int) (items.length * 0.5));
         }
         return item;
@@ -95,16 +76,9 @@ public class ArrayDeque<T> {
         if (isEmpty()) {
             return null;
         }
+        rear = (rear - 1 + items.length) % items.length;
         T item = items[rear];
-        if (front == rear) {
-            front = rear = -1;
-        } else if (rear == 0) {
-            rear = size - 1;
-        } else {
-            rear--;
-        }
-        size--;
-        if ((double) size / items.length < RESIZE_FACTOR_LOWER) {
+        if (lowUsageRate()) {
             resize((int) (items.length * 0.5));
         }
         return item;
@@ -132,7 +106,7 @@ public class ArrayDeque<T> {
         if (isEmpty()) {
             return null;
         } else {
-            return items[rear];
+            return items[rear - 1];
         }
     }
 
@@ -142,10 +116,26 @@ public class ArrayDeque<T> {
      * @return size of deque
      */
     public int size() {
-        return size;
+        return (rear - front + items.length) % items.length;
     }
 
-    private int size;
+    /**
+     * Prints the items in the deque from first to last, separated by a space. Once all the items have been printed,
+     * print out a new line.
+     */
+    public void printDeque() {
+        if (isEmpty()) {
+            System.out.println("deque empty");
+        } else {
+            int ptr = front;
+            while (ptr != rear) {
+                System.out.print(items[ptr] + " ");
+                ptr = (ptr + 1) % items.length;
+            }
+        }
+        System.out.println();
+    }
+
     private int front;
     private int rear;
     private T[] items;
@@ -159,11 +149,15 @@ public class ArrayDeque<T> {
         items = newItems;
     }
 
+    private boolean lowUsageRate() {
+        return items.length >= 16 && (double) size() / items.length < RESIZE_FACTOR_LOWER;
+    }
+
     private boolean isFull() {
-        return ((rear + 1) % size == front);
+        return size() == items.length - 1;
     }
 
     private boolean isEmpty() {
-        return front == -1;
+        return front == rear;
     }
 }

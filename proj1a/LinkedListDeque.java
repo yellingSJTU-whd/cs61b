@@ -41,6 +41,7 @@ public class LinkedListDeque<T> {
         Node first = new Node(item, sentinel, sentinel.next);
         sentinel.next.pre = first;
         sentinel.next = first;
+        size++;
     }
 
     /**
@@ -52,6 +53,7 @@ public class LinkedListDeque<T> {
         Node last = new Node(item, sentinel.pre, sentinel);
         sentinel.pre.next = last;
         sentinel.pre = last;
+        size++;
     }
 
     /**
@@ -97,6 +99,7 @@ public class LinkedListDeque<T> {
         Node first = sentinel.next;
         first.next.pre = sentinel;
         sentinel.next = first.next;
+        size--;
         return first.item;
     }
 
@@ -112,6 +115,7 @@ public class LinkedListDeque<T> {
         Node last = sentinel.pre;
         last.pre.next = sentinel;
         sentinel.pre = last.pre;
+        size--;
         return last.item;
     }
 
