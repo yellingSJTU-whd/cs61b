@@ -91,7 +91,7 @@ public class ArrayDeque<T> {
      * @return null if no such item exists, the item otherwise
      */
     public T get(int getIndex) {
-        if (isEmpty() || size() - 1 < getIndex) {
+        if (getIndex < 0 || isEmpty() || size() - 1 < getIndex) {
             return null;
         }
         int ptr = (front + getIndex) % items.length;
