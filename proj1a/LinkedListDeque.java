@@ -16,22 +16,6 @@ public class LinkedListDeque<T> {
     }
 
     /**
-     * Creates a deep copy of other LinkedListDeque.
-     *
-     * @param other the LinkedListDeque to be copied
-     */
-    public LinkedListDeque(LinkedListDeque<T> other) {
-        size = other.size;
-        sentinel = new Node((T) new Object(), null, null);
-
-        Node ptr = other.sentinel;
-        while (ptr.next != sentinel) {
-            ptr = ptr.next;
-            addLast(ptr.item);
-        }
-    }
-
-    /**
      * Adds an item of type T to the head of the deque.
      *
      * @param item the item to be added
@@ -91,7 +75,7 @@ public class LinkedListDeque<T> {
      * @return null if no such item exists, the item to be removed otherwise
      */
     public T removeFirst() {
-        if (sentinel.next == sentinel) {
+        if (isEmpty()) {
             return null;
         }
         Node first = sentinel.next;
@@ -107,7 +91,7 @@ public class LinkedListDeque<T> {
      * @return null if no such item exists, the item to be removed otherwise
      */
     public T removeLast() {
-        if (sentinel.next == sentinel) {
+        if (isEmpty()) {
             return null;
         }
         Node last = sentinel.pre;
@@ -127,7 +111,7 @@ public class LinkedListDeque<T> {
         if (size < index) {
             return null;
         }
-        Node ptr = sentinel;
+        Node ptr = sentinel.next;
         while (index-- > 0) {
             ptr = ptr.next;
         }
@@ -141,17 +125,17 @@ public class LinkedListDeque<T> {
      * @return null if no such item exists, the item at specified index otherwise
      */
     public T getRecursive(int index) {
-        if (index < size) {
+        if (size < index) {
             return null;
         }
-        return getRecursiveHelper(index, sentinel.next);
+        return getRecursive(index, sentinel.next);
     }
 
-    private T getRecursiveHelper(int index, Node curr) {
+    private T getRecursive(int index, Node curr) {
         if (index == 0) {
             return curr.item;
         }
-        return getRecursiveHelper(index - 1, curr.next);
+        return getRecursive(index - 1, curr.next);
     }
 
     private int size;

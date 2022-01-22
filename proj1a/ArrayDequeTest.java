@@ -70,36 +70,6 @@ class ArrayDequeTest {
     }
 
     @Test
-    void getFront() {
-        String getFromEmpty = deque.getFirst();
-        assertNull(getFromEmpty);
-
-        deque.addLast("one");
-        deque.addLast("two");
-        deque.addLast("three");
-        deque.printDeque();
-
-        String front = deque.getFirst();
-
-        assertEquals("one", front);
-    }
-
-    @Test
-    void getRear() {
-        String getFromEmpty = deque.getLast();
-        assertNull(getFromEmpty);
-
-        deque.addLast("one");
-        deque.addLast("two");
-        deque.addLast("three");
-        deque.printDeque();
-
-        String rear = deque.getLast();
-
-        assertEquals("three", rear);
-    }
-
-    @Test
     void size() {
         deque.addLast("one");
         deque.addLast("two");

@@ -86,32 +86,6 @@ public class ArrayDeque<T> {
     }
 
     /**
-     * Get the item at the front.
-     *
-     * @return null if deque was empty, the item at the front of deque otherwise
-     */
-    public T getFirst() {
-        if (isEmpty()) {
-            return null;
-        } else {
-            return items[front];
-        }
-    }
-
-    /**
-     * Get the item at the rear.
-     *
-     * @return null if deque was empty, the item at the rear of deque otherwise
-     */
-    public T getLast() {
-        if (isEmpty()) {
-            return null;
-        } else {
-            return items[rear - 1];
-        }
-    }
-
-    /**
      * Get the number of items in deque.
      *
      * @return size of deque
