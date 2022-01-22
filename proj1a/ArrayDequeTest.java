@@ -90,4 +90,26 @@ class ArrayDequeTest {
 
         assertEquals("two", actual);
     }
+
+    @Test
+    void resize() {
+        deque.addLast("1");
+        deque.addLast("2");
+        deque.addLast("3");
+        deque.addLast("4");
+        deque.addLast("5");
+        deque.addLast("6");
+        deque.addLast("7");
+        deque.addLast("8");
+
+        System.out.println(deque.size());
+
+        String first = deque.removeFirst();
+        String last = deque.removeLast();
+        deque.printDeque();
+
+        System.out.println(deque.size());
+        System.out.println(first);
+        System.out.println(last);
+    }
 }

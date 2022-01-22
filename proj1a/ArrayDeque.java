@@ -1,5 +1,3 @@
-import static java.lang.System.arraycopy;
-
 public class ArrayDeque<T> {
 
     /**
@@ -119,7 +117,21 @@ public class ArrayDeque<T> {
 
     private void resize(int newSize) {
         T[] newItems = (T[]) new Object[newSize];
-        arraycopy(items, 0, newItems, 0, items.length);
+
+        int ptr = front;
+        int i = 0;
+        while (!(ptr == rear || ptr == items.length)) {
+            newItems[i++] = items[ptr++];
+        }
+        if (ptr == items.length && ptr != rear) {
+            ptr = 0;
+            while (ptr != front) {
+                newItems[i++] = items[ptr++];
+            }
+        }
+
+        front = 0;
+        rear = items.length;
         items = newItems;
     }
 
