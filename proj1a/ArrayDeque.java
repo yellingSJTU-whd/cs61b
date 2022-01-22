@@ -85,6 +85,20 @@ public class ArrayDeque<T> {
     }
 
     /**
+     * Get the item at specified index in deque.
+     *
+     * @param getIndex zero-based index
+     * @return null if no such item exists, the item otherwise
+     */
+    public T get(int getIndex) {
+        if (isEmpty() || size() - 1 < getIndex) {
+            return null;
+        }
+        int ptr = (front + getIndex) % items.length;
+        return items[ptr];
+    }
+
+    /**
      * Get the item at the front.
      *
      * @return null if deque was empty, the item at the front of deque otherwise
@@ -159,6 +173,7 @@ public class ArrayDeque<T> {
 
     /**
      * Returns whether this deque is empty.
+     *
      * @return true if deque is empty, false otherwise
      */
     public boolean isEmpty() {
