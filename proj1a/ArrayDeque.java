@@ -103,7 +103,7 @@ public class ArrayDeque<T> {
      *
      * @return null if deque was empty, the item at the front of deque otherwise
      */
-    public T getFront() {
+    public T getFirst() {
         if (isEmpty()) {
             return null;
         } else {
@@ -116,7 +116,7 @@ public class ArrayDeque<T> {
      *
      * @return null if deque was empty, the item at the rear of deque otherwise
      */
-    public T getRear() {
+    public T getLast() {
         if (isEmpty()) {
             return null;
         } else {
