@@ -140,7 +140,7 @@ public class ArrayDeque<T> {
     }
 
     private boolean isFull() {
-        return size() == items.length - 1;
+        return size() == items.length;
     }
 
     /**
