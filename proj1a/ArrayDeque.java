@@ -1,5 +1,4 @@
 import static java.lang.System.arraycopy;
-import static java.util.Arrays.copyOf;
 
 public class ArrayDeque<T> {
 
@@ -9,18 +8,6 @@ public class ArrayDeque<T> {
     public ArrayDeque() {
         front = rear = 0;
         items = (T[]) new Object[DEFAULT_SIZE];
-    }
-
-    /**
-     * Creates a deep copy of other deque.
-     *
-     * @param other the ArrayDeque to be copied
-     */
-    public ArrayDeque(ArrayDeque other) {
-        front = other.front;
-        rear = other.rear;
-        T[] items = (T[]) copyOf(other.items, other.items.length);
-
     }
 
     /**
@@ -134,8 +121,7 @@ public class ArrayDeque<T> {
     }
 
     /**
-     * Prints the items in the deque from first to last, separated by a space. Once all the items have been printed,
-     * print out a new line.
+     * Prints the items in the deque from first to last, separated by a space.
      */
     public void printDeque() {
         if (isEmpty()) {

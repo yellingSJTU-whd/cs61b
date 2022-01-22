@@ -1,6 +1,5 @@
 /**
- * Deque (usually pronounced like “deck”) is an irregular acronym of double-ended queue. Double-ended queues are
- * sequence containers with dynamic sizes that can be expanded or contracted on both ends (either its front or its back).
+ * Deque is an irregular acronym of double-ended queue.
  *
  * @param <T> type of items in the deque.
  */
@@ -75,8 +74,7 @@ public class LinkedListDeque<T> {
     }
 
     /**
-     * Prints the items in the deque from first to last, separated by a space. Once all the items have been printed,
-     * print out a new line.
+     * Prints the items in the deque from first to last, separated by a space.
      */
     public void printDeque() {
         Node ptr = sentinel;
@@ -120,8 +118,7 @@ public class LinkedListDeque<T> {
     }
 
     /**
-     * Gets the item at the given index, where 0 is the front, 1 is the next item, and so forth. If no such item exists,
-     * returns null.
+     * Gets the item at the given index.
      *
      * @param index zero-based index
      * @return null if no such item exists, the item at specified index otherwise
@@ -138,8 +135,7 @@ public class LinkedListDeque<T> {
     }
 
     /**
-     * Gets the item at the given index recursively, where 0 is the front, 1 is the next item, and so forth.
-     * If no such item exists, returns null.
+     * Gets the item at the given index recursively.
      *
      * @param index zero-based index
      * @return null if no such item exists, the item at specified index otherwise
