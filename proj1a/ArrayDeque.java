@@ -24,7 +24,6 @@ public class ArrayDeque<T> {
         } else {
             front--;
         }
-        System.out.println("front = " + front + " item = " + item);
         items[front] = item;
     }
 
@@ -44,7 +43,6 @@ public class ArrayDeque<T> {
         } else {
             rear++;
         }
-        System.out.println("rear = " + rear + " item = " + item);
         items[rear] = item;
     }
 
@@ -101,10 +99,13 @@ public class ArrayDeque<T> {
      * @return null if no such item exists, the item otherwise
      */
     public T get(int getIndex) {
-        if (getIndex < 0 || isEmpty() || size() - 1 < getIndex) {
+        if (getIndex < 0 || isEmpty() || items.length <= getIndex) {
             return null;
         }
-        int ptr = (front + getIndex) % items.length;
+        int ptr = (front + getIndex);
+        if (ptr >= items.length) {
+            ptr -= items.length;
+        }
         return items[ptr];
     }
 
@@ -114,8 +115,11 @@ public class ArrayDeque<T> {
      * @return size of deque
      */
     public int size() {
-        int size = rear - front;
-        if (size < 0) {
+        if (isEmpty()) {
+            return 0;
+        }
+        int size = rear - front + 1;
+        if (size <= 0) {
             size += items.length;
         }
         return size;
