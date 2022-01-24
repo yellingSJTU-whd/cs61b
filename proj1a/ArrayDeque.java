@@ -161,18 +161,19 @@ public class ArrayDeque<T> {
         }
         if (ptr == items.length && ptr != rear) {
             ptr = 0;
-            while (ptr != front) {
+            while (ptr != rear) {
                 newItems[i++] = items[ptr++];
             }
         }
+        newItems[i] = items[ptr];
 
         front = 0;
-        rear = items.length - 1;
+        rear = i;
         items = newItems;
     }
 
     private boolean lowUsageRate() {
-        return items.length >= 16 && (double) size() / items.length < RESIZE_FACTOR_LOWER;
+        return items.length >= 16 && (double) size() / items.length <= RESIZE_FACTOR_LOWER;
     }
 
     private boolean isFull() {

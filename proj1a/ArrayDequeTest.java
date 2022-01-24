@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 class ArrayDequeTest {
 
-    ArrayDeque<Integer> deque;
+    ArrayDeque<String> deque;
 
     @BeforeAll
     static void initAll() {
@@ -17,15 +17,13 @@ class ArrayDequeTest {
 
     @Test
     void gradeScoped01() {
-        deque.addLast(0);
-        deque.addLast(1);
-        deque.addLast(2);
-        deque.addLast(3);
-        deque.addLast(4);
-        deque.addLast(5);
-        deque.addLast(6);
-        deque.addLast(7);
-        deque.printDeque();
-        System.out.println(deque.get(7));
+        for (int i = 0; i < 100; i++) {
+            deque.addFirst("nonsense");
+        }
+        for (int i = 0; i < 100; i++) {
+            deque.removeFirst();
+        }
+        System.out.println(deque.size());
+//        deque.printDeque();
     }
 }
