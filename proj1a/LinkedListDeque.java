@@ -3,7 +3,7 @@
  *
  * @param <T> type of items in the deque.
  */
-public class LinkedListDeque<T> {
+public class LinkedListDeque<T> implements Deque<T> {
 
     /**
      * Constructor for LinkedListDeque.
@@ -20,6 +20,7 @@ public class LinkedListDeque<T> {
      *
      * @param item the item to be added
      */
+    @Override
     public void addFirst(T item) {
         Node first = new Node(item, sentinel, sentinel.next);
         sentinel.next.pre = first;
@@ -32,6 +33,7 @@ public class LinkedListDeque<T> {
      *
      * @param item the item to be added
      */
+    @Override
     public void addLast(T item) {
         Node last = new Node(item, sentinel.pre, sentinel);
         sentinel.pre.next = last;
@@ -40,19 +42,11 @@ public class LinkedListDeque<T> {
     }
 
     /**
-     * Returns true if deque is empty, false otherwise.
-     *
-     * @return true if deque is empty, false otherwise
-     */
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    /**
      * Returns the number of items in the deque.
      *
      * @return the number of items in the deque
      */
+    @Override
     public int size() {
         return size;
     }
@@ -60,6 +54,7 @@ public class LinkedListDeque<T> {
     /**
      * Prints the items in the deque from first to last, separated by a space.
      */
+    @Override
     public void printDeque() {
         Node ptr = sentinel;
         while (ptr.next != sentinel) {
@@ -74,6 +69,7 @@ public class LinkedListDeque<T> {
      *
      * @return null if no such item exists, the item to be removed otherwise
      */
+    @Override
     public T removeFirst() {
         if (isEmpty()) {
             return null;
@@ -90,6 +86,7 @@ public class LinkedListDeque<T> {
      *
      * @return null if no such item exists, the item to be removed otherwise
      */
+    @Override
     public T removeLast() {
         if (isEmpty()) {
             return null;
@@ -107,6 +104,7 @@ public class LinkedListDeque<T> {
      * @param index zero-based index
      * @return null if no such item exists, the item at specified index otherwise
      */
+    @Override
     public T get(int index) {
         if (size < index) {
             return null;

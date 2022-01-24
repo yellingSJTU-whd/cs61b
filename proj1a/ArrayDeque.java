@@ -1,4 +1,4 @@
-public class ArrayDeque<T> {
+public class ArrayDeque<T> implements Deque<T> {
 
     /**
      * Creates an empty deque.
@@ -13,6 +13,7 @@ public class ArrayDeque<T> {
      *
      * @param item the item to add
      */
+    @Override
     public void addFirst(T item) {
         if (isFull()) {
             resize(items.length * RESIZE_FACTOR_UPPER);
@@ -32,6 +33,7 @@ public class ArrayDeque<T> {
      *
      * @param item the item to add
      */
+    @Override
     public void addLast(T item) {
         if (isFull()) {
             resize(items.length * RESIZE_FACTOR_UPPER);
@@ -51,6 +53,7 @@ public class ArrayDeque<T> {
      *
      * @return null if deque was empty, the removing item otherwise
      */
+    @Override
     public T removeFirst() {
         if (isEmpty()) {
             return null;
@@ -74,6 +77,7 @@ public class ArrayDeque<T> {
      *
      * @return null if deque was empty, the removing item otherwise
      */
+    @Override
     public T removeLast() {
         if (isEmpty()) {
             return null;
@@ -98,6 +102,7 @@ public class ArrayDeque<T> {
      * @param getIndex zero-based index
      * @return null if no such item exists, the item otherwise
      */
+    @Override
     public T get(int getIndex) {
         if (getIndex < 0 || isEmpty() || items.length <= getIndex) {
             return null;
@@ -114,6 +119,7 @@ public class ArrayDeque<T> {
      *
      * @return size of deque
      */
+    @Override
     public int size() {
         if (isEmpty()) {
             return 0;
@@ -128,6 +134,7 @@ public class ArrayDeque<T> {
     /**
      * Prints the items in the deque from first to last, separated by a space.
      */
+    @Override
     public void printDeque() {
         if (isEmpty()) {
             System.out.println("deque empty");
@@ -185,6 +192,7 @@ public class ArrayDeque<T> {
      *
      * @return true if deque is empty, false otherwise
      */
+    @Override
     public boolean isEmpty() {
         return front == -1;
     }
