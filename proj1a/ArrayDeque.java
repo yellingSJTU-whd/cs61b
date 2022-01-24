@@ -17,7 +17,10 @@ public class ArrayDeque<T> {
         if (isFull()) {
             resize(items.length * RESIZE_FACTOR_UPPER);
         }
-        front = (front - 1 + items.length) % items.length;
+        front--;
+        while (front < 0) {
+            front += items.length;
+        }
         items[front] = item;
     }
 
@@ -32,7 +35,10 @@ public class ArrayDeque<T> {
         }
 
         items[rear] = item;
-        rear = (rear + 1 + items.length) % items.length;
+        rear++;
+        while (rear > items.length) {
+            rear -= items.length;
+        }
     }
 
     /**
@@ -45,7 +51,10 @@ public class ArrayDeque<T> {
             return null;
         }
         T item = items[front];
-        front = (front + 1) % items.length;
+        front++;
+        while (front > items.length) {
+            front -= items.length;
+        }
         if (lowUsageRate()) {
             resize((int) (items.length * 0.5));
         }
@@ -61,7 +70,10 @@ public class ArrayDeque<T> {
         if (isEmpty()) {
             return null;
         }
-        rear = (rear - 1 + items.length) % items.length;
+        rear--;
+        while (rear < 0) {
+            rear += items.length;
+        }
         T item = items[rear];
         if (lowUsageRate()) {
             resize((int) (items.length * 0.5));
