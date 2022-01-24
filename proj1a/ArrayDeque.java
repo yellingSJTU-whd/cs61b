@@ -89,7 +89,11 @@ public class ArrayDeque<T> {
      * @return size of deque
      */
     public int size() {
-        return (rear - front + items.length) % items.length;
+        int size = rear - front;
+        while (size < 0) {
+            size += items.length;
+        }
+        return size;
     }
 
     /**
