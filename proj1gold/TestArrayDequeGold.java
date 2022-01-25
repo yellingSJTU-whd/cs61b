@@ -21,9 +21,6 @@ public class TestArrayDequeGold {
             int random = StdRandom.uniform(4);
             switch (random) {
                 case 0:
-                    sb.append("size()\n");
-                    assertEquals(sb.toString(), ads.size(), sad.size());
-
                     sad.addFirst(i);
                     ads.addFirst(i);
                     sb.append("addFirst(").append(i).append(")\n");
@@ -34,9 +31,6 @@ public class TestArrayDequeGold {
                     break;
 
                 case 1:
-                    sb.append("size()\n");
-                    assertEquals(sb.toString(), ads.size(), sad.size());
-
                     sad.addLast(i);
                     sad.addLast(i);
                     sb.append("addLast(").append(i).append(")\n");
@@ -47,9 +41,6 @@ public class TestArrayDequeGold {
                     break;
 
                 case 2:
-                    sb.append("size()\n");
-                    assertEquals(sb.toString(), ads.size(), sad.size());
-
                     if (ads.isEmpty()) {
                         sb.append("isEmpty()\n");
                         assertTrue(sb.toString(), sad.isEmpty());
@@ -65,9 +56,6 @@ public class TestArrayDequeGold {
                     break;
 
                 case 3:
-                    sb.append("size()\n");
-                    assertEquals(sb.toString(), ads.size(), sad.size());
-
                     if (ads.isEmpty()) {
                         sb.append("isEmpty()\n");
                         assertTrue(sb.toString(), sad.isEmpty());
