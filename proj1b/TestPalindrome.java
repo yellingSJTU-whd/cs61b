@@ -6,6 +6,8 @@ public class TestPalindrome {
     // You must use this palindrome, and not instantiate
     // new Palindromes, or the autograder might be upset.
     static Palindrome palindrome = new Palindrome();
+    static CharacterComparator cc = new OffByOne();
+    static CharacterComparator cc5 = new OffByN(5);
 
     @Test
     public void testWordToDeque() {
@@ -19,19 +21,32 @@ public class TestPalindrome {
 
     @Test
     public void testIsPalindrome() {
-        String nonPalindrome = "whatever";
-        String oddPalindrome = "abcdcba";
-        String evenPalindrome = "xyzzyx";
-        String singleChar = "a";
-        String zeroChar = "";
+        assertFalse(palindrome.isPalindrome(null));
+        assertFalse(palindrome.isPalindrome("abA"));
+        assertFalse(palindrome.isPalindrome("whatever"));
+        assertTrue(palindrome.isPalindrome("abcdcba"));
+        assertTrue(palindrome.isPalindrome("xyzzyx"));
+        assertTrue(palindrome.isPalindrome("a"));
+        assertTrue(palindrome.isPalindrome(""));
+    }
 
-        Palindrome p = new Palindrome();
+    @Test
+    public void testOffByOne() {
+        assertFalse(palindrome.isPalindrome(null, cc));
+        assertTrue(palindrome.isPalindrome("", cc));
+        assertTrue(palindrome.isPalindrome("a", cc));
+        assertTrue(palindrome.isPalindrome("flake", cc));
+        assertFalse(palindrome.isPalindrome("aabaa", cc));
+        assertFalse(palindrome.isPalindrome("flakE", cc));
+    }
 
-        assertFalse(p.isPalindrome(null));
-        assertFalse(p.isPalindrome(nonPalindrome));
-        assertTrue(p.isPalindrome(oddPalindrome));
-        assertTrue(p.isPalindrome(evenPalindrome));
-        assertTrue(p.isPalindrome(singleChar));
-        assertTrue(p.isPalindrome(zeroChar));
+    @Test
+    public void testOffByN() {
+        assertFalse(palindrome.isPalindrome(null, cc5));
+        assertTrue(palindrome.isPalindrome("", cc5));
+        assertTrue(palindrome.isPalindrome("a", cc5));
+        assertTrue(palindrome.isPalindrome("bing", cc5));
+        assertFalse(palindrome.isPalindrome("binG", cc5));
+        assertFalse(palindrome.isPalindrome("aabaa", cc5));
     }
 }

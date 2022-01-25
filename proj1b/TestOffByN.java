@@ -10,6 +10,8 @@ public class TestOffByN {
     @Test
     void testEqualChars() {
         assertTrue(offBy5.equalChars('a', 'f'));
+        assertFalse(offBy5.equalChars('a', 'a'));
+        assertFalse(offBy5.equalChars('A', 'f'));
         assertTrue(offBy5.equalChars('f', 'a'));
         assertFalse(offBy5.equalChars('f', 'h'));
     }
