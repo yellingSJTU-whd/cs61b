@@ -132,7 +132,15 @@ public class IntList {
         if (A == null) {
             return null;
         }
-        return IntList.of(3, 2, 1, 0);
+        IntList p = A, q = A.rest;
+        p.rest = null;
+        while (q != null) {
+            IntList curr = q.rest;
+            q.rest = p;
+            p = q;
+            q = curr;
+        }
+        return p;
     }
 
     /**
