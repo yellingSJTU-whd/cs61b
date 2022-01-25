@@ -39,8 +39,7 @@ public class Palindrome {
     }
 
     /**
-     * Determines whether the specified is a palindrome, using the given CharacterComparator to determine Character
-     * equality.
+     * Determines whether a String is palindrome with given CharacterComparator.
      *
      * @param word the String to be determined
      * @param cc   specified CharacterComparator using when Character equality is considered.

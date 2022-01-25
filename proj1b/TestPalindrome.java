@@ -20,7 +20,7 @@ public class TestPalindrome {
     @Test
     public void testIsPalindrome() {
         String nonPalindrome = "whatever";
-        String palindrome = "abcdcba";
+        String oddPalindrome = "abcdcba";
         String evenPalindrome = "xyzzyx";
         String singleChar = "a";
         String zeroChar = "";
@@ -29,7 +29,7 @@ public class TestPalindrome {
 
         assertFalse(p.isPalindrome(null));
         assertFalse(p.isPalindrome(nonPalindrome));
-        assertTrue(p.isPalindrome(palindrome));
+        assertTrue(p.isPalindrome(oddPalindrome));
         assertTrue(p.isPalindrome(evenPalindrome));
         assertTrue(p.isPalindrome(singleChar));
         assertTrue(p.isPalindrome(zeroChar));
