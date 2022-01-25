@@ -1,4 +1,5 @@
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class TestPalindrome {
@@ -14,5 +15,23 @@ public class TestPalindrome {
             actual += d.removeFirst();
         }
         assertEquals("persiflage", actual);
+    }
+
+    @Test
+    public void testIsPalindrome() {
+        String nonPalindrome = "whatever";
+        String palindrome = "abcdcba";
+        String evenPalindrome = "xyzzyx";
+        String singleChar = "a";
+        String zeroChar = "";
+
+        Palindrome p = new Palindrome();
+
+        assertFalse(p.isPalindrome(null));
+        assertFalse(p.isPalindrome(nonPalindrome));
+        assertTrue(p.isPalindrome(palindrome));
+        assertTrue(p.isPalindrome(evenPalindrome));
+        assertTrue(p.isPalindrome(singleChar));
+        assertTrue(p.isPalindrome(zeroChar));
     }
 }
