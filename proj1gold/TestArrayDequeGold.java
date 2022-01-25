@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 public class TestArrayDequeGold {
     StudentArrayDeque<Integer> sad;
     ArrayDequeSolution<Integer> ads;
+    StringBuilder sb = new StringBuilder();
 
     @Before
     public void init() {
@@ -19,38 +20,40 @@ public class TestArrayDequeGold {
             int random = StdRandom.uniform(4);
             switch (random) {
                 case 0:
-                    sad.addFirst(random);
-                    ads.addFirst(random);
-                    assertEquals("Oh nooo!\nThis is bad:\n    size of StudentArrayDeque = " + sad.size() +
-                            ", while size of ArrayDequeSolution = " + ads.size(), ads.size(), sad.size());
+                    sad.addFirst(i);
+                    ads.addFirst(i);
+                    sb.append("addFirst(").append(i).append(")\n");
+                    assertEquals(sb.toString(), ads.size(), sad.size());
+                    assertEquals(sb.toString(), ads.get(0), sad.get(0));
                     break;
 
                 case 1:
-                    sad.addLast(random);
-                    sad.addLast(random);
-                    assertEquals("Oh nooo!\nThis is bad:\n    size of StudentArrayDeque = " + sad.size() +
-                            ", while size of ArrayDequeSolution = " + ads.size(), ads.size(), sad.size());
+                    sad.addLast(i);
+                    sad.addLast(i);
+                    sb.append("addLast(").append(i).append(")\n");
+                    assertEquals(sb.toString(), ads.size(), sad.size());
+                    assertEquals(sb.toString(), ads.get(ads.size() - 1), sad.get(sad.size() - 1));
                     break;
 
                 case 2:
-                    assertEquals("Oh nooo!\nThis is bad:\n    size of StudentArrayDeque = " + sad.size() +
-                            ", while size of ArrayDequeSolution = " + ads.size(), ads.size(), sad.size());
+                    assertEquals(sb.toString(), ads.size(), sad.size());
                     if (ads.size() > 0) {
                         Integer student = sad.removeFirst();
                         Integer ref = ads.removeFirst();
-                        assertEquals("Oh nooo!\nThis is bad:\n    removeFirst() of StudentArrayDeque returns"
-                                + student + ", while removeFirst() of ArrayDequeSolution returns " + ref, ref, student);
+                        sb.append("removeFirst()\n");
+                        assertEquals(sb.toString(), ads.size(), sad.size());
+                        assertEquals(sb.toString(), ref, student);
                     }
                     break;
 
                 case 3:
-                    assertEquals("Oh nooo!\nThis is bad:\n    size of StudentArrayDeque = " + sad.size() +
-                            " while size of ArrayDequeSolution = " + ads.size(), ads.size(), sad.size());
+                    assertEquals(sb.toString(), ads.size(), sad.size());
                     if (ads.size() > 0) {
                         Integer student = sad.removeLast();
                         Integer ref = ads.removeLast();
-                        assertEquals("Oh nooo!\nThis is bad:\n    removeLast() of StudentArrayDeque returns"
-                                + student + ", while removeLast() of ArrayDequeSolution returns " + ref, ref, student);
+                        sb.append("removeLast()\n");
+                        assertEquals(sb.toString(), ads.size(), sad.size());
+                        assertEquals(sb.toString(), ref, student);
                     }
                     break;
             }
