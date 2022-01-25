@@ -32,7 +32,7 @@ public class TestArrayDequeGold {
 
                 case 1:
                     sad.addLast(i);
-                    sad.addLast(i);
+                    ads.addLast(i);
                     sb.append("addLast(").append(i).append(")\n");
                     assertEquals(sb.toString(), ads.get(ads.size() - 1), sad.get(sad.size() - 1));
 
