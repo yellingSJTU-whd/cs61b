@@ -1,5 +1,7 @@
 package synthesizer;
 
+import java.util.Iterator;
+
 public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     /* Index for the next dequeue or peek. */
     private int first;            // index for the next dequeue or peek
@@ -60,5 +62,34 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         return rb[first];
     }
 
-    // TODO: When you get to part 5, implement the needed code to support iteration.
+    @Override
+    public Iterator<T> iterator() {
+        return new BufferIterator();
+    }
+
+    private class BufferIterator implements Iterator<T> {
+        private int pos;
+        private int num;
+
+        private BufferIterator() {
+            pos = first;
+            num = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return num < fillCount;
+        }
+
+        @Override
+        public T next() {
+            T nextItem = rb[pos];
+            pos++;
+            if (pos == capacity) {
+                pos = 0;
+            }
+            num++;
+            return nextItem;
+        }
+    }
 }
