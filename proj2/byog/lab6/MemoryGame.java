@@ -62,7 +62,7 @@ public class MemoryGame {
             StdDraw.setFont(new Font("Monaco", Font.BOLD, 20));
             StdDraw.setPenColor(Color.WHITE);
             StdDraw.textLeft(1, height - 1, "Round: " + round);
-            StdDraw.text(width / 2.0, height, playerTurn ? "Type!" : "Watch");
+            StdDraw.text(width / 2.0, height - 1, playerTurn ? "Type!" : "Watch");
             StdDraw.textRight(width - 1, height - 1, ENCOURAGEMENT[rand.nextInt(ENCOURAGEMENT.length)]);
             StdDraw.line(0, height - 2, width, height - 2);
         }
@@ -98,19 +98,26 @@ public class MemoryGame {
     }
 
     public void startGame() {
-        //TODO: Set any relevant variables before the game starts
         round = 1;
         gameOver = false;
         playerTurn = false;
+
         //TODO: Establish Game loop
         while (!gameOver) {
-            drawFrame("Round: " + round);
+            playerTurn = false;
+            drawFrame("Round " + round + "! Good luck!");
+            StdDraw.pause(1500);
+
             String randomLetters = generateRandomString(round);
             flashSequence(randomLetters);
+
             playerTurn = true;
             String playerAnswer = solicitNCharsInput(round);
+
             if (randomLetters.equals(playerAnswer)) {
                 round++;
+                drawFrame("Correct!");
+                StdDraw.pause(1500);
             } else {
                 drawFrame("Game Over! You made it to round: " + round);
                 gameOver = true;
