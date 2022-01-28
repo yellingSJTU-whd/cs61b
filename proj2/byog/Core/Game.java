@@ -2,12 +2,18 @@ package byog.Core;
 
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
+import byog.TileEngine.Tileset;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class Game {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
-    public static final int WIDTH = 80;
-    public static final int HEIGHT = 30;
+    public static final int WIDTH = 81;
+    public static final int HEIGHT = 31;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -34,5 +40,40 @@ public class Game {
 
         TETile[][] finalWorldFrame = null;
         return finalWorldFrame;
+    }
+
+    /**
+     * Intern routine to generate the 2D tile game world, pseudo-randomly.
+     * @param seed pseudo-random seed
+     * @return the world generated
+     */
+    private TETile[][] generateWorld(long seed){
+        //1. init
+        TETile[][] theWorld = new TETile[WIDTH][HEIGHT];
+        for (TETile[] column:theWorld){
+            Arrays.fill(column, Tileset.NOTHING);
+        }
+        //2. generate rooms pseudo-randomly
+        Random random = new Random(seed);
+        List<Room> rooms = generateRooms(theWorld, random);
+
+
+
+
+
+
+        return theWorld;
+    }
+
+    private List<Room> generateRooms(TETile[][] theWorld, Random random) {
+        List<Room> rooms = new ArrayList<>();
+        int roomNums = RandomUtils.uniform(random, 8,13);
+        while (rooms.size()<roomNums){
+
+        }
+
+
+
+        return rooms;
     }
 }
