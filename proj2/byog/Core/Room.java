@@ -25,8 +25,8 @@ public class Room {
     }
 
     public static Room randomRoom(Random random, TETile[][] theWorld) {
-        int height = theWorld.length;
-        int width = theWorld[0].length;
+        int height = theWorld[0].length;
+        int width = theWorld.length;
 
         int x0 = RandomUtils.uniform(random, 3, width - CAP);
         int y0 = RandomUtils.uniform(random, 3, height - CAP);

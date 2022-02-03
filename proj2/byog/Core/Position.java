@@ -38,8 +38,8 @@ public class Position {
     }
 
     public boolean outOfTheWorld(TETile[][] theWorld) {
-        int width = theWorld[0].length;
-        int height = theWorld.length;
+        int width = theWorld.length;
+        int height = theWorld[0].length;
         return (x <= 0 || x >= width || y <= 0 || y >= height);
     }
 
@@ -58,8 +58,8 @@ public class Position {
         }
 
         List<Position> neighbours = new ArrayList<>(4);
-        int width = theWorld[0].length;
-        int height = theWorld.length;
+        int width = theWorld.length;
+        int height = theWorld[0].length;
         int delta = isEven ? 2 : 1;
 
         Position left = new Position(x - delta, y);

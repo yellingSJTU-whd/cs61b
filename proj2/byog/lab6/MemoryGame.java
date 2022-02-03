@@ -98,7 +98,6 @@ public class MemoryGame {
         gameOver = false;
         playerTurn = false;
 
-        //TODO: Establish Game loop
         while (!gameOver) {
             playerTurn = false;
             drawFrame("Round " + round + "! Good luck!");

@@ -3,7 +3,10 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
+import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,11 +17,217 @@ public class Game {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 81;
     public static final int HEIGHT = 31;
+    private static String operations;
+    private static Player player;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
+
+        //1. show the starting UI
+        showMainMenuUI();
+
+        //2. wait for and read input(only N、L、Q is valid)
+        String beginningStr = solicitBeginningStr();
+        if (beginningStr.equals("N")) {
+            newGame();
+        } else if (beginningStr.equals("L")) {
+            operations = loadGame();
+            if (operations.length() == 0) {
+                throw new RuntimeException("load error");
+            }
+            TETile[][] theWorld = playWithInputString(operations);
+            ter.renderFrame(theWorld);
+            interactWith(theWorld);
+        } else {
+            saveGame();
+            System.exit(0);
+        }
+    }
+
+    private void newGame() {
+        operations = "";
+        operations += "N";
+
+        promptToSeedUi();
+        String seed = solicitSeed();
+        operations = operations + seed + "S";
+
+        TETile[][] theWorld = generateWorld(Long.parseLong(seed));
+        ter.renderFrame(theWorld);
+        renderHUD(theWorld);
+
+        interactWith(theWorld);
+    }
+
+    private void renderHUD(TETile[][] theWorld) {
+        int x = (int) StdDraw.mouseX();
+        int y = (int) StdDraw.mouseY();
+        String description = theWorld[x][y].description();
+        StdDraw.textLeft(0, HEIGHT, description);
+    }
+
+    private void interactWith(TETile[][] theWorld) {
+        String gameInfo = "";
+        while (true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            char input = Character.toUpperCase(StdDraw.nextKeyTyped());
+            switch (input) {
+                case 'W':
+                    if (player.moveNorth(theWorld, gameInfo)){
+                        operations += "W";
+                    }
+                    break;
+                case 'A':
+                    if (player.moveWest(theWorld, gameInfo)) {
+                        operations += "A";
+                    }
+                    break;
+                case 'S':
+                    if (player.moveSouth(theWorld, gameInfo)) {
+                        operations += "S";
+                    }
+                    break;
+                case 'D':
+                    if (player.moveEast(theWorld, gameInfo)) {
+                        operations += "D";
+                    }
+                    break;
+                case ':':
+                    while (true) {
+                        if (!StdDraw.hasNextKeyTyped()) {
+                            continue;
+                        }
+                        char ch = Character.toUpperCase(StdDraw.nextKeyTyped());
+                        if (ch == 'Q') {
+                            saveGame();
+                            System.exit(0);
+                        }
+                        break;
+                    }
+                    break;
+                default:
+            }
+        }
+    }
+
+    private Long parseSeed(String operations) {
+        String upper = operations.toUpperCase();
+        int indexOfN = upper.indexOf("N");
+        int indexOfS = upper.indexOf("S");
+        return Long.parseLong(upper.substring(indexOfN + 1, indexOfS));
+    }
+
+    private String loadGame() {
+        File f = new File("./world.ser");
+        if (f.exists()) {
+            try {
+                FileInputStream fs = new FileInputStream(f);
+                ObjectInputStream os = new ObjectInputStream(fs);
+                String loadOperations = (String) os.readObject();
+                os.close();
+                return loadOperations;
+            } catch (FileNotFoundException e) {
+                System.out.println("file not found");
+                System.exit(0);
+            } catch (IOException e) {
+                System.out.println(e);
+                System.exit(0);
+            } catch (ClassNotFoundException e) {
+                System.out.println("class not found");
+                System.exit(0);
+            }
+        }
+        return "";
+    }
+
+    private void saveGame() {
+        File f = new File("./world.ser");
+        try {
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            FileOutputStream fs = new FileOutputStream(f);
+            ObjectOutputStream os = new ObjectOutputStream(fs);
+            os.writeObject(operations.toString());
+            os.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("file not found");
+            System.exit(0);
+        } catch (IOException e) {
+            System.out.println(e);
+            System.exit(0);
+        }
+    }
+
+    private String solicitSeed() {
+        char endFlag = 'S';
+        StringBuilder seedBuilder = new StringBuilder();
+        while (true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            char input = StdDraw.nextKeyTyped();
+            if (Character.isDigit(input)) {
+                seedBuilder.append(input);
+                StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0, seedBuilder.toString());
+                StdDraw.show();
+                StdDraw.pause(500);
+            } else if (Character.toUpperCase(input) == endFlag) {
+                return seedBuilder.toString();
+            }
+        }
+    }
+
+    private void promptToSeedUi() {
+        StdDraw.clear(Color.BLACK);
+        setGameTitle();
+        StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 - 1, "Please entry a random number");
+        StdDraw.show();
+    }
+
+    private String solicitBeginningStr() {
+        StringBuilder beginningStr = new StringBuilder();
+        while (beginningStr.length() != 1) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            char input = Character.toUpperCase(StdDraw.nextKeyTyped());
+            if (input == 'N' || input == 'L' || input == 'Q') {
+                beginningStr.append(input);
+            }
+        }
+        return beginningStr.toString();
+    }
+
+    private void showMainMenuUI() {
+        initCanvas();
+        setGameTitle();
+
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 20));
+        StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 - 1, "New Game (N)");
+        StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0, "Load Game (L)");
+        StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 + 1, "Quit (Q)");
+
+        StdDraw.show();
+    }
+
+    private void setGameTitle() {
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 60));
+        StdDraw.text(WIDTH / 2.0, HEIGHT * 3 / 4.0, "CS61B:  THE GAME");
+    }
+
+    private void initCanvas() {
+        StdDraw.setCanvasSize(WIDTH * 16, (HEIGHT + 2) * 16);
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 30));
+        StdDraw.setPenColor(Color.WHITE);
+        StdDraw.setXscale(0, WIDTH);
+        StdDraw.setYscale(0, HEIGHT + 1);
+        StdDraw.clear(Color.BLACK);
+        StdDraw.enableDoubleBuffering();
     }
 
     /**
@@ -85,7 +294,7 @@ public class Game {
         int luckyNum = RandomUtils.uniform(random, newEnds.size());
         Position beginning = newEnds.get(luckyNum);
         theWorld[beginning.getX()][beginning.getY()] = Tileset.LOCKED_DOOR;
-
+        player = new Player(beginning);
 
         return theWorld;
     }
