@@ -26,7 +26,7 @@ public class Game {
     public void playWithKeyboard() {
 
         //1. show the starting UI
-        showMainMenuUI();
+        showMainMenu();
 
         //2. wait for and read input(only N、L、Q is valid)
         String beginningStr = solicitBeginningStr();
@@ -34,21 +34,11 @@ public class Game {
         if (beginningStr.equals("N")) {
             newGame();
         } else if (beginningStr.equals("L")) {
-            loadGameForKeyboard();
+            loadAndPlay();
         } else {
             saveOperations();
             System.exit(0);
         }
-    }
-
-    private void loadGameForKeyboard() {
-        operations = loadOperations();
-        if (operations.length() == 0) {
-            throw new RuntimeException("load error");
-        }
-        TETile[][] theWorld = playWithInputString(operations);
-        ter.renderFrame(theWorld);
-        interactWith(theWorld);
     }
 
     private void newGame() {
@@ -60,26 +50,40 @@ public class Game {
         operations = operations + seed + "S";
 
         TETile[][] theWorld = generateWorld(Long.parseLong(seed));
+        StdDraw.clear(Color.BLACK);
         ter.renderFrame(theWorld);
 
+        interactWith(theWorld);
+    }
+
+    private void loadAndPlay() {
+        operations = loadOperations();
+        if (operations.length() == 0) {
+            throw new RuntimeException("load error");
+        }
+        TETile[][] theWorld = playWithInputString(operations);
+        StdDraw.clear(Color.BLACK);
+        ter.renderFrame(theWorld);
         interactWith(theWorld);
     }
 
     private void renderHUD(TETile[][] theWorld, String gameInfo) {
         int x = (int) StdDraw.mouseX();
         int y = (int) StdDraw.mouseY();
-        String description = theWorld[x][y].description();
+        String description = "";
+        if (!new Position(x, y).outOf(theWorld)) {
+            description = theWorld[x][y].description();
+        }
 
-        StdDraw.setFont(new Font("Monaco", Font.BOLD, 16));
+        StdDraw.setFont(new Font("Monaco", Font.PLAIN, 20));
         StdDraw.setPenColor(Color.WHITE);
 
         StdDraw.textLeft(0, HEIGHT + 1, description);
-        StdDraw.text(WIDTH / 2.0, HEIGHT + 1, gameInfo);
+        StdDraw.textLeft(WIDTH / 2.0 - 2, HEIGHT + 1, gameInfo);
         StdDraw.show();
     }
 
     private void interactWith(TETile[][] theWorld) {
-        String gameInfo = "";
         while (true) {
             if (!StdDraw.hasNextKeyTyped()) {
                 continue;
@@ -87,31 +91,35 @@ public class Game {
             char input = Character.toUpperCase(StdDraw.nextKeyTyped());
             switch (input) {
                 case 'W':
-                    if (player.moveNorth(theWorld, gameInfo)) {
+                    if (player.moveNorth(theWorld)) {
                         operations += "W";
-                        ter.renderFrame(theWorld);
-                        renderHUD(theWorld, gameInfo);
+                        reDraw(theWorld, "went north");
+                    } else {
+                        reDraw(theWorld, "can't go north");
                     }
                     break;
                 case 'A':
-                    if (player.moveWest(theWorld, gameInfo)) {
+                    if (player.moveWest(theWorld)) {
                         operations += "A";
-                        ter.renderFrame(theWorld);
-                        renderHUD(theWorld, gameInfo);
+                        reDraw(theWorld, "went west");
+                    } else {
+                        reDraw(theWorld, "can't go west");
                     }
                     break;
                 case 'S':
-                    if (player.moveSouth(theWorld, gameInfo)) {
+                    if (player.moveSouth(theWorld)) {
                         operations += "S";
-                        ter.renderFrame(theWorld);
-                        renderHUD(theWorld, gameInfo);
+                        reDraw(theWorld, "went south");
+                    } else {
+                        reDraw(theWorld, "can't go south");
                     }
                     break;
                 case 'D':
-                    if (player.moveEast(theWorld, gameInfo)) {
+                    if (player.moveEast(theWorld)) {
                         operations += "D";
-                        ter.renderFrame(theWorld);
-                        renderHUD(theWorld, gameInfo);
+                        reDraw(theWorld, "went east");
+                    } else {
+                        reDraw(theWorld, "can't go east");
                     }
                     break;
                 case ':':
@@ -132,6 +140,12 @@ public class Game {
                 default:
             }
         }
+    }
+
+    private void reDraw(TETile[][] theWorld, String gameInfo) {
+        StdDraw.clear(Color.BLACK);
+        ter.renderFrame(theWorld);
+        renderHUD(theWorld, gameInfo);
     }
 
     private Long parseSeed(String operations) {
@@ -227,7 +241,7 @@ public class Game {
         return beginningStr.toString();
     }
 
-    private void showMainMenuUI() {
+    private void showMainMenu() {
         initCanvas();
         setGameTitle();
 
@@ -245,13 +259,9 @@ public class Game {
     }
 
     private void initCanvas() {
-        StdDraw.setCanvasSize(WIDTH * 16, (HEIGHT + 2) * 16);
-        StdDraw.setFont(new Font("Monaco", Font.BOLD, 30));
+//        StdDraw.setCanvasSize(WIDTH * 16, (HEIGHT + 2) * 16);
+        ter.initialize(WIDTH, HEIGHT + 2);
         StdDraw.setPenColor(Color.WHITE);
-        StdDraw.setXscale(0, WIDTH);
-        StdDraw.setYscale(0, HEIGHT + 1);
-        StdDraw.clear(Color.BLACK);
-        StdDraw.enableDoubleBuffering();
     }
 
     /**
@@ -307,31 +317,35 @@ public class Game {
         String gameInfo = "";
         switch (movement.substring(0, 1)) {
             case "W":
-                if (player.moveNorth(theWorld, gameInfo)) {
+                if (player.moveNorth(theWorld)) {
                     operations += "W";
-                    ter.renderFrame(theWorld);
-                    renderHUD(theWorld, gameInfo);
+                    reDraw(theWorld, "went north");
+                } else {
+                    reDraw(theWorld, "can't go north");
                 }
                 break;
             case "A":
-                if (player.moveWest(theWorld, gameInfo)) {
+                if (player.moveWest(theWorld)) {
                     operations += "A";
-                    ter.renderFrame(theWorld);
-                    renderHUD(theWorld, gameInfo);
+                    reDraw(theWorld, "went west");
+                } else {
+                    reDraw(theWorld, "can't go west");
                 }
                 break;
             case "S":
-                if (player.moveSouth(theWorld, gameInfo)) {
+                if (player.moveSouth(theWorld)) {
                     operations += "S";
-                    ter.renderFrame(theWorld);
-                    renderHUD(theWorld, gameInfo);
+                    reDraw(theWorld, "went south");
+                } else {
+                    reDraw(theWorld, "can't go south");
                 }
                 break;
             case "D":
-                if (player.moveEast(theWorld, gameInfo)) {
+                if (player.moveEast(theWorld)) {
                     operations += "D";
-                    ter.renderFrame(theWorld);
-                    renderHUD(theWorld, gameInfo);
+                    reDraw(theWorld, "went east");
+                } else {
+                    reDraw(theWorld, "can't go east");
                 }
                 break;
             default:
@@ -437,8 +451,9 @@ public class Game {
         if (direction.equals(Direction.DOWN) || direction.equals(Direction.UP)) {
             int y = direction.equals(Direction.DOWN) ? start.getY() - 2 : start.getY() + 2;
             for (int x = start.getX(); x <= end.getX(); x++) {
-                if (theWorld[x][y].equals(Tileset.FLOOR)) {
-                    candidates.add(new Position(x, y));
+                Position candidate = new Position(x, y);
+                if (!candidate.outOf(theWorld) && theWorld[x][y].equals(Tileset.FLOOR)) {
+                    candidates.add(candidate);
                 }
             }
             if (connector(candidates, random) != null) {
@@ -470,7 +485,7 @@ public class Game {
 
 
     private List<Position> generateHalls(Position start, TETile[][] theWorld, List<Position> deadEnds) {
-        if (start.outOfTheWorld(theWorld)) {
+        if (start.outOf(theWorld)) {
             throw new IllegalArgumentException("invalid position (" + start.getX() + "," + start.getY() + ")");
         }
 

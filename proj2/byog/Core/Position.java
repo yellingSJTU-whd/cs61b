@@ -37,7 +37,7 @@ public class Position {
         return theWorld[x][y].equals(type);
     }
 
-    public boolean outOfTheWorld(TETile[][] theWorld) {
+    public boolean outOf(TETile[][] theWorld) {
         int width = theWorld.length;
         int height = theWorld[0].length;
         return (x <= 0 || x >= width || y <= 0 || y >= height);

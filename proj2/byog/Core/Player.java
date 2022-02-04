@@ -10,52 +10,46 @@ public class Player {
         position = new Position(place.getX(), place.getY());
     }
 
-    public boolean moveNorth(TETile[][] theWorld, String gameInfo) {
-        return move(theWorld, Direction.UP, gameInfo);
+    public boolean moveNorth(TETile[][] theWorld) {
+        return move(theWorld, Direction.UP);
     }
 
-    public boolean moveWest(TETile[][] theWorld, String gameInfo) {
-        return move(theWorld, Direction.LEFT, gameInfo);
+    public boolean moveWest(TETile[][] theWorld) {
+        return move(theWorld, Direction.LEFT);
     }
 
-    public boolean moveSouth(TETile[][] theWorld, String gameInfo) {
-        return move(theWorld, Direction.DOWN, gameInfo);
+    public boolean moveSouth(TETile[][] theWorld) {
+        return move(theWorld, Direction.DOWN);
     }
 
-    public boolean moveEast(TETile[][] theWorld, String gameInfo) {
-        return move(theWorld, Direction.RIGHT, gameInfo);
+    public boolean moveEast(TETile[][] theWorld) {
+        return move(theWorld, Direction.RIGHT);
     }
 
-    private boolean move(TETile[][] theWorld, Direction direction, String gameInfo) {
+    private boolean move(TETile[][] theWorld, Direction direction) {
         int currentX = position.getX();
         int currentY = position.getY();
         int width = theWorld.length;
         int height = theWorld[0].length;
         int xPrim = currentX;
         int yPrim = currentY;
-        String suffix = null;
 
         switch (direction) {
             case UP -> {
                 yPrim++;
-                suffix = "north";
             }
             case LEFT -> {
                 xPrim--;
-                suffix = "west";
             }
             case DOWN -> {
                 yPrim--;
-                suffix = "south";
             }
             case RIGHT -> {
                 xPrim++;
-                suffix = "east";
             }
         }
 
-        if (!(0 < xPrim && xPrim < width && 0 < yPrim && yPrim < height)) {
-            gameInfo = "can't go" + suffix;
+        if (xPrim <= 0 || xPrim >= width || yPrim <= 0 || yPrim >= height || theWorld[xPrim][yPrim].equals(Tileset.WALL)) {
             return false;
         }
 
@@ -67,7 +61,6 @@ public class Player {
         theWorld[xPrim][yPrim] = Tileset.PLAYER;
 
         position = new Position(xPrim, yPrim);
-        gameInfo = "went" + suffix;
         return true;
     }
 
