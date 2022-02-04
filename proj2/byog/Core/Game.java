@@ -17,8 +17,10 @@ public class Game {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 81;
     public static final int HEIGHT = 31;
-    private static String operations = "";
-    private static Player player;
+    private String operations;
+    private Player player;
+    private Random random;
+    private TETile[][] theWorld;
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -53,7 +55,7 @@ public class Game {
         StdDraw.clear(Color.BLACK);
         ter.renderFrame(theWorld);
 
-        interactWith(theWorld);
+        interact();
     }
 
     private void loadAndPlay() {
@@ -64,10 +66,10 @@ public class Game {
         TETile[][] theWorld = playWithInputString(operations);
         StdDraw.clear(Color.BLACK);
         ter.renderFrame(theWorld);
-        interactWith(theWorld);
+        interact();
     }
 
-    private void renderHUD(TETile[][] theWorld, String gameInfo) {
+    private void renderHUD(String gameInfo) {
         int x = (int) StdDraw.mouseX();
         int y = (int) StdDraw.mouseY();
         String description = "";
@@ -83,7 +85,7 @@ public class Game {
         StdDraw.show();
     }
 
-    private void interactWith(TETile[][] theWorld) {
+    private void interact() {
         while (true) {
             if (!StdDraw.hasNextKeyTyped()) {
                 continue;
@@ -93,44 +95,44 @@ public class Game {
                 case 'W':
                     if (player.moveNorth(theWorld)) {
                         operations += "W";
-                        reDraw(theWorld, "went north");
+                        reDraw("went north");
                     } else {
-                        reDraw(theWorld, "can't go north");
+                        reDraw("can't go north");
                     }
                     break;
                 case 'A':
                     if (player.moveWest(theWorld)) {
                         operations += "A";
-                        reDraw(theWorld, "went west");
+                        reDraw("went west");
                     } else {
-                        reDraw(theWorld, "can't go west");
+                        reDraw("can't go west");
                     }
                     break;
                 case 'S':
                     if (player.moveSouth(theWorld)) {
                         operations += "S";
-                        reDraw(theWorld, "went south");
+                        reDraw("went south");
                     } else {
-                        reDraw(theWorld, "can't go south");
+                        reDraw("can't go south");
                     }
                     break;
                 case 'D':
                     if (player.moveEast(theWorld)) {
                         operations += "D";
-                        reDraw(theWorld, "went east");
+                        reDraw("went east");
                     } else {
-                        reDraw(theWorld, "can't go east");
+                        reDraw("can't go east");
                     }
                     break;
                 case ':':
                     while (true) {
                         if (!StdDraw.hasNextKeyTyped()) {
-                            renderHUD(theWorld, "waiting for keyboard input");
+                            renderHUD("waiting for keyboard input");
                             continue;
                         }
                         char ch = Character.toUpperCase(StdDraw.nextKeyTyped());
                         if (ch == 'Q') {
-                            renderHUD(theWorld, "saving...");
+                            renderHUD("saving...");
                             saveOperations();
                             System.exit(0);
                         }
@@ -142,14 +144,14 @@ public class Game {
         }
     }
 
-    private void reDraw(TETile[][] theWorld, String gameInfo) {
+    private void reDraw(String gameInfo) {
         StdDraw.clear(Color.BLACK);
         ter.renderFrame(theWorld);
-        renderHUD(theWorld, gameInfo);
+        renderHUD(gameInfo);
     }
 
-    private Long parseSeed(String operations) {
-        String upper = operations.toUpperCase();
+    private Long parseSeed(String interactions) {
+        String upper = interactions.toUpperCase();
         int indexOfN = upper.indexOf("N");
         int indexOfS = upper.indexOf("S");
         return Long.parseLong(upper.substring(indexOfN + 1, indexOfS));
@@ -282,35 +284,34 @@ public class Game {
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
-        TETile[][] finalWorldFrame = null;
         String upper = input.toUpperCase();
         int delimitation = upper.indexOf("S") + 1;
         int quitIndex = upper.indexOf(":Q");
         if (upper.startsWith("N")) {
             long seed = parseSeed(input);
-            finalWorldFrame = generateWorld(seed);
+            theWorld = generateWorld(seed);
             if (quitIndex >= 0) {
-                processMovementStr(finalWorldFrame, upper.substring(delimitation, quitIndex));
+                processMovementStr(upper.substring(delimitation, quitIndex));
                 saveOperations();
                 System.exit(0);
             } else {
-                processMovementStr(finalWorldFrame, upper.substring(delimitation));
+                processMovementStr(upper.substring(delimitation));
             }
         } else if (upper.startsWith("L")) {
             operations = loadOperations();
-            finalWorldFrame = playWithInputString(operations);
+            theWorld = playWithInputString(operations);
             if (quitIndex >= 0) {
-                processMovementStr(finalWorldFrame, upper.substring(1, quitIndex));
+                processMovementStr(upper.substring(1, quitIndex));
             } else {
-                processMovementStr(finalWorldFrame, upper.substring(1));
+                processMovementStr(upper.substring(1));
             }
         } else {
             throw new IllegalStateException("illegal input: " + input);
         }
-        return finalWorldFrame;
+        return theWorld;
     }
 
-    private void processMovementStr(TETile[][] theWorld, String movement) {
+    private void processMovementStr(String movement) {
         if (movement.length() == 0) {
             return;
         }
@@ -319,39 +320,39 @@ public class Game {
             case "W":
                 if (player.moveNorth(theWorld)) {
                     operations += "W";
-                    reDraw(theWorld, "went north");
+                    reDraw("went north");
                 } else {
-                    reDraw(theWorld, "can't go north");
+                    reDraw("can't go north");
                 }
                 break;
             case "A":
                 if (player.moveWest(theWorld)) {
                     operations += "A";
-                    reDraw(theWorld, "went west");
+                    reDraw("went west");
                 } else {
-                    reDraw(theWorld, "can't go west");
+                    reDraw("can't go west");
                 }
                 break;
             case "S":
                 if (player.moveSouth(theWorld)) {
                     operations += "S";
-                    reDraw(theWorld, "went south");
+                    reDraw("went south");
                 } else {
-                    reDraw(theWorld, "can't go south");
+                    reDraw("can't go south");
                 }
                 break;
             case "D":
                 if (player.moveEast(theWorld)) {
                     operations += "D";
-                    reDraw(theWorld, "went east");
+                    reDraw("went east");
                 } else {
-                    reDraw(theWorld, "can't go east");
+                    reDraw("can't go east");
                 }
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + movement.charAt(0));
         }
-        processMovementStr(theWorld, movement.substring(1));
+        processMovementStr(movement.substring(1));
     }
 
     /**
@@ -363,34 +364,28 @@ public class Game {
      */
     private TETile[][] generateWorld(long seed) {
         //1. init
-        TETile[][] theWorld = new TETile[WIDTH][HEIGHT];
+        theWorld = new TETile[WIDTH][HEIGHT];
         for (TETile[] column : theWorld) {
             Arrays.fill(column, Tileset.NOTHING);
         }
+        random = new Random(seed);
 
         //2. generate rooms pseudo-randomly
-        Random random = new Random(seed);
-        List<Room> rooms = generateRooms(theWorld, random);
+        List<Room> rooms = generateRooms();
 
         //3. generate halls from button left of the map
         Position start = new Position(1, 1);
         theWorld[1][1] = Tileset.FLOOR;
-        List<Position> deadEnds = generateHalls(start, theWorld, new ArrayList<>());
+        List<Position> deadEnds = generateHalls(start, new ArrayList<>());
 
         //4. connect rooms and halls
-        connectToHalls(rooms, theWorld, random);
+        connectRoomsAndHalls(rooms);
 
         //5. subtract deadEnds pseudo-randomly
-        List<Position> newEnds = removeDeadEnds(deadEnds, theWorld, random, new ArrayList<>(deadEnds.size()));
+        List<Position> newEnds = removeDeadEnds(deadEnds, new ArrayList<>(deadEnds.size()));
 
         //6. generate walls
-        for (int x = 0; x < theWorld.length; x++) {
-            for (int y = 0; y < theWorld[0].length; y++) {
-                if (isWall(theWorld, x, y)) {
-                    theWorld[x][y] = Tileset.WALL;
-                }
-            }
-        }
+        generateWalls();
 
         //7. set beginning position
         int luckyNum = RandomUtils.uniform(random, newEnds.size());
@@ -401,7 +396,17 @@ public class Game {
         return theWorld;
     }
 
-    private boolean isWall(TETile[][] theWorld, int x, int y) {
+    private void generateWalls() {
+        for (int x = 0; x < theWorld.length; x++) {
+            for (int y = 0; y < theWorld[0].length; y++) {
+                if (isWall(x, y)) {
+                    theWorld[x][y] = TETile.colorVariant(Tileset.WALL, 30, 30, 30, random);
+                }
+            }
+        }
+    }
+
+    private boolean isWall(int x, int y) {
         if (!theWorld[x][y].equals(Tileset.NOTHING)) {
             return false;
         }
@@ -411,7 +416,7 @@ public class Game {
         return neighbourFloorTiles.size() + neighbourRoomTiles.size() > 0;
     }
 
-    private List<Position> removeDeadEnds(List<Position> deadEnds, TETile[][] theWorld, Random random, List<Position> newEnds) {
+    private List<Position> removeDeadEnds(List<Position> deadEnds, List<Position> newEnds) {
 
         if (deadEnds == null || deadEnds.size() == 0) {
             return newEnds;
@@ -420,7 +425,7 @@ public class Game {
             if (RandomUtils.bernoulli(random, 0.6)) {
                 theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.NOTHING;
                 List<Position> neighbours = deadEnd.oddNeighbours(theWorld, Tileset.FLOOR);
-                removeDeadEnds(neighbours, theWorld, random, newEnds);
+                removeDeadEnds(neighbours, newEnds);
             } else {
                 newEnds.add(deadEnd);
             }
@@ -429,24 +434,24 @@ public class Game {
     }
 
 
-    private void connectToHalls(List<Room> rooms, TETile[][] theWorld, Random random) {
+    private void connectRoomsAndHalls(List<Room> rooms) {
         for (Room room : rooms) {
-            connectToHalls(room, theWorld, random);
+            connectRoomsAndHalls(room);
         }
     }
 
-    private void connectToHalls(Room room, TETile[][] theWorld, Random random) {
+    private void connectRoomsAndHalls(Room room) {
         Position buttonRight = new Position(room.getTopRight().getX(), room.getButtonLeft().getY());
         Position topLeft = new Position(room.getButtonLeft().getX(), room.getTopRight().getY());
 
-        connectToHalls(room.getButtonLeft(), buttonRight, Direction.DOWN, theWorld, random);
-        connectToHalls(room.getButtonLeft(), topLeft, Direction.LEFT, theWorld, random);
-        connectToHalls(topLeft, room.getTopRight(), Direction.UP, theWorld, random);
-        connectToHalls(buttonRight, room.getTopRight(), Direction.RIGHT, theWorld, random);
+        connectRoomsAndHalls(room.getButtonLeft(), buttonRight, Direction.DOWN);
+        connectRoomsAndHalls(room.getButtonLeft(), topLeft, Direction.LEFT);
+        connectRoomsAndHalls(topLeft, room.getTopRight(), Direction.UP);
+        connectRoomsAndHalls(buttonRight, room.getTopRight(), Direction.RIGHT);
     }
 
-    private void connectToHalls(Position start, Position end, Direction direction, TETile[][] theWorld, Random random) {
-        List<Position> candidates = new ArrayList<>();
+    private void connectRoomsAndHalls(Position start, Position end, Direction direction) {
+        List<Position> candidates = new ArrayList<>(4);
 
         if (direction.equals(Direction.DOWN) || direction.equals(Direction.UP)) {
             int y = direction.equals(Direction.DOWN) ? start.getY() - 2 : start.getY() + 2;
@@ -456,27 +461,28 @@ public class Game {
                     candidates.add(candidate);
                 }
             }
-            if (connector(candidates, random) != null) {
+            if (connector(candidates) != null) {
                 int yPrim = y < start.getY() ? y + 1 : y - 1;
-                theWorld[start.getX()][yPrim] = Tileset.FLOOR;
+                theWorld[start.getX()][yPrim] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
             }
         } else {
-            int x = direction.equals(Direction.LEFT) ? start.getX() - 2 : start.getX() + 2;
+            int connectorX = direction.equals(Direction.LEFT) ? start.getX() - 2 : start.getX() + 2;
             for (int y = start.getY(); y <= end.getY(); y++) {
-                if (theWorld[x][y].equals(Tileset.FLOOR)) {
-                    candidates.add(new Position(x, y));
+                Position candidate = new Position(connectorX, y);
+                if (!candidate.outOf(theWorld) && theWorld[connectorX][y].equals(Tileset.FLOOR)) {
+                    candidates.add(candidate);
                 }
             }
-            if (connector(candidates, random) != null) {
-                int xPrim = x < start.getX() ? x + 1 : x - 1;
-                theWorld[xPrim][start.getY()] = Tileset.FLOOR;
+            if (connector(candidates) != null) {
+                int bridgeX = connectorX < start.getX() ? connectorX + 1 : connectorX - 1;
+                theWorld[bridgeX][start.getY()] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
             }
         }
     }
 
-    private Position connector(List<Position> candidates, Random random) {
+    private Position connector(List<Position> candidates) {
         Position connector = null;
-        if (candidates.size() != 0 && RandomUtils.bernoulli(random)) {
+        if (candidates.size() != 0 && RandomUtils.bernoulli(random, 0.7)) {
             int luckyNum = RandomUtils.uniform(random, candidates.size());
             connector = candidates.get(luckyNum);
         }
@@ -484,25 +490,27 @@ public class Game {
     }
 
 
-    private List<Position> generateHalls(Position start, TETile[][] theWorld, List<Position> deadEnds) {
+    private List<Position> generateHalls(Position start, List<Position> deadEnds) {
         if (start.outOf(theWorld)) {
-            throw new IllegalArgumentException("invalid position (" + start.getX() + "," + start.getY() + ")");
+            return new ArrayList<>();
         }
-
         List<Position> neighbours = start.evenNeighbours(theWorld, Tileset.NOTHING);
+
         if (neighbours.size() == 0) {
             deadEnds.add(start);
             return deadEnds;
         }
 
-        for (Position neighbour : neighbours) {
-            connectPositions(start, neighbour, theWorld);
-            generateHalls(neighbour, theWorld, deadEnds);
+        while (neighbours.size() > 0) {
+            int randomIndex = RandomUtils.uniform(random, neighbours.size());
+            Position neighbour = neighbours.remove(randomIndex);
+            connectPositions(start, neighbour);
+            generateHalls(neighbour, deadEnds);
         }
         return deadEnds;
     }
 
-    private void connectPositions(Position start, Position neighbour, TETile[][] theWorld) {
+    private void connectPositions(Position start, Position neighbour) {
         int connectorX = (start.getX() + neighbour.getX()) / 2;
         int connectorY = (start.getY() + neighbour.getY()) / 2;
 
@@ -510,27 +518,28 @@ public class Game {
         theWorld[connectorX][connectorY] = Tileset.FLOOR;
     }
 
-    private List<Room> generateRooms(TETile[][] theWorld, Random random) {
+    private List<Room> generateRooms() {
         List<Room> rooms = new ArrayList<>();
         int roomNums = RandomUtils.uniform(random, 8, 13);
         while (rooms.size() < roomNums) {
             Room newRoom = Room.randomRoom(random, theWorld);
             if (!newRoom.overLap(rooms)) {
                 rooms.add(newRoom);
-                fillWithRoomTile(newRoom, theWorld);
+                fillWithRoomTile(newRoom);
             }
         }
         return rooms;
     }
 
-    private void fillWithRoomTile(Room room, TETile[][] theWorld) {
+    private void fillWithRoomTile(Room room) {
         int xStart = room.getButtonLeft().getX();
         int xEnd = room.getTopRight().getX();
         int yStart = room.getButtonLeft().getY();
         int yEnd = room.getTopRight().getY();
+
         for (int x = xStart; x < xEnd + 1; x++) {
             TETile[] column = theWorld[x];
-            Arrays.fill(column, yStart, yEnd + 1, Tileset.ROOM);
+            Arrays.fill(column, yStart, yEnd + 1, TETile.colorVariant(Tileset.ROOM, 30, 30, 30, random));
         }
     }
 }
