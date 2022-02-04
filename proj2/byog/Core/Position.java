@@ -53,10 +53,6 @@ public class Position {
     }
 
     private List<Position> neighbours(TETile[][] theWorld, TETile neighbourType, boolean isEven, boolean diagonal) {
-        if (outOfTheWorld(theWorld)) {
-            throw new IllegalArgumentException("invalid position (" + x + "," + y + ")");
-        }
-
         List<Position> neighbours = new ArrayList<>(4);
         int width = theWorld.length;
         int height = theWorld[0].length;
@@ -72,30 +68,30 @@ public class Position {
         Position buttonLeft = new Position(x - delta, y - delta);
         Position buttonRight = new Position(x + delta, y - delta);
 
-        if (x > 1 && left.belongsTo(theWorld, neighbourType)) {
+        if (x > delta && left.belongsTo(theWorld, neighbourType)) {
             neighbours.add(left);
         }
-        if (x < width - 1 && right.belongsTo(theWorld, neighbourType)) {
+        if (x < width - delta && right.belongsTo(theWorld, neighbourType)) {
             neighbours.add(right);
         }
-        if (y > 1 && button.belongsTo(theWorld, neighbourType)) {
+        if (y > delta && button.belongsTo(theWorld, neighbourType)) {
             neighbours.add(button);
         }
-        if (y < height - 1 && top.belongsTo(theWorld, neighbourType)) {
+        if (y < height - delta && top.belongsTo(theWorld, neighbourType)) {
             neighbours.add(top);
         }
 
         if (diagonal) {
-            if (x > 1 && y > 1 && buttonLeft.belongsTo(theWorld, neighbourType)) {
+            if (x > delta && y > delta && buttonLeft.belongsTo(theWorld, neighbourType)) {
                 neighbours.add(buttonLeft);
             }
-            if (x < width - 1 && y > 1 && buttonRight.belongsTo(theWorld, neighbourType)) {
+            if (x < width - delta && y > delta && buttonRight.belongsTo(theWorld, neighbourType)) {
                 neighbours.add(buttonRight);
             }
-            if (x > 1 && y < height - 1 && topLeft.belongsTo(theWorld, neighbourType)) {
+            if (x > delta && y < height - delta && topLeft.belongsTo(theWorld, neighbourType)) {
                 neighbours.add(topLeft);
             }
-            if (x < width - 1 && y < height - 1 && topRight.belongsTo(theWorld, neighbourType)) {
+            if (x < width - delta && y < height - delta && topRight.belongsTo(theWorld, neighbourType)) {
                 neighbours.add(topRight);
             }
         }

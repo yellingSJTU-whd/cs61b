@@ -17,7 +17,7 @@ public class Game {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 81;
     public static final int HEIGHT = 31;
-    private static String operations;
+    private static String operations = "";
     private static Player player;
 
     /**
@@ -30,20 +30,25 @@ public class Game {
 
         //2. wait for and read input(only N、L、Q is valid)
         String beginningStr = solicitBeginningStr();
+
         if (beginningStr.equals("N")) {
             newGame();
         } else if (beginningStr.equals("L")) {
-            operations = loadGame();
-            if (operations.length() == 0) {
-                throw new RuntimeException("load error");
-            }
-            TETile[][] theWorld = playWithInputString(operations);
-            ter.renderFrame(theWorld);
-            interactWith(theWorld);
+            loadGameForKeyboard();
         } else {
-            saveGame();
+            saveOperations();
             System.exit(0);
         }
+    }
+
+    private void loadGameForKeyboard() {
+        operations = loadOperations();
+        if (operations.length() == 0) {
+            throw new RuntimeException("load error");
+        }
+        TETile[][] theWorld = playWithInputString(operations);
+        ter.renderFrame(theWorld);
+        interactWith(theWorld);
     }
 
     private void newGame() {
@@ -56,16 +61,21 @@ public class Game {
 
         TETile[][] theWorld = generateWorld(Long.parseLong(seed));
         ter.renderFrame(theWorld);
-        renderHUD(theWorld);
 
         interactWith(theWorld);
     }
 
-    private void renderHUD(TETile[][] theWorld) {
+    private void renderHUD(TETile[][] theWorld, String gameInfo) {
         int x = (int) StdDraw.mouseX();
         int y = (int) StdDraw.mouseY();
         String description = theWorld[x][y].description();
-        StdDraw.textLeft(0, HEIGHT, description);
+
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 16));
+        StdDraw.setPenColor(Color.WHITE);
+
+        StdDraw.textLeft(0, HEIGHT + 1, description);
+        StdDraw.text(WIDTH / 2.0, HEIGHT + 1, gameInfo);
+        StdDraw.show();
     }
 
     private void interactWith(TETile[][] theWorld) {
@@ -77,33 +87,43 @@ public class Game {
             char input = Character.toUpperCase(StdDraw.nextKeyTyped());
             switch (input) {
                 case 'W':
-                    if (player.moveNorth(theWorld, gameInfo)){
+                    if (player.moveNorth(theWorld, gameInfo)) {
                         operations += "W";
+                        ter.renderFrame(theWorld);
+                        renderHUD(theWorld, gameInfo);
                     }
                     break;
                 case 'A':
                     if (player.moveWest(theWorld, gameInfo)) {
                         operations += "A";
+                        ter.renderFrame(theWorld);
+                        renderHUD(theWorld, gameInfo);
                     }
                     break;
                 case 'S':
                     if (player.moveSouth(theWorld, gameInfo)) {
                         operations += "S";
+                        ter.renderFrame(theWorld);
+                        renderHUD(theWorld, gameInfo);
                     }
                     break;
                 case 'D':
                     if (player.moveEast(theWorld, gameInfo)) {
                         operations += "D";
+                        ter.renderFrame(theWorld);
+                        renderHUD(theWorld, gameInfo);
                     }
                     break;
                 case ':':
                     while (true) {
                         if (!StdDraw.hasNextKeyTyped()) {
+                            renderHUD(theWorld, "waiting for keyboard input");
                             continue;
                         }
                         char ch = Character.toUpperCase(StdDraw.nextKeyTyped());
                         if (ch == 'Q') {
-                            saveGame();
+                            renderHUD(theWorld, "saving...");
+                            saveOperations();
                             System.exit(0);
                         }
                         break;
@@ -121,7 +141,7 @@ public class Game {
         return Long.parseLong(upper.substring(indexOfN + 1, indexOfS));
     }
 
-    private String loadGame() {
+    private String loadOperations() {
         File f = new File("./world.ser");
         if (f.exists()) {
             try {
@@ -144,7 +164,7 @@ public class Game {
         return "";
     }
 
-    private void saveGame() {
+    private void saveOperations() {
         File f = new File("./world.ser");
         try {
             if (!f.exists()) {
@@ -173,9 +193,12 @@ public class Game {
             char input = StdDraw.nextKeyTyped();
             if (Character.isDigit(input)) {
                 seedBuilder.append(input);
-                StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0, seedBuilder.toString());
+                StdDraw.clear(Color.BLACK);
+                setGameTitle();
+                StdDraw.setFont(new Font("Monaco", Font.BOLD, 30));
+                StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 + 1, seedBuilder.toString());
+                StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 - 1, "Please entry a random number");
                 StdDraw.show();
-                StdDraw.pause(500);
             } else if (Character.toUpperCase(input) == endFlag) {
                 return seedBuilder.toString();
             }
@@ -185,6 +208,7 @@ public class Game {
     private void promptToSeedUi() {
         StdDraw.clear(Color.BLACK);
         setGameTitle();
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 30));
         StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 - 1, "Please entry a random number");
         StdDraw.show();
     }
@@ -207,10 +231,10 @@ public class Game {
         initCanvas();
         setGameTitle();
 
-        StdDraw.setFont(new Font("Monaco", Font.BOLD, 20));
-        StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 - 1, "New Game (N)");
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 30));
+        StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 + 2, "New Game (N)");
         StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0, "Load Game (L)");
-        StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 + 1, "Quit (Q)");
+        StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 - 2, "Quit (Q)");
 
         StdDraw.show();
     }
@@ -249,7 +273,71 @@ public class Game {
         // drawn if the same inputs had been given to playWithKeyboard().
 
         TETile[][] finalWorldFrame = null;
+        String upper = input.toUpperCase();
+        int delimitation = upper.indexOf("S") + 1;
+        int quitIndex = upper.indexOf(":Q");
+        if (upper.startsWith("N")) {
+            long seed = parseSeed(input);
+            finalWorldFrame = generateWorld(seed);
+            if (quitIndex >= 0) {
+                processMovementStr(finalWorldFrame, upper.substring(delimitation, quitIndex));
+                saveOperations();
+                System.exit(0);
+            } else {
+                processMovementStr(finalWorldFrame, upper.substring(delimitation));
+            }
+        } else if (upper.startsWith("L")) {
+            operations = loadOperations();
+            finalWorldFrame = playWithInputString(operations);
+            if (quitIndex >= 0) {
+                processMovementStr(finalWorldFrame, upper.substring(1, quitIndex));
+            } else {
+                processMovementStr(finalWorldFrame, upper.substring(1));
+            }
+        } else {
+            throw new IllegalStateException("illegal input: " + input);
+        }
         return finalWorldFrame;
+    }
+
+    private void processMovementStr(TETile[][] theWorld, String movement) {
+        if (movement.length() == 0) {
+            return;
+        }
+        String gameInfo = "";
+        switch (movement.substring(0, 1)) {
+            case "W":
+                if (player.moveNorth(theWorld, gameInfo)) {
+                    operations += "W";
+                    ter.renderFrame(theWorld);
+                    renderHUD(theWorld, gameInfo);
+                }
+                break;
+            case "A":
+                if (player.moveWest(theWorld, gameInfo)) {
+                    operations += "A";
+                    ter.renderFrame(theWorld);
+                    renderHUD(theWorld, gameInfo);
+                }
+                break;
+            case "S":
+                if (player.moveSouth(theWorld, gameInfo)) {
+                    operations += "S";
+                    ter.renderFrame(theWorld);
+                    renderHUD(theWorld, gameInfo);
+                }
+                break;
+            case "D":
+                if (player.moveEast(theWorld, gameInfo)) {
+                    operations += "D";
+                    ter.renderFrame(theWorld);
+                    renderHUD(theWorld, gameInfo);
+                }
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + movement.charAt(0));
+        }
+        processMovementStr(theWorld, movement.substring(1));
     }
 
     /**
@@ -282,8 +370,8 @@ public class Game {
         List<Position> newEnds = removeDeadEnds(deadEnds, theWorld, random, new ArrayList<>(deadEnds.size()));
 
         //6. generate walls
-        for (int x = 0; x < theWorld[0].length; x++) {
-            for (int y = 0; y < theWorld.length; y++) {
+        for (int x = 0; x < theWorld.length; x++) {
+            for (int y = 0; y < theWorld[0].length; y++) {
                 if (isWall(theWorld, x, y)) {
                     theWorld[x][y] = Tileset.WALL;
                 }
@@ -315,7 +403,7 @@ public class Game {
             return newEnds;
         }
         for (Position deadEnd : deadEnds) {
-            if (RandomUtils.bernoulli(random, 0.75)) {
+            if (RandomUtils.bernoulli(random, 0.6)) {
                 theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.NOTHING;
                 List<Position> neighbours = deadEnd.oddNeighbours(theWorld, Tileset.FLOOR);
                 removeDeadEnds(neighbours, theWorld, random, newEnds);
