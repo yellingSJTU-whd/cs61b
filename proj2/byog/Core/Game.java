@@ -387,11 +387,11 @@ public class Game {
         theWorld[1][1] = Tileset.FLOOR;
         List<Position> deadEnds = generateHalls(start, new ArrayList<>(), new boolean[WIDTH][HEIGHT]);
 //
-//        //4. connect rooms and halls
-//        connectRoomsAndHalls(rooms);
-//
-//        //5. subtract deadEnds pseudo-randomly
-//        List<Position> newEnds = removeDeadEnds(deadEnds, new ArrayList<>(deadEnds.size()));
+        //4. connect rooms and halls
+        connectRoomsAndHalls(rooms);
+
+        //5. subtract deadEnds pseudo-randomly
+        List<Position> newEnds = removeDeadEnds(deadEnds, new ArrayList<>(deadEnds.size()));
 //
 //        //6. generate walls
 //        generateWalls();
@@ -426,17 +426,19 @@ public class Game {
     }
 
     private List<Position> removeDeadEnds(List<Position> deadEnds, List<Position> newEnds) {
-
         if (deadEnds == null || deadEnds.size() == 0) {
             return newEnds;
         }
         for (Position deadEnd : deadEnds) {
-            if (RandomUtils.bernoulli(random, 0.6)) {
+            List<Position> neighbours = deadEnd.oddNeighbours(theWorld, Tileset.FLOOR);
+            if (RandomUtils.bernoulli(random, 0.75)) {
                 theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.NOTHING;
-                List<Position> neighbours = deadEnd.oddNeighbours(theWorld, Tileset.FLOOR);
                 removeDeadEnds(neighbours, newEnds);
-            } else {
+            } else if (deadEnd.oddNeighbours(theWorld, Tileset.FLOOR).size() != 0) {
+                theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.DEADEND;
                 newEnds.add(deadEnd);
+            } else {
+                theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.NOTHING;
             }
         }
         return newEnds;
@@ -461,30 +463,35 @@ public class Game {
 
     private void connectRoomsAndHalls(Position start, Position end, Direction direction) {
         List<Position> candidates = new ArrayList<>(4);
+        Position connector, candidate;
 
         if (direction.equals(Direction.DOWN) || direction.equals(Direction.UP)) {
             int y = direction.equals(Direction.DOWN) ? start.getY() - 2 : start.getY() + 2;
             for (int x = start.getX(); x <= end.getX(); x++) {
-                Position candidate = new Position(x, y);
+                candidate = new Position(x, y);
                 if (!candidate.outOf(theWorld) && theWorld[x][y].equals(Tileset.FLOOR)) {
                     candidates.add(candidate);
                 }
             }
-            if (connector(candidates) != null) {
+
+            connector = connector(candidates);
+            if (connector != null) {
                 int yPrim = y < start.getY() ? y + 1 : y - 1;
-                theWorld[start.getX()][yPrim] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
+                theWorld[connector.getX()][yPrim] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
             }
         } else {
             int connectorX = direction.equals(Direction.LEFT) ? start.getX() - 2 : start.getX() + 2;
             for (int y = start.getY(); y <= end.getY(); y++) {
-                Position candidate = new Position(connectorX, y);
+                candidate = new Position(connectorX, y);
                 if (!candidate.outOf(theWorld) && theWorld[connectorX][y].equals(Tileset.FLOOR)) {
                     candidates.add(candidate);
                 }
             }
-            if (connector(candidates) != null) {
+
+            connector = connector(candidates);
+            if (connector != null) {
                 int bridgeX = connectorX < start.getX() ? connectorX + 1 : connectorX - 1;
-                theWorld[bridgeX][start.getY()] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
+                theWorld[bridgeX][connector.getY()] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
             }
         }
     }
