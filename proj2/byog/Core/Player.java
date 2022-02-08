@@ -37,18 +37,18 @@ public class Player {
         int yPrim = currentY;
 
         switch (direction) {
-            case UP -> {
+            case UP:
                 yPrim++;
-            }
-            case LEFT -> {
+                break;
+            case LEFT:
                 xPrim--;
-            }
-            case DOWN -> {
+                break;
+            case DOWN:
                 yPrim--;
-            }
-            case RIGHT -> {
+                break;
+            case RIGHT:
                 xPrim++;
-            }
+                break;
         }
 
         if (xPrim <= 0 || xPrim >= width || yPrim < 0 || yPrim >= height || theWorld[xPrim][yPrim].equals(Tileset.WALL)) {

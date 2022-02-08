@@ -27,9 +27,10 @@ public class Position {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Position another)) {
+        if (!(o instanceof Position)) {
             return false;
         }
+        Position another = (Position) o;
         return x == another.getX() && y == another.getY();
     }
 
