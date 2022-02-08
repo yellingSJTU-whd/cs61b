@@ -52,7 +52,7 @@ public class Game {
         operations = operations + seed + "S";
 
         TETile[][] theWorld = generateWorld(Long.parseLong(seed));
-        StdDraw.clear(Color.BLACK);
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
         ter.renderFrame(theWorld);
 
         interact();
@@ -64,7 +64,7 @@ public class Game {
             throw new RuntimeException("load error");
         }
         TETile[][] theWorld = playWithInputString(operations);
-        StdDraw.clear(Color.BLACK);
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
         ter.renderFrame(theWorld);
         interact();
     }
@@ -77,11 +77,14 @@ public class Game {
             description = theWorld[x][y].description();
         }
 
-        StdDraw.setFont(new Font("Monaco", Font.PLAIN, 20));
+        StdDraw.setFont(new Font("Monaco", Font.PLAIN, 25));
         StdDraw.setPenColor(Color.WHITE);
 
         StdDraw.textLeft(0, HEIGHT + 1, description);
-        StdDraw.textLeft(WIDTH / 2.0 - 2, HEIGHT + 1, gameInfo);
+        StdDraw.text(WIDTH / 2.0, HEIGHT + 1, gameInfo);
+
+        StdDraw.line(0, HEIGHT, WIDTH, HEIGHT);
+
         StdDraw.show();
     }
 
@@ -145,7 +148,7 @@ public class Game {
     }
 
     private void reDraw(String gameInfo) {
-        StdDraw.clear(Color.BLACK);
+        StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
         ter.renderFrame(theWorld);
         renderHUD(gameInfo);
     }
@@ -246,13 +249,16 @@ public class Game {
     private void showMainMenu() {
         initCanvas();
         setGameTitle();
+        setGameOptions();
 
+        StdDraw.show();
+    }
+
+    private void setGameOptions() {
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 30));
         StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 + 2, "New Game (N)");
         StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0, "Load Game (L)");
         StdDraw.text(WIDTH / 2.0, HEIGHT / 2.0 - 2, "Quit (Q)");
-
-        StdDraw.show();
     }
 
     private void setGameTitle() {
@@ -514,8 +520,8 @@ public class Game {
         int connectorX = (start.getX() + neighbour.getX()) / 2;
         int connectorY = (start.getY() + neighbour.getY()) / 2;
 
-        theWorld[neighbour.getX()][neighbour.getY()] = Tileset.FLOOR;
-        theWorld[connectorX][connectorY] = Tileset.FLOOR;
+        theWorld[neighbour.getX()][neighbour.getY()] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
+        theWorld[connectorX][connectorY] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
     }
 
     private List<Room> generateRooms() {
