@@ -54,6 +54,9 @@ public class Game {
         TETile[][] theWorld = generateWorld(Long.parseLong(seed));
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
         ter.renderFrame(theWorld);
+        StdDraw.setPenColor(Color.ORANGE);
+        StdDraw.line(0, HEIGHT, WIDTH, HEIGHT);
+        StdDraw.show();
 
         interact();
     }
@@ -78,7 +81,7 @@ public class Game {
         }
 
         StdDraw.setFont(new Font("Monaco", Font.PLAIN, 25));
-        StdDraw.setPenColor(Color.WHITE);
+        StdDraw.setPenColor(Color.ORANGE);
 
         StdDraw.textLeft(0, HEIGHT + 1, description);
         StdDraw.text(WIDTH / 2.0, HEIGHT + 1, gameInfo);
