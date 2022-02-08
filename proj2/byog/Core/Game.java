@@ -385,22 +385,22 @@ public class Game {
         //3. generate halls from button left of the map
         Position start = new Position(1, 1);
         theWorld[1][1] = Tileset.FLOOR;
-        List<Position> deadEnds = generateHalls(start, new ArrayList<>());
-
-        //4. connect rooms and halls
-        connectRoomsAndHalls(rooms);
-
-        //5. subtract deadEnds pseudo-randomly
-        List<Position> newEnds = removeDeadEnds(deadEnds, new ArrayList<>(deadEnds.size()));
-
-        //6. generate walls
-        generateWalls();
-
-        //7. set beginning position
-        int luckyNum = RandomUtils.uniform(random, newEnds.size());
-        Position beginning = newEnds.get(luckyNum);
-        theWorld[beginning.getX()][beginning.getY()] = Tileset.LOCKED_DOOR;
-        player = new Player(beginning);
+        List<Position> deadEnds = generateHalls(start, new ArrayList<>(), new boolean[WIDTH][HEIGHT]);
+//
+//        //4. connect rooms and halls
+//        connectRoomsAndHalls(rooms);
+//
+//        //5. subtract deadEnds pseudo-randomly
+//        List<Position> newEnds = removeDeadEnds(deadEnds, new ArrayList<>(deadEnds.size()));
+//
+//        //6. generate walls
+//        generateWalls();
+//
+//        //7. set beginning position
+//        int luckyNum = RandomUtils.uniform(random, newEnds.size());
+//        Position beginning = newEnds.get(luckyNum);
+//        theWorld[beginning.getX()][beginning.getY()] = Tileset.LOCKED_DOOR;
+//        player = new Player(beginning);
 
         return theWorld;
     }
@@ -499,10 +499,11 @@ public class Game {
     }
 
 
-    private List<Position> generateHalls(Position start, List<Position> deadEnds) {
-        if (start.outOf(theWorld)) {
-            return new ArrayList<>();
+    private List<Position> generateHalls(Position start, List<Position> deadEnds, boolean[][] visited) {
+        if (start.outOf(theWorld) || visited[start.getX()][start.getY()]) {
+            return deadEnds;
         }
+        visited[start.getX()][start.getY()] = true;
         List<Position> neighbours = start.evenNeighbours(theWorld, Tileset.NOTHING);
 
         if (neighbours.size() == 0) {
@@ -513,9 +514,12 @@ public class Game {
         while (neighbours.size() > 0) {
             int randomIndex = RandomUtils.uniform(random, neighbours.size());
             Position neighbour = neighbours.remove(randomIndex);
-            connectPositions(start, neighbour);
-            generateHalls(neighbour, deadEnds);
+            if (!visited[neighbour.getX()][neighbour.getY()]) {
+                connectPositions(start, neighbour);
+            }
+            generateHalls(neighbour, deadEnds, visited);
         }
+
         return deadEnds;
     }
 
@@ -529,10 +533,10 @@ public class Game {
 
     private List<Room> generateRooms() {
         List<Room> rooms = new ArrayList<>();
-        int roomNums = RandomUtils.uniform(random, 8, 13);
+        int roomNums = RandomUtils.uniform(random, 10, 20);
         while (rooms.size() < roomNums) {
             Room newRoom = Room.randomRoom(random, theWorld);
-            if (!newRoom.overLap(rooms)) {
+            if (!newRoom.overLap(rooms) && !newRoom.adjacent(rooms)) {
                 rooms.add(newRoom);
                 fillWithRoomTile(newRoom);
             }

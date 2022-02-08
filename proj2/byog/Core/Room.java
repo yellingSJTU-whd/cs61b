@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Random;
 
 public class Room {
-    private Position buttonLeft;
-    private Position topRight;
+    private final Position buttonLeft;
+    private final Position topRight;
 
     private static final int CAP = 6;
 
@@ -16,11 +16,11 @@ public class Room {
         topRight = topRightPosition;
     }
 
-    public Position getButtonLeft(){
+    public Position getButtonLeft() {
         return buttonLeft;
     }
 
-    public Position getTopRight(){
+    public Position getTopRight() {
         return topRight;
     }
 
@@ -37,6 +37,70 @@ public class Room {
         Position p1 = new Position(x1, y1);
 
         return new Room(p0, p1);
+    }
+
+    public boolean adjacent(Room another) {
+        return adjacentAtTop(another) || adjacentAtButton(another) || adjacentAtLeft(another) || adjacentAtRight(another);
+    }
+
+    private boolean adjacentAtRight(Room another) {
+        int xMax = topRight.getX();
+        int yMin = buttonLeft.getY();
+        int yMax = topRight.getY();
+
+        int anotherXMin = another.buttonLeft.getX();
+        int anotherYMin = another.buttonLeft.getY();
+        int anotherYMax = another.topRight.getY();
+
+        return xMax == anotherXMin - 1 && (yMin <= anotherYMax && yMax >= anotherYMin);
+    }
+
+    private boolean adjacentAtLeft(Room another) {
+        int xMin = buttonLeft.getX();
+        int yMin = buttonLeft.getY();
+        int yMax = topRight.getY();
+
+        int anotherXMax = another.topRight.getX();
+        int anotherYMin = another.buttonLeft.getY();
+        int anotherYMax = another.topRight.getY();
+
+        return xMin == anotherXMax + 1 && (yMin <= anotherYMax && yMax >= anotherYMin);
+    }
+
+    private boolean adjacentAtTop(Room another) {
+        int yMax = topRight.getY();
+        int xMin = buttonLeft.getX();
+        int xMax = topRight.getX();
+
+        int anotherYMin = another.buttonLeft.getY();
+        int anotherXMin = another.buttonLeft.getX();
+        int anotherXMax = another.topRight.getX();
+
+        return yMax == anotherYMin - 1 && (xMin <= anotherXMax && xMax >= anotherXMin);
+    }
+
+    private boolean adjacentAtButton(Room another) {
+        int yMin = buttonLeft.getY();
+        int xMin = buttonLeft.getX();
+        int xMax = topRight.getX();
+
+        int anotherYMax = another.topRight.getY();
+        int anotherXMin = another.buttonLeft.getX();
+        int anotherXMax = another.topRight.getX();
+
+        return yMin == anotherYMax + 1 && (xMin <= anotherXMax && xMax >= anotherXMin);
+    }
+
+    public boolean adjacent(List<Room> rooms) {
+        if (rooms == null || rooms.size() == 0) {
+            return false;
+        }
+        for (Room room : rooms) {
+            if (adjacent(room)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean overLap(Room another) {
