@@ -2,7 +2,8 @@ package byog.lab6;
 
 import edu.princeton.cs.introcs.StdDraw;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Color;
 import java.util.Random;
 
 public class MemoryGame {
@@ -14,8 +15,8 @@ public class MemoryGame {
     private boolean playerTurn;
     private static final char[] CHARACTERS = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
-            "You got this!", "You're a star!", "Go Bears!",
-            "Too easy for you!", "Wow, so impressive!"};
+                                                   "You got this!", "You're a star!", "Go Bears!",
+                                                   "Too easy for you!", "Wow, so impressive!"};
 
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -61,7 +62,8 @@ public class MemoryGame {
             StdDraw.setPenColor(Color.WHITE);
             StdDraw.textLeft(1, height - 1, "Round: " + round);
             StdDraw.text(width / 2.0, height - 1, playerTurn ? "Type!" : "Watch");
-            StdDraw.textRight(width - 1, height - 1, ENCOURAGEMENT[rand.nextInt(ENCOURAGEMENT.length)]);
+            StdDraw.textRight(width - 1, height - 1,
+                    ENCOURAGEMENT[rand.nextInt(ENCOURAGEMENT.length)]);
             StdDraw.line(0, height - 2, width, height - 2);
         }
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 30));
