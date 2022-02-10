@@ -37,6 +37,7 @@ public class Game {
         promptToSeedUi();
         String seed = solicitSeed();
         operations = operations + seed + "S";
+        saveOperations();
 
         theWorld = generateWorld(Long.parseLong(seed));
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
@@ -301,17 +302,15 @@ public class Game {
         int quitIndex = upper.indexOf(":Q");
         if (upper.startsWith("N")) {
             long seed = parseSeed(input);
+            operations = "N" + seed + "S";
+            saveOperations();
             theWorld = generateWorld(seed);
-            initCanvas();
             if (quitIndex >= 0) {
                 processMovementStr(upper.substring(delimitation, quitIndex));
                 saveOperations();
                 System.exit(0);
             } else {
-                ter.renderFrame(theWorld);
-                renderHUD("");
                 processMovementStr(upper.substring(delimitation));
-                interact();
             }
         } else if (upper.startsWith("L")) {
             if (quitIndex >= 0) {
@@ -323,10 +322,7 @@ public class Game {
                 saveOperations();
                 System.exit(0);
             } else {
-                loadAndShow();
-                renderHUD("");
                 processMovementStr(upper.substring(1));
-                interact();
             }
         } else {
             throw new IllegalStateException("illegal input: " + input);
@@ -342,33 +338,21 @@ public class Game {
             case "W":
                 if (player.moveNorth(theWorld)) {
                     operations += "W";
-                    reDraw("went north");
-                } else {
-                    reDraw("can't go north");
                 }
                 break;
             case "A":
                 if (player.moveWest(theWorld)) {
                     operations += "A";
-                    reDraw("went west");
-                } else {
-                    reDraw("can't go west");
                 }
                 break;
             case "S":
                 if (player.moveSouth(theWorld)) {
                     operations += "S";
-                    reDraw("went south");
-                } else {
-                    reDraw("can't go south");
                 }
                 break;
             case "D":
                 if (player.moveEast(theWorld)) {
                     operations += "D";
-                    reDraw("went east");
-                } else {
-                    reDraw("can't go east");
                 }
                 break;
             default:
