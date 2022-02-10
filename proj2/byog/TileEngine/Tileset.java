@@ -1,6 +1,6 @@
 package byog.TileEngine;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Contains constant tile objects, to avoid having to remake the same tiles in different parts of
