@@ -58,7 +58,7 @@ public class Game {
         String seed = solicitSeed();
         operations = operations + seed + "S";
 
-        TETile[][] theWorld = generateWorld(Long.parseLong(seed));
+        theWorld = generateWorld(Long.parseLong(seed));
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
         ter.renderFrame(theWorld);
         StdDraw.setPenColor(Color.ORANGE);
@@ -73,7 +73,7 @@ public class Game {
         if (operations.length() == 0) {
             throw new RuntimeException("load error");
         }
-        TETile[][] theWorld = playWithInputString(operations);
+        theWorld = playWithInputString(operations);
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
         ter.renderFrame(theWorld);
         interact();
@@ -296,7 +296,6 @@ public class Game {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        // TODO: Fill out this method to run the game using the input passed in,
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
@@ -392,7 +391,8 @@ public class Game {
         //3. generate halls from button left of the map
         Position start = new Position(1, 1);
         theWorld[1][1] = Tileset.FLOOR;
-        List<Position> deadEnds = generateHalls(start, new ArrayList<>(), new boolean[WIDTH][HEIGHT]);
+        boolean[][] visited = new boolean[WIDTH][HEIGHT];
+        List<Position> deadEnds = halls(start, new ArrayList<>(), visited);
 
         //4. connect rooms and halls
         connectRoomsAndHalls(rooms);
@@ -461,10 +461,10 @@ public class Game {
             return false;
         }
         Position current = new Position(x, y);
-        List<Position> neighbourFloorTiles = current.diagonalNeighbours(theWorld, Tileset.FLOOR);
-        List<Position> neighbourRoomTiles = current.diagonalNeighbours(theWorld, Tileset.ROOM);
-        List<Position> neighbourDeadEnds = current.diagonalNeighbours(theWorld, Tileset.DEADEND);
-        return neighbourFloorTiles.size() + neighbourRoomTiles.size() + neighbourDeadEnds.size() > 0;
+        List<Position> floors = current.diagonalNeighbours(theWorld, Tileset.FLOOR);
+        List<Position> rooms = current.diagonalNeighbours(theWorld, Tileset.ROOM);
+        List<Position> deadEnds = current.diagonalNeighbours(theWorld, Tileset.DEADEND);
+        return floors.size() + rooms.size() + deadEnds.size() > 0;
     }
 
     private List<Position> removeDeadEnds(List<Position> deadEnds, List<Position> newEnds) {
@@ -517,7 +517,8 @@ public class Game {
             connector = connector(candidates);
             if (connector != null) {
                 int yPrim = y < start.getY() ? y + 1 : y - 1;
-                theWorld[connector.getX()][yPrim] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
+                theWorld[connector.getX()][yPrim] =
+                        TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
             }
         } else {
             int connectorX = direction.equals(Direction.LEFT) ? start.getX() - 2 : start.getX() + 2;
@@ -531,7 +532,8 @@ public class Game {
             connector = connector(candidates);
             if (connector != null) {
                 int bridgeX = connectorX < start.getX() ? connectorX + 1 : connectorX - 1;
-                theWorld[bridgeX][connector.getY()] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
+                theWorld[bridgeX][connector.getY()] =
+                        TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
             }
         }
     }
@@ -546,7 +548,7 @@ public class Game {
     }
 
 
-    private List<Position> generateHalls(Position start, List<Position> deadEnds, boolean[][] visited) {
+    private List<Position> halls(Position start, List<Position> deadEnds, boolean[][] visited) {
         if (start.outOf(theWorld) || visited[start.getX()][start.getY()]) {
             return deadEnds;
         }
@@ -564,7 +566,7 @@ public class Game {
             if (!visited[neighbour.getX()][neighbour.getY()]) {
                 connectPositions(start, neighbour);
             }
-            generateHalls(neighbour, deadEnds, visited);
+            halls(neighbour, deadEnds, visited);
         }
 
         return deadEnds;
@@ -574,8 +576,10 @@ public class Game {
         int connectorX = (start.getX() + neighbour.getX()) / 2;
         int connectorY = (start.getY() + neighbour.getY()) / 2;
 
-        theWorld[neighbour.getX()][neighbour.getY()] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
-        theWorld[connectorX][connectorY] = TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
+        theWorld[neighbour.getX()][neighbour.getY()] =
+                TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
+        theWorld[connectorX][connectorY] =
+                TETile.colorVariant(Tileset.FLOOR, 30, 30, 30, random);
     }
 
     private List<Room> generateRooms() {
@@ -599,7 +603,8 @@ public class Game {
 
         for (int x = xStart; x < xEnd + 1; x++) {
             TETile[] column = theWorld[x];
-            Arrays.fill(column, yStart, yEnd + 1, TETile.colorVariant(Tileset.ROOM, 30, 30, 30, random));
+            Arrays.fill(column, yStart, yEnd + 1,
+                    TETile.colorVariant(Tileset.ROOM, 30, 30, 30, random));
         }
     }
 }
