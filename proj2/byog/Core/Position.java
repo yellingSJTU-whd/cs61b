@@ -34,6 +34,11 @@ public class Position {
         return x == another.getX() && y == another.getY();
     }
 
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(x) + Integer.hashCode(y);
+    }
+
     public boolean belongsTo(TETile[][] theWorld, TETile type) {
         return theWorld[x][y].equals(type);
     }
@@ -53,11 +58,11 @@ public class Position {
         return neighbours(theWorld, neighbourType, true, false);
     }
 
-    private List<Position> neighbours(TETile[][] theWorld, TETile neighbourType, boolean isEven, boolean diagonal) {
+    private List<Position> neighbours(TETile[][] tiles, TETile type, boolean even, boolean across) {
         List<Position> neighbours = new ArrayList<>(4);
-        int width = theWorld.length;
-        int height = theWorld[0].length;
-        int delta = isEven ? 2 : 1;
+        int width = tiles.length;
+        int height = tiles[0].length;
+        int delta = even ? 2 : 1;
 
         Position left = new Position(x - delta, y);
         Position right = new Position(x + delta, y);
@@ -69,30 +74,30 @@ public class Position {
         Position buttonLeft = new Position(x - delta, y - delta);
         Position buttonRight = new Position(x + delta, y - delta);
 
-        if (x > delta && left.belongsTo(theWorld, neighbourType)) {
+        if (x > delta && left.belongsTo(tiles, type)) {
             neighbours.add(left);
         }
-        if (x < width - delta && right.belongsTo(theWorld, neighbourType)) {
+        if (x < width - delta && right.belongsTo(tiles, type)) {
             neighbours.add(right);
         }
-        if (y > delta && button.belongsTo(theWorld, neighbourType)) {
+        if (y > delta && button.belongsTo(tiles, type)) {
             neighbours.add(button);
         }
-        if (y < height - delta && top.belongsTo(theWorld, neighbourType)) {
+        if (y < height - delta && top.belongsTo(tiles, type)) {
             neighbours.add(top);
         }
 
-        if (diagonal) {
-            if (x > delta && y > delta && buttonLeft.belongsTo(theWorld, neighbourType)) {
+        if (across) {
+            if (x > delta && y > delta && buttonLeft.belongsTo(tiles, type)) {
                 neighbours.add(buttonLeft);
             }
-            if (x < width - delta && y > delta && buttonRight.belongsTo(theWorld, neighbourType)) {
+            if (x < width - delta && y > delta && buttonRight.belongsTo(tiles, type)) {
                 neighbours.add(buttonRight);
             }
-            if (x > delta && y < height - delta && topLeft.belongsTo(theWorld, neighbourType)) {
+            if (x > delta && y < height - delta && topLeft.belongsTo(tiles, type)) {
                 neighbours.add(topLeft);
             }
-            if (x < width - delta && y < height - delta && topRight.belongsTo(theWorld, neighbourType)) {
+            if (x < width - delta && y < height - delta && topRight.belongsTo(tiles, type)) {
                 neighbours.add(topRight);
             }
         }

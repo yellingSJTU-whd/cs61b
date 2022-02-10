@@ -40,7 +40,10 @@ public class Room {
     }
 
     public boolean adjacent(Room another) {
-        return adjacentAtTop(another) || adjacentAtButton(another) || adjacentAtLeft(another) || adjacentAtRight(another);
+        return adjacentAtTop(another)
+                || adjacentAtButton(another)
+                || adjacentAtLeft(another)
+                || adjacentAtRight(another);
     }
 
     private boolean adjacentAtRight(Room another) {
@@ -110,10 +113,10 @@ public class Room {
         if (this.equals(another)) {
             return true;
         }
-        return buttonLeft.getY() <= another.topRight.getY() &&
-                topRight.getY() >= another.buttonLeft.getY() &&
-                buttonLeft.getX() <= another.topRight.getX() &&
-                topRight.getX() >= another.buttonLeft.getX();
+        return buttonLeft.getY() <= another.topRight.getY()
+                && topRight.getY() >= another.buttonLeft.getY()
+                && buttonLeft.getX() <= another.topRight.getX()
+                && topRight.getX() >= another.buttonLeft.getX();
     }
 
     public boolean overLap(List<Room> rooms) {
@@ -137,6 +140,11 @@ public class Room {
             return false;
         }
         return buttonLeft.equals(((Room) o).buttonLeft) && topRight.equals(((Room) o).topRight);
+    }
+
+    @Override
+    public int hashCode() {
+        return buttonLeft.hashCode() + topRight.hashCode();
     }
 
     public boolean contains(Position p) {
