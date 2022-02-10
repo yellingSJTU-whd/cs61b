@@ -151,7 +151,7 @@ public class Game {
     }
 
     private String loadOperations() {
-        File f = new File("./world.ser");
+        File f = new File("save.txt");
         if (f.exists()) {
             try {
                 FileInputStream fs = new FileInputStream(f);
@@ -174,7 +174,7 @@ public class Game {
     }
 
     private void saveOperations() {
-        File f = new File("./world.ser");
+        File f = new File("save.txt");
         try {
             if (!f.exists()) {
                 f.createNewFile();
