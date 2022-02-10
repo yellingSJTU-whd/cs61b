@@ -389,26 +389,25 @@ public class Game {
         connectRoomsAndHalls(rooms);
 
         //5. subtract deadEnds pseudo-randomly
-        List<Position> newEnds = removeDeadEnds(deadEnds, new ArrayList<>(deadEnds.size()));
+        removeDeadEnds(deadEnds, new ArrayList<>(deadEnds.size()));
 
         //6. generate walls
         generateWalls();
 
         //7. set beginning position
-        setBeginning(newEnds);
+        setBeginning();
 
         //8. repaint dead ends and rooms into floors
-        repaint(rooms, newEnds);
+        repaint(rooms);
 
         return theWorld;
     }
 
-    private void repaint(List<Room> rooms, List<Position> deadEnds) {
-        for (Room room : rooms) {
-            repaint(room);
-        }
-        for (Position deadEnd : deadEnds) {
-            repaint(deadEnd);
+    private void repaint(List<Room> rooms) {
+        if (rooms != null && rooms.size() != 0) {
+            for (Room room : rooms) {
+                repaint(room);
+            }
         }
     }
 
@@ -425,14 +424,17 @@ public class Game {
         }
     }
 
-    private void repaint(Position position) {
-        theWorld[position.getX()][position.getY()] = Tileset.FLOOR;
-    }
-
-    private void setBeginning(List<Position> newEnds) {
-        Position selectedDeadEnd = newEnds.get(RandomUtils.uniform(random, newEnds.size()));
-        List<Position> candidates = selectedDeadEnd.oddNeighbours(theWorld, Tileset.WALL);
-        Position beginning = candidates.get(RandomUtils.uniform(random, candidates.size()));
+    private void setBeginning() {
+        Position beginning = null;
+        while (beginning == null) {
+            int x = RandomUtils.uniform(random, 1, WIDTH);
+            int y = RandomUtils.uniform(random, 1, HEIGHT);
+            Position candidate = new Position(x, y);
+            List<Position> walls = candidate.oddNeighbours(theWorld, Tileset.WALL);
+            if (theWorld[x][y].equals(Tileset.FLOOR) && walls.size() > 0) {
+                beginning = walls.get(RandomUtils.uniform(random, walls.size()));
+            }
+        }
         theWorld[beginning.getX()][beginning.getY()] = Tileset.LOCKED_DOOR;
         player = new Player(beginning);
     }
@@ -458,9 +460,9 @@ public class Game {
         return floors.size() + rooms.size() + deadEnds.size() > 0;
     }
 
-    private List<Position> removeDeadEnds(List<Position> deadEnds, List<Position> newEnds) {
+    private void removeDeadEnds(List<Position> deadEnds, List<Position> newEnds) {
         if (deadEnds == null || deadEnds.size() == 0) {
-            return newEnds;
+            return;
         }
         for (Position deadEnd : deadEnds) {
             List<Position> neighbours = deadEnd.oddNeighbours(theWorld, Tileset.FLOOR);
@@ -472,7 +474,6 @@ public class Game {
                 newEnds.add(deadEnd);
             }
         }
-        return newEnds;
     }
 
 
