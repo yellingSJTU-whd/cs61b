@@ -10,10 +10,10 @@ import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -201,7 +201,7 @@ public class Game {
             }
             FileOutputStream fs = new FileOutputStream(f);
             ObjectOutputStream os = new ObjectOutputStream(fs);
-            os.writeObject(operations.toString());
+            os.writeObject(operations);
             os.close();
         } catch (FileNotFoundException e) {
             System.out.println("file not found");
@@ -393,23 +393,57 @@ public class Game {
         Position start = new Position(1, 1);
         theWorld[1][1] = Tileset.FLOOR;
         List<Position> deadEnds = generateHalls(start, new ArrayList<>(), new boolean[WIDTH][HEIGHT]);
-//
+
         //4. connect rooms and halls
         connectRoomsAndHalls(rooms);
 
         //5. subtract deadEnds pseudo-randomly
         List<Position> newEnds = removeDeadEnds(deadEnds, new ArrayList<>(deadEnds.size()));
-//
-//        //6. generate walls
-//        generateWalls();
-//
-//        //7. set beginning position
-//        int luckyNum = RandomUtils.uniform(random, newEnds.size());
-//        Position beginning = newEnds.get(luckyNum);
-//        theWorld[beginning.getX()][beginning.getY()] = Tileset.LOCKED_DOOR;
-//        player = new Player(beginning);
+
+        //6. generate walls
+        generateWalls();
+
+        //7. set beginning position
+        setBeginning(newEnds);
+
+        //8. repaint dead ends and rooms into floors
+        repaint(rooms, newEnds);
 
         return theWorld;
+    }
+
+    private void repaint(List<Room> rooms, List<Position> deadEnds) {
+        for (Room room : rooms) {
+            repaint(room);
+        }
+        for (Position deadEnd : deadEnds) {
+            repaint(deadEnd);
+        }
+    }
+
+    private void repaint(Room room) {
+        int xStart = room.getButtonLeft().getX();
+        int xEnd = room.getTopRight().getX();
+        int yStart = room.getButtonLeft().getY();
+        int yEnd = room.getTopRight().getY();
+
+        for (int x = xStart; x <= xEnd; x++) {
+            for (int y = yStart; y <= yEnd; y++) {
+                theWorld[x][y] = Tileset.FLOOR;
+            }
+        }
+    }
+
+    private void repaint(Position position) {
+        theWorld[position.getX()][position.getY()] = Tileset.FLOOR;
+    }
+
+    private void setBeginning(List<Position> newEnds) {
+        Position selectedDeadEnd = newEnds.get(RandomUtils.uniform(random, newEnds.size()));
+        List<Position> candidates = selectedDeadEnd.diagonalNeighbours(theWorld, Tileset.WALL);
+        Position beginning = candidates.get(RandomUtils.uniform(random, candidates.size()));
+        theWorld[beginning.getX()][beginning.getY()] = Tileset.LOCKED_DOOR;
+        player = new Player(beginning);
     }
 
     private void generateWalls() {
@@ -429,7 +463,8 @@ public class Game {
         Position current = new Position(x, y);
         List<Position> neighbourFloorTiles = current.diagonalNeighbours(theWorld, Tileset.FLOOR);
         List<Position> neighbourRoomTiles = current.diagonalNeighbours(theWorld, Tileset.ROOM);
-        return neighbourFloorTiles.size() + neighbourRoomTiles.size() > 0;
+        List<Position> neighbourDeadEnds = current.diagonalNeighbours(theWorld, Tileset.DEADEND);
+        return neighbourFloorTiles.size() + neighbourRoomTiles.size() + neighbourDeadEnds.size() > 0;
     }
 
     private List<Position> removeDeadEnds(List<Position> deadEnds, List<Position> newEnds) {
@@ -438,14 +473,12 @@ public class Game {
         }
         for (Position deadEnd : deadEnds) {
             List<Position> neighbours = deadEnd.oddNeighbours(theWorld, Tileset.FLOOR);
-            if (RandomUtils.bernoulli(random, 0.75)) {
+            if (neighbours.size() == 1 && RandomUtils.bernoulli(random, 0.975)) {
                 theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.NOTHING;
                 removeDeadEnds(neighbours, newEnds);
-            } else if (deadEnd.oddNeighbours(theWorld, Tileset.FLOOR).size() != 0) {
+            } else if (deadEnd.oddNeighbours(theWorld, Tileset.FLOOR).size() == 1) {
                 theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.DEADEND;
                 newEnds.add(deadEnd);
-            } else {
-                theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.NOTHING;
             }
         }
         return newEnds;
@@ -547,7 +580,7 @@ public class Game {
 
     private List<Room> generateRooms() {
         List<Room> rooms = new ArrayList<>();
-        int roomNums = RandomUtils.uniform(random, 10, 20);
+        int roomNums = RandomUtils.uniform(random, 8, 13);
         while (rooms.size() < roomNums) {
             Room newRoom = Room.randomRoom(random, theWorld);
             if (!newRoom.overLap(rooms) && !newRoom.adjacent(rooms)) {

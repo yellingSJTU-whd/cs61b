@@ -3,8 +3,6 @@ package byog.Core;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
-import java.util.Random;
-
 public class Player {
     private Position position;
 
@@ -49,9 +47,11 @@ public class Player {
             case RIGHT:
                 xPrim++;
                 break;
+            default:
         }
 
-        if (xPrim <= 0 || xPrim >= width || yPrim < 0 || yPrim >= height || theWorld[xPrim][yPrim].equals(Tileset.WALL)) {
+        if (xPrim <= 0 || xPrim >= width || yPrim < 0 || yPrim >= height
+                || !theWorld[xPrim][yPrim].equals(Tileset.FLOOR)) {
             return false;
         }
 
@@ -64,9 +64,5 @@ public class Player {
 
         position = new Position(xPrim, yPrim);
         return true;
-    }
-
-    public void moveTo(Position destination) {
-
     }
 }
