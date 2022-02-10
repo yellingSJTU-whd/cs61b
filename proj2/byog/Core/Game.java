@@ -29,26 +29,6 @@ public class Game {
     private Random random;
     private TETile[][] theWorld;
 
-    /**
-     * Method used for playing a fresh game. The game should start from the main menu.
-     */
-    public void playWithKeyboard() {
-
-        //1. show the starting UI
-        showMainMenu();
-
-        //2. wait for and read input(only N、L、Q is valid)
-        String beginningStr = solicitBeginningStr();
-
-        if (beginningStr.equals("N")) {
-            newGame();
-        } else if (beginningStr.equals("L")) {
-            loadAndPlay();
-        } else {
-            saveOperations();
-            System.exit(0);
-        }
-    }
 
     private void newGame() {
         operations = "";
@@ -68,15 +48,14 @@ public class Game {
         interact();
     }
 
-    private void loadAndPlay() {
+    private void loadAndShow() {
         operations = loadOperations();
-        if (operations.length() == 0) {
+        if (operations == null || operations.length() == 0) {
             throw new RuntimeException("load error");
         }
         theWorld = playWithInputString(operations);
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
         ter.renderFrame(theWorld);
-        interact();
     }
 
     private void renderHUD(String gameInfo) {
@@ -138,14 +117,14 @@ public class Game {
                     }
                     break;
                 case ':':
+                    reDraw("waiting for keyboard input");
                     while (true) {
                         if (!StdDraw.hasNextKeyTyped()) {
-                            renderHUD("waiting for keyboard input");
                             continue;
                         }
                         char ch = Character.toUpperCase(StdDraw.nextKeyTyped());
                         if (ch == 'Q') {
-                            renderHUD("saving...");
+                            reDraw("saving...");
                             saveOperations();
                             System.exit(0);
                         }
@@ -277,9 +256,30 @@ public class Game {
     }
 
     private void initCanvas() {
-//        StdDraw.setCanvasSize(WIDTH * 16, (HEIGHT + 2) * 16);
         ter.initialize(WIDTH, HEIGHT + 2);
         StdDraw.setPenColor(Color.WHITE);
+    }
+
+    /**
+     * Method used for playing a fresh game. The game should start from the main menu.
+     */
+    public void playWithKeyboard() {
+
+        //1. show the starting UI
+        showMainMenu();
+
+        //2. wait for and read input(only N、L、Q is valid)
+        String beginningStr = solicitBeginningStr();
+
+        if (beginningStr.equals("N")) {
+            newGame();
+        } else if (beginningStr.equals("L")) {
+            loadAndShow();
+            interact();
+        } else {
+            saveOperations();
+            System.exit(0);
+        }
     }
 
     /**
@@ -296,29 +296,37 @@ public class Game {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        // and return a 2D tile representation of the world that would have been
-        // drawn if the same inputs had been given to playWithKeyboard().
-
         String upper = input.toUpperCase();
         int delimitation = upper.indexOf("S") + 1;
         int quitIndex = upper.indexOf(":Q");
         if (upper.startsWith("N")) {
             long seed = parseSeed(input);
             theWorld = generateWorld(seed);
+            initCanvas();
             if (quitIndex >= 0) {
                 processMovementStr(upper.substring(delimitation, quitIndex));
                 saveOperations();
                 System.exit(0);
             } else {
+                ter.renderFrame(theWorld);
+                renderHUD("");
                 processMovementStr(upper.substring(delimitation));
+                interact();
             }
         } else if (upper.startsWith("L")) {
-            operations = loadOperations();
-            theWorld = playWithInputString(operations);
             if (quitIndex >= 0) {
+                operations = loadOperations();
+                if (operations == null || operations.length() == 0) {
+                    throw new RuntimeException("load error");
+                }
                 processMovementStr(upper.substring(1, quitIndex));
+                saveOperations();
+                System.exit(0);
             } else {
+                loadAndShow();
+                renderHUD("");
                 processMovementStr(upper.substring(1));
+                interact();
             }
         } else {
             throw new IllegalStateException("illegal input: " + input);
@@ -330,7 +338,6 @@ public class Game {
         if (movement.length() == 0) {
             return;
         }
-        String gameInfo = "";
         switch (movement.substring(0, 1)) {
             case "W":
                 if (player.moveNorth(theWorld)) {
@@ -440,7 +447,7 @@ public class Game {
 
     private void setBeginning(List<Position> newEnds) {
         Position selectedDeadEnd = newEnds.get(RandomUtils.uniform(random, newEnds.size()));
-        List<Position> candidates = selectedDeadEnd.diagonalNeighbours(theWorld, Tileset.WALL);
+        List<Position> candidates = selectedDeadEnd.oddNeighbours(theWorld, Tileset.WALL);
         Position beginning = candidates.get(RandomUtils.uniform(random, candidates.size()));
         theWorld[beginning.getX()][beginning.getY()] = Tileset.LOCKED_DOOR;
         player = new Player(beginning);
@@ -473,7 +480,7 @@ public class Game {
         }
         for (Position deadEnd : deadEnds) {
             List<Position> neighbours = deadEnd.oddNeighbours(theWorld, Tileset.FLOOR);
-            if (neighbours.size() == 1 && RandomUtils.bernoulli(random, 0.975)) {
+            if (neighbours.size() == 1 && RandomUtils.bernoulli(random, 0.985)) {
                 theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.NOTHING;
                 removeDeadEnds(neighbours, newEnds);
             } else if (deadEnd.oddNeighbours(theWorld, Tileset.FLOOR).size() == 1) {
