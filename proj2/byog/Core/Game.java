@@ -313,16 +313,19 @@ public class Game {
                 processMovementStr(upper.substring(delimitation));
             }
         } else if (upper.startsWith("L")) {
+            operations = loadOperations();
+            if (operations == null || operations.length() == 0) {
+                System.exit(0);
+            }
+            theWorld = playWithInputString(operations);
             if (quitIndex >= 0) {
-                operations = loadOperations();
-                if (operations == null || operations.length() == 0) {
-                    System.exit(0);
-                }
                 processMovementStr(upper.substring(1, quitIndex));
                 saveOperations();
                 System.exit(0);
             } else {
-                processMovementStr(upper.substring(1));
+                if (upper.length() > 1) {
+                    processMovementStr(upper.substring(1));
+                }
             }
         } else {
             throw new IllegalStateException("illegal input: " + input);
