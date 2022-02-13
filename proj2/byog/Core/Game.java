@@ -418,8 +418,6 @@ public class Game {
                     if (atPortal()) {
                         teleport();
                     }
-                } else {
-                    repaintWall(Direction.UP);
                 }
                 break;
             case "A":
@@ -428,8 +426,6 @@ public class Game {
                     if (atPortal()) {
                         teleport();
                     }
-                } else {
-                    repaintWall(Direction.LEFT);
                 }
                 break;
             case "S":
@@ -438,8 +434,6 @@ public class Game {
                     if (atPortal()) {
                         teleport();
                     }
-                } else {
-                    repaintWall(Direction.DOWN);
                 }
                 break;
             case "D":
@@ -448,8 +442,6 @@ public class Game {
                     if (atPortal()) {
                         teleport();
                     }
-                } else {
-                    repaintWall(Direction.RIGHT);
                 }
                 break;
             default:
