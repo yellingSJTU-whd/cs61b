@@ -308,7 +308,6 @@ public class Game {
             if (quitIndex >= 0) {
                 processMovementStr(upper.substring(delimitation, quitIndex));
                 saveOperations();
-                System.exit(0);
             } else {
                 processMovementStr(upper.substring(delimitation));
             }
