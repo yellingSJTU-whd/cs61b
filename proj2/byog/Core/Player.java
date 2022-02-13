@@ -55,18 +55,33 @@ public class Player {
         }
 
         if (xPrim <= 0 || xPrim >= width || yPrim < 0 || yPrim >= height
-                || !theWorld[xPrim][yPrim].equals(Tileset.FLOOR)) {
+                || !(theWorld[xPrim][yPrim].equals(Tileset.FLOOR)
+                || theWorld[xPrim][yPrim].equals(Tileset.IN))) {
             return false;
         }
 
         if (theWorld[currentX][currentY].equals(Tileset.LOCKED_DOOR)) {
             theWorld[currentX][currentY] = Tileset.UNLOCKED_DOOR;
+        } else if (theWorld[currentX][currentY].equals(Tileset.OUT)) {
+            theWorld[currentX][currentY] = Tileset.IN;
         } else {
             theWorld[currentX][currentY] = Tileset.FLOOR;
         }
-        theWorld[xPrim][yPrim] = Tileset.PLAYER;
+
+        if (theWorld[xPrim][yPrim].equals(Tileset.FLOOR)) {
+            theWorld[xPrim][yPrim] = Tileset.PLAYER;
+        }
 
         position = new Position(xPrim, yPrim);
         return true;
+    }
+
+    public void moveTo(TETile[][] theWorld, Position destination) {
+        int x = destination.getX();
+        int y = destination.getY();
+        position = new Position(x, y);
+        if (theWorld[x][y].equals(Tileset.IN)) {
+            theWorld[x][y] = Tileset.OUT;
+        }
     }
 }

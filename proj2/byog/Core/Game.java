@@ -28,6 +28,7 @@ public class Game {
     private Player player;
     private Random random;
     private TETile[][] theWorld;
+    private List<Position> portals;
 
 
     private void newGame() {
@@ -41,7 +42,7 @@ public class Game {
 
         theWorld = generateWorld(Long.parseLong(seed));
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
-        ter.renderFrameWithShadow(theWorld, player.getPosition(), 10);
+        ter.renderFrameWithShadow(theWorld, player.getPosition(), 15);
         StdDraw.setPenColor(Color.ORANGE);
         StdDraw.line(0, HEIGHT, WIDTH, HEIGHT);
         StdDraw.show();
@@ -56,7 +57,7 @@ public class Game {
         }
         theWorld = playWithInputString(operations);
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
-        ter.renderFrameWithShadow(theWorld, player.getPosition(), 10);
+        ter.renderFrameWithShadow(theWorld, player.getPosition(), 15);
     }
 
     private void renderHUD(String gameInfo) {
@@ -86,25 +87,25 @@ public class Game {
             case UP:
                 if (theWorld[currX][currY + 1].equals(Tileset.WALL)) {
                     wall = theWorld[currX][currY + 1];
-                    theWorld[currX][currY + 1] = TETile.colorVariant(wall, 30, 30, 30, random);
+                    theWorld[currX][currY + 1] = TETile.colorVariant(wall, 60, 60, 60, random);
                 }
                 break;
             case DOWN:
                 if (theWorld[currX][currY - 1].equals(Tileset.WALL)) {
                     wall = theWorld[currX][currY - 1];
-                    theWorld[currX][currY - 1] = TETile.colorVariant(wall, 30, 30, 30, random);
+                    theWorld[currX][currY - 1] = TETile.colorVariant(wall, 60, 60, 60, random);
                 }
                 break;
             case LEFT:
                 if (theWorld[currX - 1][currY].equals(Tileset.WALL)) {
                     wall = theWorld[currX - 1][currY];
-                    theWorld[currX - 1][currY] = TETile.colorVariant(wall, 30, 30, 30, random);
+                    theWorld[currX - 1][currY] = TETile.colorVariant(wall, 60, 60, 60, random);
                 }
                 break;
             case RIGHT:
                 if (theWorld[currX + 1][currY].equals(Tileset.WALL)) {
                     wall = theWorld[currX + 1][currY];
-                    theWorld[currX + 1][currY] = TETile.colorVariant(wall, 30, 30, 30, random);
+                    theWorld[currX + 1][currY] = TETile.colorVariant(wall, 60, 60, 60, random);
                 }
                 break;
             default:
@@ -122,6 +123,7 @@ public class Game {
                     if (player.moveNorth(theWorld)) {
                         operations += "W";
                         reDraw("went north");
+                        handleTeleport();
                     } else {
                         reDraw("can't go north");
                         repaintWall(Direction.UP);
@@ -131,6 +133,7 @@ public class Game {
                     if (player.moveWest(theWorld)) {
                         operations += "A";
                         reDraw("went west");
+                        handleTeleport();
                     } else {
                         reDraw("can't go west");
                         repaintWall(Direction.LEFT);
@@ -140,6 +143,7 @@ public class Game {
                     if (player.moveSouth(theWorld)) {
                         operations += "S";
                         reDraw("went south");
+                        handleTeleport();
                     } else {
                         reDraw("can't go south");
                         repaintWall(Direction.DOWN);
@@ -149,6 +153,7 @@ public class Game {
                     if (player.moveEast(theWorld)) {
                         operations += "D";
                         reDraw("went east");
+                        handleTeleport();
                     } else {
                         reDraw("can't go east");
                         repaintWall(Direction.RIGHT);
@@ -174,9 +179,42 @@ public class Game {
         }
     }
 
+    private void handleTeleport() {
+        if (atPortal()) {
+            repaint(player.getPosition());
+            teleport();
+            repaint(player.getPosition());
+            StdDraw.pause(500);
+            reDraw("teleport !");
+        }
+    }
+
+    private void teleport() {
+        Position current = player.getPosition();
+        Position destination = null;
+        while (destination == null) {
+            Position candidate = portals.get(RandomUtils.uniform(random, portals.size()));
+            if (!candidate.equals(current)) {
+                destination = candidate;
+            }
+        }
+        player.moveTo(theWorld, destination);
+    }
+
+    private void repaint(Position position) {
+        int x = position.getX();
+        int y = position.getY();
+        TETile tile = theWorld[x][y];
+        theWorld[x][y] = TETile.colorVariant(tile, 60, 60, 60, random);
+    }
+
+    private boolean atPortal() {
+        return portals.contains(player.getPosition());
+    }
+
     private void reDraw(String gameInfo) {
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
-        ter.renderFrameWithShadow(theWorld, player.getPosition(), 10);
+        ter.renderFrameWithShadow(theWorld, player.getPosition(), 15);
         renderHUD(gameInfo);
     }
 
@@ -377,6 +415,9 @@ public class Game {
             case "W":
                 if (player.moveNorth(theWorld)) {
                     operations += "W";
+                    if (atPortal()) {
+                        teleport();
+                    }
                 } else {
                     repaintWall(Direction.UP);
                 }
@@ -384,6 +425,9 @@ public class Game {
             case "A":
                 if (player.moveWest(theWorld)) {
                     operations += "A";
+                    if (atPortal()) {
+                        teleport();
+                    }
                 } else {
                     repaintWall(Direction.LEFT);
                 }
@@ -391,6 +435,9 @@ public class Game {
             case "S":
                 if (player.moveSouth(theWorld)) {
                     operations += "S";
+                    if (atPortal()) {
+                        teleport();
+                    }
                 } else {
                     repaintWall(Direction.DOWN);
                 }
@@ -398,6 +445,9 @@ public class Game {
             case "D":
                 if (player.moveEast(theWorld)) {
                     operations += "D";
+                    if (atPortal()) {
+                        teleport();
+                    }
                 } else {
                     repaintWall(Direction.RIGHT);
                 }
@@ -447,7 +497,24 @@ public class Game {
         //8. repaint dead ends and rooms into floors
         repaint(rooms);
 
+        //9. set portals
+        setPortals();
+
         return theWorld;
+    }
+
+    private void setPortals() {
+        int numOfPortals = 4;
+        portals = new ArrayList<>(numOfPortals);
+        while (portals.size() < numOfPortals) {
+            int x = RandomUtils.uniform(random, 1, WIDTH);
+            int y = RandomUtils.uniform(random, 1, HEIGHT);
+            if (theWorld[x][y].equals(Tileset.FLOOR)) {
+                theWorld[x][y] = Tileset.IN;
+                Position portal = new Position(x, y);
+                portals.add(portal);
+            }
+        }
     }
 
     private void repaint(List<Room> rooms) {

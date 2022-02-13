@@ -108,12 +108,12 @@ public class TERenderer {
         int numYTiles = theWorld[0].length;
         StdDraw.clear(new Color(0, 0, 0));
         for (int x = centre.getX() - radius; x <= centre.getX() + radius; x++) {
-            if (x < 0 || x > numXTiles) {
+            if (x < 0 || x >= numXTiles) {
                 continue;
             }
             int delta = radius - Math.abs(centre.getX() - x);
             for (int y = centre.getY() - delta; y <= centre.getY() + delta; y++) {
-                if (y < 0 || y > numYTiles) {
+                if (y < 0 || y >= numYTiles) {
                     continue;
                 }
                 if (theWorld[x][y] == null) {
