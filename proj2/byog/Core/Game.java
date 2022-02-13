@@ -41,7 +41,7 @@ public class Game {
 
         theWorld = generateWorld(Long.parseLong(seed));
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
-        ter.renderFrame(theWorld);
+        ter.renderFrameWithShadow(theWorld, player.getPosition(), 10);
         StdDraw.setPenColor(Color.ORANGE);
         StdDraw.line(0, HEIGHT, WIDTH, HEIGHT);
         StdDraw.show();
@@ -56,7 +56,7 @@ public class Game {
         }
         theWorld = playWithInputString(operations);
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
-        ter.renderFrame(theWorld);
+        ter.renderFrameWithShadow(theWorld, player.getPosition(), 10);
     }
 
     private void renderHUD(String gameInfo) {
@@ -139,7 +139,7 @@ public class Game {
 
     private void reDraw(String gameInfo) {
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
-        ter.renderFrame(theWorld);
+        ter.renderFrameWithShadow(theWorld, player.getPosition(), 10);
         renderHUD(gameInfo);
     }
 
@@ -458,8 +458,7 @@ public class Game {
         Position current = new Position(x, y);
         List<Position> floors = current.diagonalNeighbours(theWorld, Tileset.FLOOR);
         List<Position> rooms = current.diagonalNeighbours(theWorld, Tileset.ROOM);
-        List<Position> deadEnds = current.diagonalNeighbours(theWorld, Tileset.DEADEND);
-        return floors.size() + rooms.size() + deadEnds.size() > 0;
+        return floors.size() + rooms.size() > 0;
     }
 
     private void removeDeadEnds(List<Position> deadEnds, List<Position> newEnds) {
@@ -472,7 +471,6 @@ public class Game {
                 theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.NOTHING;
                 removeDeadEnds(neighbours, newEnds);
             } else if (deadEnd.oddNeighbours(theWorld, Tileset.FLOOR).size() == 1) {
-                theWorld[deadEnd.getX()][deadEnd.getY()] = Tileset.DEADEND;
                 newEnds.add(deadEnd);
             }
         }

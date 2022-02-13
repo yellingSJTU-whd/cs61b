@@ -6,6 +6,10 @@ import byog.TileEngine.Tileset;
 public class Player {
     private Position position;
 
+    public Position getPosition() {
+        return position;
+    }
+
     public Player(Position place) {
         position = new Position(place.getX(), place.getY());
     }
