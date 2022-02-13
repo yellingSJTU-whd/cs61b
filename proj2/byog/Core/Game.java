@@ -49,10 +49,10 @@ public class Game {
         interact();
     }
 
-    private void loadAndShow() {
+    private void loadGame() {
         operations = loadOperations();
         if (operations == null || operations.length() == 0) {
-            throw new RuntimeException("load error");
+            System.exit(0);
         }
         theWorld = playWithInputString(operations);
         StdDraw.setFont(new Font("Monaco", Font.BOLD, 14));
@@ -275,7 +275,7 @@ public class Game {
         if (beginningStr.equals("N")) {
             newGame();
         } else if (beginningStr.equals("L")) {
-            loadAndShow();
+            loadGame();
             interact();
         } else {
             saveOperations();
@@ -316,7 +316,7 @@ public class Game {
             if (quitIndex >= 0) {
                 operations = loadOperations();
                 if (operations == null || operations.length() == 0) {
-                    throw new RuntimeException("load error");
+                    System.exit(0);
                 }
                 processMovementStr(upper.substring(1, quitIndex));
                 saveOperations();
