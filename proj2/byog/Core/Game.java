@@ -14,10 +14,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.util.Random;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
+import java.util.ArrayList;
 
 public class Game {
     TERenderer ter = new TERenderer();
@@ -78,6 +78,39 @@ public class Game {
         StdDraw.show();
     }
 
+    private void repaintWall(Direction direction) {
+        int currX = player.getPosition().getX();
+        int currY = player.getPosition().getY();
+        TETile wall;
+        switch (direction) {
+            case UP:
+                if (theWorld[currX][currY + 1].equals(Tileset.WALL)) {
+                    wall = theWorld[currX][currY + 1];
+                    theWorld[currX][currY + 1] = TETile.colorVariant(wall, 30, 30, 30, random);
+                }
+                break;
+            case DOWN:
+                if (theWorld[currX][currY - 1].equals(Tileset.WALL)) {
+                    wall = theWorld[currX][currY - 1];
+                    theWorld[currX][currY - 1] = TETile.colorVariant(wall, 30, 30, 30, random);
+                }
+                break;
+            case LEFT:
+                if (theWorld[currX - 1][currY].equals(Tileset.WALL)) {
+                    wall = theWorld[currX - 1][currY];
+                    theWorld[currX - 1][currY] = TETile.colorVariant(wall, 30, 30, 30, random);
+                }
+                break;
+            case RIGHT:
+                if (theWorld[currX + 1][currY].equals(Tileset.WALL)) {
+                    wall = theWorld[currX + 1][currY];
+                    theWorld[currX + 1][currY] = TETile.colorVariant(wall, 30, 30, 30, random);
+                }
+                break;
+            default:
+        }
+    }
+
     private void interact() {
         while (true) {
             if (!StdDraw.hasNextKeyTyped()) {
@@ -91,10 +124,7 @@ public class Game {
                         reDraw("went north");
                     } else {
                         reDraw("can't go north");
-                        int currX = player.getPosition().getX();
-                        int currY = player.getPosition().getY();
-                        TETile wall = theWorld[currX][currY + 1];
-                        theWorld[currX][currY + 1] = TETile.colorVariant(wall, 30, 30, 30, random);
+                        repaintWall(Direction.UP);
                     }
                     break;
                 case 'A':
@@ -103,6 +133,7 @@ public class Game {
                         reDraw("went west");
                     } else {
                         reDraw("can't go west");
+                        repaintWall(Direction.LEFT);
                     }
                     break;
                 case 'S':
@@ -111,6 +142,7 @@ public class Game {
                         reDraw("went south");
                     } else {
                         reDraw("can't go south");
+                        repaintWall(Direction.DOWN);
                     }
                     break;
                 case 'D':
@@ -119,6 +151,7 @@ public class Game {
                         reDraw("went east");
                     } else {
                         reDraw("can't go east");
+                        repaintWall(Direction.RIGHT);
                     }
                     break;
                 case ':':
@@ -344,21 +377,29 @@ public class Game {
             case "W":
                 if (player.moveNorth(theWorld)) {
                     operations += "W";
+                } else {
+                    repaintWall(Direction.UP);
                 }
                 break;
             case "A":
                 if (player.moveWest(theWorld)) {
                     operations += "A";
+                } else {
+                    repaintWall(Direction.LEFT);
                 }
                 break;
             case "S":
                 if (player.moveSouth(theWorld)) {
                     operations += "S";
+                } else {
+                    repaintWall(Direction.DOWN);
                 }
                 break;
             case "D":
                 if (player.moveEast(theWorld)) {
                     operations += "D";
+                } else {
+                    repaintWall(Direction.RIGHT);
                 }
                 break;
             default:
