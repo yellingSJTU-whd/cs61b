@@ -104,16 +104,16 @@ public class TERenderer {
     }
 
     public void renderFrameWithShadow(TETile[][] theWorld, Position centre, int radius) {
-        int width = theWorld.length;
-        int height = theWorld[0].length;
+        int numXTiles = theWorld.length;
+        int numYTiles = theWorld[0].length;
         StdDraw.clear(new Color(0, 0, 0));
         for (int x = centre.getX() - radius; x <= centre.getX() + radius; x++) {
-            if (x < 0 || x > width) {
+            if (x < 0 || x > numXTiles) {
                 continue;
             }
             int delta = radius - Math.abs(centre.getX() - x);
             for (int y = centre.getY() - delta; y <= centre.getY() + delta; y++) {
-                if (y < 0 || y > height) {
+                if (y < 0 || y > numYTiles) {
                     continue;
                 }
                 if (theWorld[x][y] == null) {

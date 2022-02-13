@@ -91,6 +91,10 @@ public class Game {
                         reDraw("went north");
                     } else {
                         reDraw("can't go north");
+                        int currX = player.getPosition().getX();
+                        int currY = player.getPosition().getY();
+                        TETile wall = theWorld[currX][currY + 1];
+                        theWorld[currX][currY + 1] = TETile.colorVariant(wall, 30, 30, 30, random);
                     }
                     break;
                 case 'A':
