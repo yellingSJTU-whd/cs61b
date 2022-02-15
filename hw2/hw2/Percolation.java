@@ -119,6 +119,9 @@ public class Percolation {
      * @return true if system percolates, false otherwise
      */
     public boolean percolates() {
+        if (order == 1) {
+            return isOpen(0, 0);
+        }
         return weightedQuickUnionUF.connected(order * order, order * order + 1);
     }
 
