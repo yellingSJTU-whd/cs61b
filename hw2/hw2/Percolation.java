@@ -29,9 +29,12 @@ public class Percolation {
         opened = new boolean[order * order];
         Arrays.fill(opened, false);
 
-        weightedQuickUnionUF = new WeightedQuickUnionUF(order * order + 2);
-        for (int i = 0; i < order; i++) {
-            weightedQuickUnionUF.union(i, order * order);
+        weightedQuickUnionUF = new WeightedQuickUnionUF(N * N + 2);
+        for (int i = 0; i < N; i++) {
+            weightedQuickUnionUF.union(i, N * N);
+        }
+        for (int i = N * (N - 1); i < N * N; i++) {
+            weightedQuickUnionUF.union(i, N * N + 1);
         }
     }
 
@@ -63,9 +66,6 @@ public class Percolation {
             }
             if (col < order - 1 && isOpen(row, col + 1)) {
                 weightedQuickUnionUF.union(idx, convertTo1D(row, col + 1));
-            }
-            if (col == order - 1) {
-                weightedQuickUnionUF.union(idx, order * order + 1);
             }
         }
     }
