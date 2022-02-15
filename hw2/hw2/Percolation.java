@@ -4,9 +4,6 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class Percolation {
 
     private final WeightedQuickUnionUF weightedQuickUnionUF;
@@ -126,17 +123,6 @@ public class Percolation {
     }
 
     public static void main(String[] args) {
-        Percolation system = new Percolation(2);
-        system.open(0, 0);
-
-        assertTrue(system.isOpen(0, 0));
-        assertFalse(system.percolates());
-
-        system.open(1, 1);
-        assertFalse(system.percolates());
-
-        system.open(1, 0);
-        assertTrue(system.percolates());
     }
 
     private int convertTo1D(int row, int col) {
