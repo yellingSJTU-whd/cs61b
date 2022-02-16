@@ -1,13 +1,12 @@
 package hw2;
 
 import edu.princeton.cs.introcs.StdRandom;
+import edu.princeton.cs.introcs.StdStats;
 import edu.princeton.cs.introcs.Stopwatch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PercolationStats {
-    private double mean, stddev, confidenceLow, confidenceHigh;
+    private final int T;
+    private final double[] fractions;
 
     public PercolationStats(int N, int T, PercolationFactory pf) {
         if (N <= 0 || T <= 0) {
@@ -15,34 +14,8 @@ public class PercolationStats {
         }
 
         Stopwatch timer = new Stopwatch();
-        List<Double> samples = evalMean(N, T, pf);
-        evalStddev(samples, N, T);
-        evalConfidenceInterval(T);
-        System.out.println("total time in seconds: " + timer.elapsedTime());
-    }
-
-    private void evalConfidenceInterval(int T) {
-        double delta = 1.96 * stddev / (Math.sqrt(T));
-        confidenceLow = mean - delta;
-        confidenceHigh = mean + delta;
-    }
-
-    private void evalStddev(List<Double> samples, int N, int T) {
-        if (T == 1) {
-            stddev = Double.NaN;
-            return;
-        }
-
-        double deviation = 0;
-        for (Double sample : samples) {
-            deviation += Math.pow(sample / (N * N) - mean, 2);
-        }
-        deviation /= (T - 1);
-        stddev = Math.sqrt(deviation);
-    }
-
-    private List<Double> evalMean(int N, int T, PercolationFactory pf) {
-        List<Double> samples = new ArrayList<>(T);
+        this.T = T;
+        fractions = new double[T];
 
         for (int i = 0; i < T; i++) {
             Percolation system = pf.make(N);
@@ -51,26 +24,25 @@ public class PercolationStats {
                 int col = StdRandom.uniform(N);
                 system.open(row, col);
             }
-            mean += system.numberOfOpenSites();
-            samples.add(mean);
+            fractions[i] = (double) system.numberOfOpenSites() / (N * N);
         }
-        mean = mean / (N * N) / T;
-        return samples;
+
+        System.out.println("total time in seconds: " + timer.elapsedTime());
     }
 
     public double mean() {
-        return mean;
+        return StdStats.mean(fractions);
     }
 
     public double stddev() {
-        return stddev;
+        return StdStats.stddev(fractions);
     }
 
     public double confidenceLow() {
-        return confidenceLow;
+        return mean() - 1.96 * stddev() / Math.sqrt(T);
     }
 
     public double confidenceHigh() {
-        return confidenceHigh;
+        return mean() + 1.96 * stddev() / Math.sqrt(T);
     }
 }
