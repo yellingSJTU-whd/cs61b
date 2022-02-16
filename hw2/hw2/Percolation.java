@@ -6,7 +6,8 @@ import java.util.Arrays;
 
 public class Percolation {
 
-    private final WeightedQuickUnionUF weightedQuickUnionUF;
+    private final WeightedQuickUnionUF percolatesUF;
+    private final WeightedQuickUnionUF isFullUF;
     private final int order;
     private int openSitesCount;
     private final boolean[] opened;
@@ -23,15 +24,20 @@ public class Percolation {
 
         order = N;
         openSitesCount = 0;
-        opened = new boolean[order * order];
+        opened = new boolean[N * N];
         Arrays.fill(opened, false);
 
-        weightedQuickUnionUF = new WeightedQuickUnionUF(N * N + 2);
+        percolatesUF = new WeightedQuickUnionUF(N * N + 2);
         for (int i = 0; i < N; i++) {
-            weightedQuickUnionUF.union(i, N * N);
+            percolatesUF.union(i, N * N);
         }
         for (int i = N * (N - 1); i < N * N; i++) {
-            weightedQuickUnionUF.union(i, N * N + 1);
+            percolatesUF.union(i, N * N + 1);
+        }
+
+        isFullUF = new WeightedQuickUnionUF(N * N + 1);
+        for (int i = 0; i < N; i++) {
+            isFullUF.union(i, N * N);
         }
     }
 
@@ -53,16 +59,20 @@ public class Percolation {
 
             int idx = convertTo1D(row, col);
             if (row > 0 && isOpen(row - 1, col)) {
-                weightedQuickUnionUF.union(idx, convertTo1D(row - 1, col));
+                percolatesUF.union(idx, convertTo1D(row - 1, col));
+                isFullUF.union(idx, convertTo1D(row - 1, col));
             }
             if (row < order - 1 && isOpen(row + 1, col)) {
-                weightedQuickUnionUF.union(idx, convertTo1D(row + 1, col));
+                percolatesUF.union(idx, convertTo1D(row + 1, col));
+                isFullUF.union(idx, convertTo1D(row + 1, col));
             }
             if (col > 0 && isOpen(row, col - 1)) {
-                weightedQuickUnionUF.union(idx, convertTo1D(row, col - 1));
+                percolatesUF.union(idx, convertTo1D(row, col - 1));
+                isFullUF.union(idx, convertTo1D(row, col - 1));
             }
             if (col < order - 1 && isOpen(row, col + 1)) {
-                weightedQuickUnionUF.union(idx, convertTo1D(row, col + 1));
+                percolatesUF.union(idx, convertTo1D(row, col + 1));
+                isFullUF.union(idx, convertTo1D(row, col + 1));
             }
         }
     }
@@ -101,7 +111,7 @@ public class Percolation {
         }
 
         return isOpen(row, col)
-                && weightedQuickUnionUF.connected(convertTo1D(row, col), order * order);
+                && isFullUF.connected(convertTo1D(row, col), order * order);
     }
 
     /**
@@ -122,7 +132,7 @@ public class Percolation {
         if (order == 1) {
             return isOpen(0, 0);
         }
-        return weightedQuickUnionUF.connected(order * order, order * order + 1);
+        return percolatesUF.connected(order * order, order * order + 1);
     }
 
     public static void main(String[] args) {
