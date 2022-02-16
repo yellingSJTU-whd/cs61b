@@ -2,7 +2,6 @@ package hw2;
 
 import edu.princeton.cs.introcs.StdRandom;
 import edu.princeton.cs.introcs.StdStats;
-import edu.princeton.cs.introcs.Stopwatch;
 
 public class PercolationStats {
     private final int T;
@@ -13,7 +12,6 @@ public class PercolationStats {
             throw new IllegalArgumentException("must be positive: N = " + N + ", T = " + T);
         }
 
-        Stopwatch timer = new Stopwatch();
         this.T = T;
         fractions = new double[T];
 
@@ -26,8 +24,6 @@ public class PercolationStats {
             }
             fractions[i] = (double) system.numberOfOpenSites() / (N * N);
         }
-
-        System.out.println("total time in seconds: " + timer.elapsedTime());
     }
 
     public double mean() {
