@@ -16,7 +16,7 @@ public class PercolationStats {
 
         Stopwatch timer = new Stopwatch();
         List<Double> samples = evalMean(N, T, pf);
-        evalStddev(samples, T);
+        evalStddev(samples, N, T);
         evalConfidenceInterval(T);
         System.out.println("total time in seconds: " + timer.elapsedTime());
     }
@@ -27,10 +27,16 @@ public class PercolationStats {
         confidenceHigh = mean + delta;
     }
 
-    private void evalStddev(List<Double> samples, int T) {
+    private void evalStddev(List<Double> samples, int N, int T) {
+        if (T == 1) {
+            stddev = Double.NaN;
+            return;
+        }
+
         double deviation = 0;
         for (Double sample : samples) {
-            deviation += Math.pow(sample - mean, 2);
+            deviation += Math.pow(sample / (N * N) - mean, 2);
+            System.out.println(deviation);
         }
         deviation /= (T - 1);
         stddev = Math.sqrt(deviation);
@@ -42,9 +48,9 @@ public class PercolationStats {
         for (int i = 0; i < T; i++) {
             Percolation system = pf.make(N);
             while (!system.percolates()) {
-                int randomRow = StdRandom.uniform(N);
-                int randomCol = StdRandom.uniform(N);
-                system.open(randomRow, randomCol);
+                int row = StdRandom.uniform(N);
+                int col = StdRandom.uniform(N);
+                system.open(row, col);
             }
             mean += system.numberOfOpenSites();
             samples.add(mean);
@@ -67,5 +73,11 @@ public class PercolationStats {
 
     public double confidenceHigh() {
         return confidenceHigh;
+    }
+
+    public static void main(String[] args) {
+        PercolationStats percolationStats = new PercolationStats(20, 10, new PercolationFactory());
+        System.out.println("mean= " + percolationStats.mean());
+        System.out.println("standard deviation= " + percolationStats.stddev());
     }
 }
