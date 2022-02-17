@@ -39,8 +39,10 @@ public class SimpleOomage implements Oomage {
     }
 
     private int perfectHash() {
-        return Integer.hashCode(red / 5 + 2) * Integer.hashCode(green / 5 + 3)
-                + Integer.hashCode(blue / 5 + 4);
+        int res = Integer.hashCode(red / 5);
+        res = res * 53 + Integer.hashCode(green / 5);
+        res = res * 71 + Integer.hashCode(blue / 5);
+        return res;
     }
 
     public SimpleOomage(int r, int g, int b) {
