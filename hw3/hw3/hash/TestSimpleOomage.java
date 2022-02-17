@@ -32,8 +32,6 @@ public class TestSimpleOomage {
 
         assertNotEquals(ooA.hashCode(), ooA2.hashCode());
         assertNotEquals(ooA3.hashCode(), ooA4.hashCode());
-        System.out.println(ooA3.hashCode());
-        System.out.println(ooA4.hashCode());
     }
 
     @Test
