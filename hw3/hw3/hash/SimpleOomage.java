@@ -1,7 +1,9 @@
 package hw3.hash;
-import java.awt.Color;
-import edu.princeton.cs.algs4.StdRandom;
+
 import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdRandom;
+
+import java.awt.*;
 
 
 public class SimpleOomage implements Oomage {
@@ -37,7 +39,7 @@ public class SimpleOomage implements Oomage {
     }
 
     private int perfectHash() {
-        return Integer.hashCode(red / 5) * Integer.hashCode(green / 5) + Integer.hashCode(blue / 5);
+        return Integer.hashCode(red / 5 + 1) * Integer.hashCode(green / 5 + 1) + Integer.hashCode(blue / 5 + 1);
     }
 
     public SimpleOomage(int r, int g, int b) {
