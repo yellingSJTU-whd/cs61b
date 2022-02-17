@@ -1,12 +1,14 @@
 package hw3.hash;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
+
 import java.util.HashSet;
 import java.util.List;
-
-import static org.junit.Assert.*;
+import java.util.ArrayList;
 
 
 public class TestSimpleOomage {
@@ -25,11 +27,7 @@ public class TestSimpleOomage {
         SimpleOomage ooA = new SimpleOomage(15, 25, 120);
         SimpleOomage ooA2 = new SimpleOomage(35, 15, 110);
 
-        SimpleOomage ooA3 = new SimpleOomage(0, 0, 0);
-        SimpleOomage ooA4 = new SimpleOomage(0, 5, 0);
-
         assertNotEquals(ooA.hashCode(), ooA2.hashCode());
-        assertNotEquals(ooA3.hashCode(), ooA4.hashCode());
     }
 
     @Test
