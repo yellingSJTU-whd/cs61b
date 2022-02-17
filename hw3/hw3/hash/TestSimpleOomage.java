@@ -1,14 +1,13 @@
 package hw3.hash;
 
+import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
-
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
+
+import static org.junit.Assert.*;
 
 
 public class TestSimpleOomage {
@@ -24,14 +23,19 @@ public class TestSimpleOomage {
 
     @Test
     public void testHashCodePerfect() {
-        SimpleOomage ooA = new SimpleOomage(15, 25, 120);
-        SimpleOomage ooA2 = new SimpleOomage(35, 15, 110);
+        SimpleOomage ooA = new SimpleOomage(0, 0, 0);
+        SimpleOomage ooA2;
 
-        SimpleOomage ooA3 = new SimpleOomage(0, 0, 0);
-        SimpleOomage ooA4 = new SimpleOomage(0, 5, 0);
-
-        assertNotEquals(ooA.hashCode(), ooA2.hashCode());
-        assertNotEquals(ooA3.hashCode(), ooA4.hashCode());
+        for (int i = 0; i <= 10000; i++) {
+            int r = StdRandom.uniform(0, 51);
+            int g = StdRandom.uniform(0, 51);
+            int b = StdRandom.uniform(0, 51);
+            ooA2 = new SimpleOomage(r * 5, g * 5, b * 5);
+            if (r + g + b == 0) {
+                continue;
+            }
+            assertNotEquals("rgb= " + r + g + b + i, ooA.hashCode(), ooA2.hashCode());
+        }
     }
 
     @Test
