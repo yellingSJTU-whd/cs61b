@@ -11,7 +11,7 @@ public class ComplexOomage implements Oomage {
 
     @Override
     public int hashCode() {
-        return params.hashCode() + Integer.hashCode(params.size());
+        return params.hashCode();
     }
 
     @Override
