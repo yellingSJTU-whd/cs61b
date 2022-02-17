@@ -11,12 +11,7 @@ public class ComplexOomage implements Oomage {
 
     @Override
     public int hashCode() {
-        int total = 0;
-        for (int x : params) {
-            total = total * 256;
-            total = total + x;
-        }
-        return total;
+        return params.hashCode() + StdRandom.uniform(0, 255);
     }
 
     @Override
@@ -30,7 +25,7 @@ public class ComplexOomage implements Oomage {
 
     public ComplexOomage(List<Integer> params) {
         if (params == null) {
-            throw new IllegalArgumentException("params must not be null!");            
+            throw new IllegalArgumentException("params must not be null!");
         }
 
         for (Integer x : params) {
