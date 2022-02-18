@@ -1,5 +1,6 @@
 package hw4.puzzle;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -103,10 +104,10 @@ public class Word implements WorldState {
 
         Word word1 = (Word) o;
 
-        if (word != null ? !word.equals(word1.word) : word1.word != null) {
+        if (!Objects.equals(word, word1.word)) {
             return false;
         }
-        return goal != null ? goal.equals(word1.goal) : word1.goal == null;
+        return Objects.equals(goal, word1.goal);
     }
 
     @Override
