@@ -30,14 +30,17 @@ public class Solver {
         MinPQ<SearchNode> minHeap = new MinPQ<>(Solver::compare);
         minHeap.insert(initialNode);
         SearchNode currNode = initialNode;
-        while (!currNode.state.isGoal()){
-            totalMoves++;
-            currNode = minHeap.delMin();
-            for (WorldState worldState:currNode.state.neighbors()){
-                if (currNode.pre==null||!worldState.equals(currNode.pre.state)){
-                    minHeap.insert(new SearchNode(currNode.state, totalMoves+1,currNode));
+        while (!currNode.state.isGoal()) {
+
+
+            for (WorldState worldState : currNode.state.neighbors()) {
+                if (currNode.pre == null || !worldState.equals(currNode.pre.state)) {
+                    minHeap.insert(new SearchNode(worldState, totalMoves + 1, currNode));
                 }
             }
+            currNode = minHeap.delMin();
+            totalMoves++;
+            System.out.println(currNode.state.toString());
         }
     }
 
