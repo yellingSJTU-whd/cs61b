@@ -52,6 +52,11 @@ public class CommonBugDetector {
         }
 
         @Override
+        public String toString() {
+            return Character.toString(name);
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (this == o) {
                 return true;

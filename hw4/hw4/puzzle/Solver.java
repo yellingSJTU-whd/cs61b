@@ -2,12 +2,15 @@ package hw4.puzzle;
 
 import edu.princeton.cs.algs4.MinPQ;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class Solver {
-    private int totalMoves;
-    private Set<WorldState> solution;
+    private final List<WorldState> solution;
+    private final Map<WorldState, Integer> distanceMap;
 
     /**
      * Constructor which solves the puzzle, computing
@@ -18,35 +21,30 @@ public class Solver {
      * @param initial initial world state
      */
     public Solver(WorldState initial) {
-        totalMoves = 0;
-        solution = new LinkedHashSet<>();
-        solution.add(initial);
+        int count = 0;
 
-        if (initial.isGoal()) {
-            return;
-        }
+        distanceMap = new HashMap<>();
+        int totalMoves = 0;
+        solution = new ArrayList<>();
 
+        MinPQ<SearchNode> minHeap = new MinPQ<>(SearchNode::compare);
         SearchNode initialNode = new SearchNode(initial, 0, null);
-        MinPQ<SearchNode> minHeap = new MinPQ<>(Solver::compare);
         minHeap.insert(initialNode);
-        SearchNode currNode = initialNode;
-        while (!currNode.state.isGoal()) {
-
-
-            for (WorldState worldState : currNode.state.neighbors()) {
-                if (currNode.pre == null || !worldState.equals(currNode.pre.state)) {
-                    minHeap.insert(new SearchNode(worldState, totalMoves + 1, currNode));
-                }
+        while (!minHeap.isEmpty()) {
+            SearchNode curr = minHeap.delMin();
+            if (curr.state.isGoal()) {
+                System.out.println("The number of total things ever enqueued: " + count);
+                return;
             }
-            currNode = minHeap.delMin();
-            totalMoves++;
-            System.out.println(currNode.state.toString());
+            solution.add(curr.state);
+            for (WorldState worldState : curr.state.neighbors()) {
+                if (curr.pre != null && worldState.equals(curr.pre.state)) {
+                    continue;
+                }
+                minHeap.insert(new SearchNode(worldState, totalMoves + 1, curr));
+                count++;
+            }
         }
-    }
-
-    private static int compare(SearchNode x, SearchNode y) {
-        return Integer.compare(x.from + x.state.estimatedDistanceToGoal(),
-                y.from + x.state.estimatedDistanceToGoal());
     }
 
     /**
@@ -57,7 +55,7 @@ public class Solver {
      * at the initial WorldState
      */
     public int moves() {
-        return totalMoves;
+        return solution.size() - 1;
     }
 
     /**
@@ -72,14 +70,25 @@ public class Solver {
     }
 
     private class SearchNode {
-        private WorldState state;
-        private int from;
-        private SearchNode pre;
+        private final WorldState state;
+        private final int from;
+        private final SearchNode pre;
 
         SearchNode(WorldState state, int from, SearchNode pre) {
             this.state = state;
             this.from = from;
             this.pre = pre;
+        }
+
+        public int compare(SearchNode another) {
+            if (!distanceMap.containsKey(state)) {
+                distanceMap.put(state, state.estimatedDistanceToGoal());
+            }
+            if (!distanceMap.containsKey(another.state)) {
+                distanceMap.put(another.state, another.state.estimatedDistanceToGoal());
+            }
+            return Integer.compare(from + distanceMap.get(state),
+                    another.from + distanceMap.get(another.state));
         }
     }
 }
