@@ -10,7 +10,6 @@ public class EightPuzzleSolver {
     **********************************************************************/
     public static void main(String[] args) {
         In in = new In(args[0]);
-//        File f = new File("input/puzzle2x2-00.txt");
         int N = in.readInt();
         int[][] tiles = new int[N][N];
         for (int i = 0; i < N; i++) {

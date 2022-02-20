@@ -46,13 +46,16 @@ public class Board implements WorldState {
      * @return value at the specified position if presented, 0 otherwise
      */
     public int tileAt(int i, int j) {
+        if (i < 0 || i >= width || j < 0 || j >= width) {
+            throw new IndexOutOfBoundsException();
+        }
         return this.tiles[i * width + j];
     }
 
     /**
      * @return the board size N
      */
-    private int size() {
+    public int size() {
         return width;
     }
 
