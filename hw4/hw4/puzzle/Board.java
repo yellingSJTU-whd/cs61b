@@ -105,8 +105,8 @@ public class Board implements WorldState {
      */
     public int hamming() {
         int hammingCount = 0;
-        for (int i = 1; i < tiles.length; i++) {
-            if (tiles[i] != i) {
+        for (int i = 0; i < tiles.length; i++) {
+            if (tiles[i] != i + 1) {
                 hammingCount++;
             }
         }
