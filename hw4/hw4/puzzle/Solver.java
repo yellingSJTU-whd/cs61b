@@ -1,6 +1,7 @@
 package hw4.puzzle;
 
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Stack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,29 +22,37 @@ public class Solver {
      * @param initial initial world state
      */
     public Solver(WorldState initial) {
-        int count = 0;
-
+        int enqueueCount = 0;
         distanceMap = new HashMap<>();
-        int totalMoves = 0;
-        solution = new ArrayList<>();
+        int moves = 0;
 
         MinPQ<SearchNode> minHeap = new MinPQ<>(SearchNode::compare);
         SearchNode initialNode = new SearchNode(initial, 0, null);
         minHeap.insert(initialNode);
+        SearchNode curr = null;
         while (!minHeap.isEmpty()) {
-            SearchNode curr = minHeap.delMin();
+            curr = minHeap.delMin();
             if (curr.state.isGoal()) {
-                System.out.println("The number of total things ever enqueued: " + count);
-                return;
+                enqueueCount++;
+                System.out.println("The number of total things ever enqueued: " + enqueueCount);
+                break;
             }
-            solution.add(curr.state);
             for (WorldState worldState : curr.state.neighbors()) {
                 if (curr.pre != null && worldState.equals(curr.pre.state)) {
                     continue;
                 }
-                minHeap.insert(new SearchNode(worldState, totalMoves + 1, curr));
-                count++;
+                minHeap.insert(new SearchNode(worldState, curr.from + 1, curr));
+                enqueueCount++;
             }
+        }
+
+        Stack<WorldState> stack = new Stack<>();
+        for (SearchNode node = curr; node != null; node = node.pre) {
+            stack.push(node.state);
+        }
+        solution = new ArrayList<>();
+        while (!stack.isEmpty()) {
+            solution.add(stack.pop());
         }
     }
 
