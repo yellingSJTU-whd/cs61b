@@ -106,6 +106,9 @@ public class Board implements WorldState {
     public int hamming() {
         int hammingCount = 0;
         for (int i = 0; i < tiles.length; i++) {
+            if (tiles[i] == BLANK) {
+                continue;
+            }
             if (tiles[i] != i + 1) {
                 hammingCount++;
             }
@@ -121,12 +124,15 @@ public class Board implements WorldState {
     public int manhattan() {
         int manhattanCount = 0;
         for (int i = 0; i < tiles.length; i++) {
+            if (tiles[i] == BLANK) {
+                continue;
+            }
             int row = i / width;
             int col = i % width;
             int tile = tiles[i];
             int refRow = tile / width;
             int refCol = tile % width - 1;
-            manhattanCount += Math.abs(row - refRow) + Math.abs(col - refCol);
+            manhattanCount += (Math.abs(row - refRow) + Math.abs(col - refCol));
         }
         return manhattanCount;
     }
