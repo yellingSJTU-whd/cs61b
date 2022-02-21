@@ -130,8 +130,8 @@ public class Board implements WorldState {
             int row = i / width;
             int col = i % width;
             int tile = tiles[i];
-            int refRow = tile / width;
-            int refCol = tile % width - 1;
+            int refRow = (tile - 1) / width;
+            int refCol = (tile - 1) % width;
             manhattanCount += (Math.abs(row - refRow) + Math.abs(col - refCol));
         }
         return manhattanCount;
