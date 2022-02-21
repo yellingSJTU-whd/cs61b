@@ -1,7 +1,5 @@
 package lab9;
 
-import edu.princeton.cs.algs4.Stack;
-
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -84,12 +82,12 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
         int compare = key.compareTo(p.key);
         if (compare < 0) {
-            return putHelper(key, value, p.left);
+            p.left = putHelper(key, value, p.left);
         } else if (compare > 0) {
-            return putHelper(key, value, p.right);
+            p.right = putHelper(key, value, p.right);
         } else {
-            size++;
             p.value = value;
+            size++;
         }
         return p;
     }
@@ -139,6 +137,31 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
     }
 
+    private V removeHelper(Node node, K key) {
+        if (node == null) {
+            return null;
+        }
+        int compare = key.compareTo(node.key);
+        if (compare < 0) {
+            return removeHelper(node.left, key);
+        } else if (compare > 0) {
+            return removeHelper(node.right, key);
+        } else {
+            if (node.left == null) {
+                node = node.right;
+            }
+            if (node.right == null) {
+                node = node.left;
+            }
+            Node t = node;
+            node = min(t.right);
+            V removed = removeMin(t.right);
+            node.right = t.right;
+            node.left = t.left;
+            return removed;
+        }
+    }
+
     /**
      * Removes KEY from the tree if present
      * returns VALUE removed,
@@ -146,7 +169,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      */
     @Override
     public V remove(K key) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            return null;
+        }
+        return removeHelper(root, key);
     }
 
     /**
@@ -156,7 +182,37 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      **/
     @Override
     public V remove(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (key == null || value == null) {
+            return null;
+        }
+        if (!get(key).equals(value)) {
+            return null;
+        }
+        return remove(key);
+    }
+
+    public V removeMin() {
+        return removeMin(root);
+    }
+
+    public V removeMin(Node node) {
+        if (node == null) {
+            return null;
+        }
+        if (node.left == null) {
+            size--;
+            V removed = node.value;
+            node = node.right;
+            return removed;
+        }
+        return removeMin(node.left);
+    }
+
+    private Node min(Node node) {
+        if (node.left == null) {
+            return node;
+        }
+        return min(node.left);
     }
 
     @Override

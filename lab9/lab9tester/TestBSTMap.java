@@ -29,8 +29,8 @@ public class TestBSTMap {
         for (int i = 0; i < 455; i++) {
             b.put("hi" + i, 1 + i);
             //make sure put is working via containsKey and get
-            assertTrue(null != b.get("hi" + i));
-            assertTrue(b.get("hi" + i).equals(1 + i));
+            assertNotNull(b.get("hi" + i));
+            assertEquals((int) b.get("hi" + i), 1 + i);
             assertTrue(b.containsKey("hi" + i));
         }
         assertEquals(455, b.size());
@@ -54,12 +54,12 @@ public class TestBSTMap {
     @Test
     public void sanityGetTest() {
         BSTMap<String, Integer> b = new BSTMap<String, Integer>();
-        assertEquals(null, b.get("starChild"));
+        assertNull(b.get("starChild"));
         assertEquals(0, b.size());
         b.put("starChild", 5);
-        assertTrue(((Integer) b.get("starChild")).equals(5));
+        assertEquals(5, (int) ((Integer) b.get("starChild")));
         b.put("KISS", 5);
-        assertTrue(((Integer) b.get("KISS")).equals(5));
+        assertEquals(5, (int) ((Integer) b.get("KISS")));
         assertNotEquals(null, b.get("starChild"));
         assertEquals(2, b.size());
     }
@@ -83,7 +83,22 @@ public class TestBSTMap {
         BSTMap<String, Integer> b = new BSTMap<String, Integer>();
         b.put("hi", 1);
         assertTrue(b.containsKey("hi"));
-        assertTrue(b.get("hi") != null);
+        assertNotNull(b.get("hi"));
+    }
+
+    //test removeMin
+    @Test
+    public void sanityRemoveMinTest() {
+        BSTMap<String, Integer> bstMap = new BSTMap<>();
+        bstMap.put("abc", 1);
+        bstMap.put("zzz", 2);
+        assertEquals(2, bstMap.size());
+
+        System.out.println(bstMap.removeMin());
+        assertEquals(1, bstMap.size());
+        assertNull(bstMap.get("abc"));
+        System.out.println(bstMap.keySet());
+
     }
 
     public static void main(String[] args) {
