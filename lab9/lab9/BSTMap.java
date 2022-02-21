@@ -1,6 +1,9 @@
 package lab9;
 
+import edu.princeton.cs.algs4.Stack;
+
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -40,40 +43,77 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         size = 0;
     }
 
-    /** Returns the value mapped to by KEY in the subtree rooted in P.
-     *  or null if this map contains no mapping for the key.
+    /**
+     * Returns the value mapped to by KEY in the subtree rooted in P.
+     * or null if this map contains no mapping for the key.
      */
     private V getHelper(K key, Node p) {
-        throw new UnsupportedOperationException();
+        if (p == null) {
+            return null;
+        }
+        int compare = key.compareTo(p.key);
+        if (compare < 0) {
+            return getHelper(key, p.left);
+        } else if (compare > 0) {
+            return getHelper(key, p.right);
+        } else {
+            return p.value;
+        }
     }
 
-    /** Returns the value to which the specified key is mapped, or null if this
-     *  map contains no mapping for the key.
+    /**
+     * Returns the value to which the specified key is mapped, or null if this
+     * map contains no mapping for the key.
      */
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("calls get() with a null key");
+        }
+        return getHelper(key, root);
     }
 
-    /** Returns a BSTMap rooted in p with (KEY, VALUE) added as a key-value mapping.
-      * Or if p is null, it returns a one node BSTMap containing (KEY, VALUE).
+    /**
+     * Returns a BSTMap rooted in p with (KEY, VALUE) added as a key-value mapping.
+     * Or if p is null, it returns a one node BSTMap containing (KEY, VALUE).
      */
     private Node putHelper(K key, V value, Node p) {
-        throw new UnsupportedOperationException();
+        if (p == null) {
+            size++;
+            return new Node(key, value);
+        }
+        int compare = key.compareTo(p.key);
+        if (compare < 0) {
+            return putHelper(key, value, p.left);
+        } else if (compare > 0) {
+            return putHelper(key, value, p.right);
+        } else {
+            size++;
+            p.value = value;
+        }
+        return p;
     }
 
-    /** Inserts the key KEY
-     *  If it is already present, updates value to be VALUE.
+    /**
+     * Inserts the key KEY
+     * If it is already present, updates value to be VALUE.
      */
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("calls put() with a null key");
+        }
+        if (value == null) {
+            remove(key);
+            return;
+        }
+        root = putHelper(key, value, root);
     }
 
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
     }
 
     //////////////// EVERYTHING BELOW THIS LINE IS OPTIONAL ////////////////
@@ -81,21 +121,38 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     /* Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException();
+        Set<K> keySet = new LinkedHashSet<>();
+        inorderTraversal(root, keySet);
+        return keySet;
     }
 
-    /** Removes KEY from the tree if present
-     *  returns VALUE removed,
-     *  null on failed removal.
+    private void inorderTraversal(Node node, Set<K> set) {
+        if (node == null) {
+            return;
+        }
+        if (node.left != null) {
+            inorderTraversal(node.left, set);
+        }
+        set.add(node.key);
+        if (node.right != null) {
+            inorderTraversal(node.right, set);
+        }
+    }
+
+    /**
+     * Removes KEY from the tree if present
+     * returns VALUE removed,
+     * null on failed removal.
      */
     @Override
     public V remove(K key) {
         throw new UnsupportedOperationException();
     }
 
-    /** Removes the key-value entry for the specified key only if it is
-     *  currently mapped to the specified value.  Returns the VALUE removed,
-     *  null on failed removal.
+    /**
+     * Removes the key-value entry for the specified key only if it is
+     * currently mapped to the specified value.  Returns the VALUE removed,
+     * null on failed removal.
      **/
     @Override
     public V remove(K key, V value) {
