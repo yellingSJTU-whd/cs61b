@@ -2,6 +2,7 @@ package lab9;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -13,7 +14,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     private class Node {
         /* (K, V) pair stored in this Node. */
-        private K key;
+        private final K key;
         private V value;
 
         /* Children of this Node. */
@@ -155,8 +156,8 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             }
             Node t = node;
             node = min(t.right);
-            V removed = removeMin(t.right);
-            node.right = t.right;
+            V removed = node.value;
+            node.right = removeMin(t.right);
             node.left = t.left;
             return removed;
         }
@@ -191,21 +192,23 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return remove(key);
     }
 
-    public V removeMin() {
-        return removeMin(root);
+    public void removeMin() {
+        if (root == null) {
+            throw new NoSuchElementException("underflow!");
+        }
+        root = removeMin(root);
     }
 
-    public V removeMin(Node node) {
+    public Node removeMin(Node node) {
         if (node == null) {
             return null;
         }
         if (node.left == null) {
             size--;
-            V removed = node.value;
-            node = node.right;
-            return removed;
+            return node.right;
         }
-        return removeMin(node.left);
+        node.left = removeMin(node.left);
+        return node;
     }
 
     private Node min(Node node) {

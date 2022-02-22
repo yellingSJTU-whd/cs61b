@@ -90,13 +90,14 @@ public class TestBSTMap {
     @Test
     public void sanityRemoveMinTest() {
         BSTMap<String, Integer> bstMap = new BSTMap<>();
-        bstMap.put("abc", 1);
-        bstMap.put("zzz", 2);
-        assertEquals(2, bstMap.size());
 
-        System.out.println(bstMap.removeMin());
-        assertEquals(1, bstMap.size());
-        assertNull(bstMap.get("abc"));
+        bstMap.put("abc", 2);
+        bstMap.put("zzz", 1);
+        bstMap.put("scj", 3);
+        assertEquals(3, bstMap.size());
+
+        bstMap.removeMin();
+        assertEquals(2, bstMap.size());
         System.out.println(bstMap.keySet());
 
     }
