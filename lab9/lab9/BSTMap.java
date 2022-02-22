@@ -220,9 +220,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     @Override
     public Iterator<K> iterator() {
-        if (root == null) {
-            throw new NoSuchElementException("The map is empty!");
-        }
         return keySet().iterator();
     }
 }
