@@ -199,7 +199,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         root = removeMin(root);
     }
 
-    public Node removeMin(Node node) {
+    private Node removeMin(Node node) {
         if (node == null) {
             return null;
         }

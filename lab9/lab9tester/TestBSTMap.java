@@ -86,22 +86,6 @@ public class TestBSTMap {
         assertNotNull(b.get("hi"));
     }
 
-    //test removeMin
-    @Test
-    public void sanityRemoveMinTest() {
-        BSTMap<String, Integer> bstMap = new BSTMap<>();
-
-        bstMap.put("abc", 2);
-        bstMap.put("zzz", 1);
-        bstMap.put("scj", 3);
-        assertEquals(3, bstMap.size());
-
-        bstMap.removeMin();
-        assertEquals(2, bstMap.size());
-        System.out.println(bstMap.keySet());
-
-    }
-
     public static void main(String[] args) {
         jh61b.junit.TestRunner.runTests(TestBSTMap.class);
     }
