@@ -25,15 +25,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             key = k;
             value = v;
         }
-    }
 
-    private class Tuple {
-        private final V value;
-        private final Node node;
-
-        private Tuple(V v, Node n) {
-            value = v;
-            node = n;
+        @Override
+        public String toString() {
+            return "Key = " + key + ", Value = " + value;
         }
     }
 
@@ -130,46 +125,45 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     /* Returns a Set view of the keys contained in this map. */
     @Override
     public Set<K> keySet() {
-        Set<K> keySet = new LinkedHashSet<>();
-        inorderTraversal(root, keySet);
-        return keySet;
+        return inorderTraversal(root, new LinkedHashSet<>());
     }
 
-    private void inorderTraversal(Node node, Set<K> set) {
+    private Set<K> inorderTraversal(Node node, Set<K> set) {
         if (node == null) {
-            return;
+            return set;
         }
         if (node.left != null) {
-            inorderTraversal(node.left, set);
+            set = inorderTraversal(node.left, set);
         }
         set.add(node.key);
         if (node.right != null) {
-            inorderTraversal(node.right, set);
+            set = inorderTraversal(node.right, set);
         }
+        return set;
     }
 
-    private Tuple removeHelper(Node node, K key) {
+    private Node removeHelper(Node node, K key) {
         if (node == null) {
             return null;
         }
         int compare = key.compareTo(node.key);
         if (compare < 0) {
-            return removeHelper(node.left, key);
+            node.left = removeHelper(node.left, key);
         } else if (compare > 0) {
-            return removeHelper(node.right, key);
+            node.right = removeHelper(node.right, key);
         } else {
             if (node.left == null) {
-                return new Tuple(node.value, node.right);
+                return node.right;
             }
             if (node.right == null) {
-                return new Tuple(node.value, node.left);
+                return node.left;
             }
             Node t = node;
             node = min(t.right);
             node.right = removeMin(t.right);
             node.left = t.left;
-            return new Tuple(t.value, node);
         }
+        return node;
     }
 
     /**
@@ -185,9 +179,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (!containsKey(key)) {
             return null;
         }
-        Tuple tuple = removeHelper(root, key);
-        root = tuple.node;
-        return tuple.value;
+        V removed = get(key);
+        size--;
+        root = removeHelper(root, key);
+        return removed;
     }
 
     /**
