@@ -86,6 +86,21 @@ public class TestBSTMap {
         assertNotNull(b.get("hi"));
     }
 
+    @Test
+    public void testRemoveThreeCases() {
+        BSTMap<String, Integer> b = new BSTMap<>();
+        b.put("kft", 1);
+        b.put("avg", 2);
+        b.put("zzr", 3);
+
+        b.remove("kft");
+        assertFalse(b.containsKey("kft"));
+        b.remove("kft");
+        b.remove("kft");
+
+        assertEquals(2, b.size());
+    }
+
     public static void main(String[] args) {
         jh61b.junit.TestRunner.runTests(TestBSTMap.class);
     }

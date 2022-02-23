@@ -182,6 +182,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (key == null) {
             return null;
         }
+        if (!containsKey(key)) {
+            return null;
+        }
         Tuple tuple = removeHelper(root, key);
         root = tuple.node;
         return tuple.value;
