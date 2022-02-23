@@ -1,5 +1,6 @@
 package lab9;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -23,8 +24,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
 
     public MyHashMap() {
-        buckets = new ArrayMap[DEFAULT_SIZE];
-        this.clear();
+        this(DEFAULT_SIZE);
     }
 
     public MyHashMap(int initialSize) {
@@ -37,9 +37,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public void clear() {
         this.size = 0;
-        for (int i = 0; i < this.buckets.length; i += 1) {
-            this.buckets[i] = new ArrayMap<>();
-        }
+        Arrays.setAll(this.buckets, i -> new ArrayMap<>());
     }
 
     /**
@@ -47,7 +45,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * computing the hashcode, followed by modding by the number of buckets.
      * To handle negative numbers properly, uses floorMod instead of %.
      */
-    private int hash(K key) {
+    public int hash(K key) {
         if (key == null) {
             return 0;
         }
@@ -68,9 +66,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
+        if (!containsKey(key)) {
+            size++;
+        }
         int idx = hash(key);
         buckets[idx].put(key, value);
-        size++;
         if (loadFactor() >= MAX_LF) {
             resize(2 * buckets.length);
         }
@@ -78,6 +78,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     private void resize(int capacity) {
         ArrayMap<K, V>[] newBuckets = new ArrayMap[capacity];
+        Arrays.setAll(newBuckets, i -> new ArrayMap<>());
         for (ArrayMap<K, V> bucket : buckets) {
             for (K key : bucket) {
                 V value = bucket.get(key);
