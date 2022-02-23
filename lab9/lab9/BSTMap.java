@@ -27,6 +27,16 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
     }
 
+    private class Tuple {
+        private final V value;
+        private final Node node;
+
+        private Tuple(V v, Node n) {
+            value = v;
+            node = n;
+        }
+    }
+
     private Node root;  /* Root node of the tree. */
     private int size; /* The number of key-value pairs in the tree */
 
@@ -138,7 +148,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
     }
 
-    private V removeHelper(Node node, K key) {
+    private Tuple removeHelper(Node node, K key) {
         if (node == null) {
             return null;
         }
@@ -149,21 +159,16 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             return removeHelper(node.right, key);
         } else {
             if (node.left == null) {
-                V removed = node.value;
-                node = node.right;
-                return removed;
+                return new Tuple(node.value, node.right);
             }
             if (node.right == null) {
-                V removed = node.value;
-                node = node.left;
-                return removed;
+                return new Tuple(node.value, node.left);
             }
             Node t = node;
             node = min(t.right);
-            V removed = node.value;
             node.right = removeMin(t.right);
             node.left = t.left;
-            return removed;
+            return new Tuple(t.value, node);
         }
     }
 
@@ -177,7 +182,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (key == null) {
             return null;
         }
-        return removeHelper(root, key);
+        Tuple tuple = removeHelper(root, key);
+        root = tuple.node;
+        return tuple.value;
     }
 
     /**
