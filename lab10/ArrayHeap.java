@@ -112,6 +112,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Return whether the node at first given index is prior than another.
      */
     private boolean less(int idx, int another) {
+        System.out.println("idx= " + idx + " another= " + another + " size= " + size);
         return contents[idx].myPriority < contents[another].myPriority;
     }
 
@@ -174,11 +175,13 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         if (size == 0) {
             return null;
         }
+        if (size == 1) {
+            return contents[1].myItem;
+        }
         T removed = contents[1].myItem;
         swap(1, size);
-        contents[size] = null;
+        contents[size--] = null;
         sink(1);
-        size--;
         return removed;
     }
 
