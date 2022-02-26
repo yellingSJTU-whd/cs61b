@@ -1,13 +1,16 @@
 package lab11.graphs;
 
+import edu.princeton.cs.algs4.MinPQ;
+import java.util.Comparator;
+
 /**
- *  @author Josh Hug
+ * @author Josh Hug
  */
 public class MazeAStarPath extends MazeExplorer {
     private int s;
     private int t;
-    private boolean targetFound = false;
     private Maze maze;
+    private boolean visited[];
 
     public MazeAStarPath(Maze m, int sourceX, int sourceY, int targetX, int targetY) {
         super(m);
@@ -18,25 +21,46 @@ public class MazeAStarPath extends MazeExplorer {
         edgeTo[s] = s;
     }
 
-    /** Estimate of the distance from v to the target. */
+    /**
+     * Estimate of the distance from v to the target.
+     */
     private int h(int v) {
-        return -1;
+        return Math.abs(maze.toX(v) - maze.toX(t)) + Math.abs(maze.toY(v) - maze.toY(t));
     }
 
-    /** Finds vertex estimated to be closest to target. */
-    private int findMinimumUnmarked() {
-        return -1;
-        /* You do not have to use this method. */
-    }
+    /**
+     * Performs an A star search from vertex s.
+     */
+    private void astar() {
+        MinPQ<Integer> minHeap = new MinPQ<>(Comparator.comparingInt(this::h));
+        minHeap.insert(s);
+        visited = new boolean[maze.V()];
+        visited[s] = marked[s] = true;
 
-    /** Performs an A star search from vertex s. */
-    private void astar(int s) {
-        // TODO
+        while (!minHeap.isEmpty()) {
+            Integer curr = minHeap.delMin();
+            marked[curr] = true;
+            System.out.println(curr + " " + h(curr));
+            announce();
+
+            if (curr == t) {
+                return;
+            }
+
+            for (int u : maze.adj(curr)) {
+                if (!visited[u]) {
+                    visited[u] = true;
+                    edgeTo[u] = curr;
+                    distTo[u] = distTo[curr] + 1;
+                    minHeap.insert(u);
+                }
+            }
+        }
     }
 
     @Override
     public void solve() {
-        astar(s);
+        astar();
     }
 
 }
