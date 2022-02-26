@@ -1,5 +1,7 @@
 package lab11.graphs;
 
+import edu.princeton.cs.algs4.Queue;
+
 /**
  * @author Josh Hug
  */
@@ -11,7 +13,6 @@ public class MazeBreadthFirstPaths extends MazeExplorer {
     */
     private int s;
     private int t;
-    private boolean targetFound = false;
     private Maze maze;
 
 
@@ -28,14 +29,36 @@ public class MazeBreadthFirstPaths extends MazeExplorer {
     /**
      * Conducts a breadth first search of the maze starting at the source.
      */
-    private void bfs() {
-        // TODO: Your code here. Don't forget to update distTo, edgeTo, and marked, as well as call announce()
+    private void bfs(int v) {
+
+        Queue<Integer> queue = new Queue<>();
+        queue.enqueue(v);
+
+        while (!queue.isEmpty()) {
+            int u = queue.dequeue();
+
+            if (u == t) {
+                return;
+            }
+            marked[u] = true;
+            announce();
+
+            for (int w : maze.adj(u)) {
+                if (!marked[w]) {
+                    queue.enqueue(w);
+
+                    edgeTo[w] = u;
+                    distTo[w] = distTo[u] + 1;
+                    marked[w] = true;
+                }
+            }
+        }
     }
 
 
     @Override
     public void solve() {
-        // bfs();
+        bfs(s);
     }
 }
 
