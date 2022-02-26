@@ -40,7 +40,6 @@ public class MazeAStarPath extends MazeExplorer {
         while (!minHeap.isEmpty()) {
             Integer curr = minHeap.delMin();
             marked[curr] = true;
-            System.out.println(curr + " " + h(curr));
             announce();
 
             if (curr == t) {
