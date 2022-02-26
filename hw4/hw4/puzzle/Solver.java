@@ -24,7 +24,6 @@ public class Solver {
     public Solver(WorldState initial) {
         int enqueueCount = 0;
         distanceMap = new HashMap<>();
-        int moves = 0;
 
         MinPQ<SearchNode> minHeap = new MinPQ<>(SearchNode::compare);
         SearchNode initialNode = new SearchNode(initial, 0, null);
