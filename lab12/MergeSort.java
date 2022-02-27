@@ -94,7 +94,7 @@ public class MergeSort {
         queue.enqueue(-4);
         Queue<Integer> sorted = mergeSort(queue);
 
-        System.out.println("original= " + queue);
-        System.out.println("sorted= " + sorted);
+//        System.out.println("original= " + queue);
+//        System.out.println("sorted= " + sorted);
     }
 }

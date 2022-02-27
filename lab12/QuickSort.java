@@ -81,18 +81,21 @@ public class QuickSort {
         Queue<Item> greater = new Queue<>();
         partition(items, getRandomItem(items), less, equal, greater);
 
+        if (less.isEmpty() && greater.isEmpty()) {
+            return equal;
+        }
+
         return catenate(catenate(quickSort(less), quickSort(equal)), quickSort(greater));
     }
 
     public static void main(String[] args) {
         Queue<Integer> queue = new Queue<>();
-        queue.enqueue(77);
-        queue.enqueue(1);
-        queue.enqueue(-38);
-        queue.enqueue(Integer.MAX_VALUE);
+        queue.enqueue(5);
+        queue.enqueue(5);
+        queue.enqueue(-5);
         Queue<Integer> sorted = quickSort(queue);
 
-        System.out.println(queue);
-        System.out.println(sorted);
+//        System.out.println(queue);
+//        System.out.println(sorted);
     }
 }
