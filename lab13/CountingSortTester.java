@@ -53,6 +53,8 @@ public class CountingSortTester {
     public void testBetterWithSomeNegative() {
         int[] sortedSomeNegative = CountingSort.betterCountingSort(someNegative);
         assertIsSorted(sortedSomeNegative);
+        String str = "be" + ' ';
+        System.out.println(str.length());
     }
 
 
