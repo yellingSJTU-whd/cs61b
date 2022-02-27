@@ -53,15 +53,14 @@ public class QuickSort {
             return;
         }
 
-        while (!unsorted.isEmpty()) {
-            Item curr = unsorted.dequeue();
-            int cmp = curr.compareTo(pivot);
+        for (Item item : unsorted) {
+            int cmp = item.compareTo(pivot);
             if (cmp < 0) {
-                less.enqueue(curr);
+                less.enqueue(item);
             } else if (cmp == 0) {
-                equal.enqueue(curr);
+                equal.enqueue(item);
             } else {
-                greater.enqueue(curr);
+                greater.enqueue(item);
             }
         }
     }

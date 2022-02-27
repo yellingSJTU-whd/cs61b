@@ -80,7 +80,6 @@ public class MergeSort {
         while (queue.size() > 1) {
             Queue<Item> q1 = queue.dequeue();
             Queue<Item> q2 = queue.dequeue();
-            System.out.println(q1 + " " + q2);
             queue.enqueue(mergeSortedQueues(q1, q2));
         }
         return queue.dequeue();
