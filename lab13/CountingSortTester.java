@@ -1,5 +1,8 @@
 import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import java.util.Arrays;
 
 public class CountingSortTester {
 
@@ -17,7 +20,7 @@ public class CountingSortTester {
     public static void assertIsSorted(int[] a) {
         int previous = Integer.MIN_VALUE;
         for (int x : a) {
-            assertTrue(x >= previous);
+            assertTrue("After sorting:\n" + Arrays.toString(a), x >= previous);
             previous = x;
         }
     }
@@ -33,8 +36,7 @@ public class CountingSortTester {
     public void testNaiveWithSomeNegative() {
         try {
             int[] sortedSomeNegative = CountingSort.naiveCountingSort(someNegative);
-            assertTrue("Naive counting sort should not sort arrays with negative numbers.",
-                    false);
+            fail("Naive counting sort should not sort arrays with negative numbers.");
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Great! Exception happened as we expected,"
                     + "since this sort is broken for negative numbers.");
