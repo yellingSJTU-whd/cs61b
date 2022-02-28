@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /**
  * Class for doing Radix sort
  *
@@ -14,14 +16,13 @@ public class RadixSort {
      * @return String[] the sorted array
      */
     public static String[] sort(String[] asciis) {
-        // TODO: Implement LSD Sort
         //LSD
         int digits = Integer.MIN_VALUE;
         for (String str : asciis) {
             digits = Math.max(digits, str.length());
         }
 
-        for (int i = 0; i < digits; i++) {
+        for (int i = digits - 1; i >= 0; i--) {
             sortHelperLSD(asciis, i);
         }
 
@@ -42,7 +43,38 @@ public class RadixSort {
      */
     private static void sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
-        return;
+        int[] count = new int[256];
+        for (String ascii : asciis) {
+            int transfer;
+            if (index >= ascii.length()) {
+                transfer = ' ';
+            } else {
+                transfer = ascii.charAt(index);
+            }
+            count[transfer]++;
+        }
+
+        int[] start = new int[count.length];
+        int pos = 0;
+        for (int i = 0; i < count.length; i++) {
+            start[i] = pos;
+            pos += count[i];
+        }
+
+        String[] ref = Arrays.copyOf(asciis, asciis.length);
+        for (String ascii : ref) {
+            int transfer;
+            if (index >= ascii.length()) {
+                transfer = ' ';
+            } else {
+                transfer = ascii.charAt(index);
+            }
+            int place = start[transfer];
+            asciis[place] = ascii;
+            start[transfer]++;
+        }
+        System.out.println("before sorting: " + Arrays.toString(ref) + "\n"
+                + "after sorting: " + Arrays.toString(asciis) + "\n");
     }
 
     /**

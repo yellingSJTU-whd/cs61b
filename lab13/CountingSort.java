@@ -18,7 +18,7 @@ public class CountingSort {
         // find max
         int max = Integer.MIN_VALUE;
         for (int i : arr) {
-            max = max > i ? max : i;
+            max = Math.max(max, i);
         }
 
         // gather all the counts for each value
@@ -47,8 +47,7 @@ public class CountingSort {
         }
 
         int[] sorted2 = new int[arr.length];
-        for (int i = 0; i < arr.length; i += 1) {
-            int item = arr[i];
+        for (int item : arr) {
             int place = starts[item];
             sorted2[place] = item;
             starts[item] += 1;
@@ -95,7 +94,7 @@ public class CountingSort {
         int[] sorted = new int[arr.length];
         int num = min;
         int idx = 0;
-        for (int i = 1; i < count.length; i++) {
+        for (int i = 1; i < start.length; i++) {
             Arrays.fill(sorted, idx, start[i], num);
             num++;
             idx = start[i];
