@@ -17,6 +17,9 @@ public class RadixSort {
      */
     public static String[] sort(String[] asciis) {
         System.out.println("before radix sort: " + Arrays.toString(asciis));
+        if (asciis == null || asciis.length < 2) {
+            return asciis;
+        }
         //LSD
         int digits = Integer.MIN_VALUE;
         for (String str : asciis) {
@@ -74,8 +77,6 @@ public class RadixSort {
             asciis[place] = ascii;
             start[transfer]++;
         }
-//        System.out.println("before sorting: " + Arrays.toString(ref) + "\n"
-//                + "after sorting: " + Arrays.toString(asciis) + "\n");
     }
 
     /**

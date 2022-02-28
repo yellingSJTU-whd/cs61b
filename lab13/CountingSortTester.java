@@ -12,15 +12,18 @@ public class CountingSortTester {
      **/
     private static int[] someNegative = {9, 5, -4, 2, 1, -2, 5, 3, 0, -2, 3, 1, 1};
 
-    private static int[] moreNegative = {-95, -94, -94, -93, -93, -92, -91, -89, -88, -85, -84, -83, -81, -81, -79, -79,
-            -25, -24, -22, -20, -19, -17, -14, -13, -13, -12, -10, -10, -10, -9, -5, -4, -3, -2, -2, -2, 0, 0, -1,
-            -77, -76, -76, -76, -74, -71, -69, -68, -67, -65, -64, -64, -63, -62, -61, -61, -60, -59, -59, -55, -55, -54,
-            -52, -51, -50, -50, -47, -45, -43, -42, -42, -41, -40, -40, -39, -34, -33, -32, -31, -31, -28, -28, -27, -26};
-
+    private static int[] allNegative = {-51, -96, -6, -38, -71, -55, -27, -68, -17, -65, -61,
+        -28, -94, -34, -46, -94, -31, -47, -61, -3, -91, -69, -11, -30, -54, -66, -61, -73,
+        -88, -16, -66, -43, -4, -43, -96, -63, -48, -27, -85, -9, -86, -64, -47, -25, -92, -90,
+        -80, -48, -1, -5, -65, -84, -28, -38, -1, -48, -81, -92, -83, -11, -34, -92, -46, -47, -54,
+        -48, -35, -34, -50, -23, -96, -29, -9, -21, -48, -9, -86, -52, -33, -62, -77, -16, -38};
     /**
      * Array that both sorts should sort successfully.
      **/
-    private static int[] nonNegative = {9, 5, 2, 1, 5, 3, 0, 3, 1, 1};
+    private static int[] nonNegative = {1, 4, 0, 36, 32, 35, 9, 15, 25, 26, 33, 11,
+        6, 35, 29, 20, 19, 16, 29, 9, 30, 23, 1, 20, 9, 23, 27, 16, 3, 15, 32,
+        23, 25, 18, 29, 12, 4, 22, 3, 20, 13, 15, 7, 31, 9, 22, 32, 0, 28,
+        35, 36, 29, 19, 30, 16, 0, 32, 19, 5, 5, 34, 25, 35, 33, 4, 35, 25, 1, 29, 23, 8, 26, 26};
 
     public static void assertIsSorted(int[] a) {
         int previous = Integer.MIN_VALUE;
@@ -62,7 +65,7 @@ public class CountingSortTester {
 
     @Test
     public void testBetterWithMoreNegative() {
-        int[] sortedMoreNegative = CountingSort.betterCountingSort(moreNegative);
+        int[] sortedMoreNegative = CountingSort.betterCountingSort(allNegative);
         assertIsSorted(sortedMoreNegative);
     }
 
