@@ -12,6 +12,8 @@ public class CountingSortTester {
      **/
     private static int[] someNegative = {9, 5, -4, 2, 1, -2, 5, 3, 0, -2, 3, 1, 1};
 
+    private static int[] moreNegative = {-8, -3, -4, -6, -7, -44, -45};
+
     /**
      * Array that both sorts should sort successfully.
      **/
@@ -56,12 +58,10 @@ public class CountingSortTester {
     }
 
     @Test
-    public void testASCII() {
-        String str = "be";
-        int i = str.charAt(1);
-        System.out.println(i + " = " + (char) i);
+    public void testBetterWithMoreNegative() {
+        int[] sortedMoreNegative = CountingSort.betterCountingSort(moreNegative);
+        assertIsSorted(sortedMoreNegative);
     }
-
 
     public static void main(String[] args) {
         jh61b.junit.TestRunner.runTests(CountingSortTester.class);
