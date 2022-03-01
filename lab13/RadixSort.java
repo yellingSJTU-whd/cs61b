@@ -16,7 +16,6 @@ public class RadixSort {
      * @return String[] the sorted array
      */
     public static String[] sort(String[] asciis) {
-        System.out.println("before radix sort: " + Arrays.toString(asciis));
         if (asciis == null || asciis.length < 2) {
             return asciis;
         }
@@ -46,13 +45,16 @@ public class RadixSort {
      */
     private static void sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
-        int[] count = new int[65536];
+        int[] count = new int[256];
         for (String ascii : asciis) {
             int transfer;
             if (index >= ascii.length()) {
                 transfer = 0;
             } else {
                 transfer = ascii.charAt(index);
+                if (transfer > 255) {
+                    transfer = 255;
+                }
             }
             count[transfer]++;
         }
@@ -71,6 +73,9 @@ public class RadixSort {
                 transfer = 0;
             } else {
                 transfer = ascii.charAt(index);
+                if (transfer > 255) {
+                    transfer = 255;
+                }
             }
             int place = start[transfer];
             asciis[place] = ascii;
