@@ -25,7 +25,6 @@ public class RadixSort {
         for (String str : asciis) {
             digits = Math.max(digits, str.length());
         }
-        System.out.println("digits= " + digits);
         for (int i = digits - 1; i >= 0; i--) {
             sortHelperLSD(asciis, i);
         }
@@ -51,7 +50,7 @@ public class RadixSort {
         for (String ascii : asciis) {
             int transfer;
             if (index >= ascii.length()) {
-                transfer = ' ';
+                transfer = 0;
             } else {
                 transfer = ascii.charAt(index);
             }
@@ -69,7 +68,7 @@ public class RadixSort {
         for (String ascii : ref) {
             int transfer;
             if (index >= ascii.length()) {
-                transfer = ' ';
+                transfer = 0;
             } else {
                 transfer = ascii.charAt(index);
             }
