@@ -66,6 +66,7 @@ public class CountingSort {
      * @param arr int array that will be sorted
      */
     public static int[] betterCountingSort(int[] arr) {
+        System.out.println("before sorting: " + Arrays.toString(arr));
         if (arr.length < 2) {
             return arr;
         }
@@ -101,7 +102,7 @@ public class CountingSort {
             num++;
             idx = start[i];
         }
-        Arrays.fill(sorted, idx, sorted.length - 1, max);
+        Arrays.fill(sorted, idx, sorted.length, ++num);
 
         return sorted;
     }
