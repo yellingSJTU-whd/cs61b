@@ -1,12 +1,12 @@
 /**
-  * Map project javascript file written for CS61B/CS61BL.
-  * This is not an example of good javascript or programming practice.
-  * Feel free to improve this front-end for your own personal pleasure.
-  * Authors: Alan Yao (Spring 2016), Colby Guan (Spring 2017), Alexander Hwang (Spring 2018)
-  * If using, please credit authors.
-  **/
+ * Map project javascript file written for CS61B/CS61BL.
+ * This is not an example of good javascript or programming practice.
+ * Feel free to improve this front-end for your own personal pleasure.
+ * Authors: Alan Yao (Spring 2016), Colby Guan (Spring 2017), Alexander Hwang (Spring 2018)
+ * If using, please credit authors.
+ **/
 
-$(function() {
+$(function () {
     'use strict';
     /* ══════════════════════════════════ ೋღ PROPERTIES ღೋ ════════════════════════════════ */
     const $body = $('#mapbody');
@@ -15,7 +15,7 @@ $(function() {
     const $errorStatus = $('#status-error');
     const $directionsText = $('#directions-text');
     const themeableElements = ['body', '.actions', '.card', '.search', '.ui-autocomplete',
-                                '.status', '.settings', '.clear', '.action-icon'];
+        '.status', '.settings', '.clear', '.action-icon'];
     var params = {
         ullat: 37.88,
         ullon: -122.27625,
@@ -60,26 +60,34 @@ $(function() {
     const search = host + '/search';
 
     /* ════════════════════════════ ೋღ HELPERS ღೋ ══════════════════════════ */
-    /* Compute lat and lon by window size */
-    function real_lrlat() { return params.ullat - hdpp * params.h; }
 
-    function real_lrlon() { return params.ullon + wdpp * params.w; }
+    /* Compute lat and lon by window size */
+    function real_lrlat() {
+        return params.ullat - hdpp * params.h;
+    }
+
+    function real_lrlon() {
+        return params.ullon + wdpp * params.w;
+    }
 
     function shiftLeft(delta) {
         params.ullon -= delta;
         params.lrlon -= delta;
         tx -= delta * (1 / wdpp);
     }
+
     function shiftUp(delta) {
         params.ullat += delta;
         params.lrlat += delta;
         ty += delta * (1 / hdpp);
     }
+
     function shiftRight(delta) {
         params.ullon += delta;
         params.lrlon += delta;
         tx += delta * (1 / wdpp);
     }
+
     function shiftDown(delta) {
         params.ullat -= delta;
         params.lrlat -= delta;
@@ -97,7 +105,7 @@ $(function() {
         for (var i = 0; i < markers.length; i++) {
             const marker = markers[i];
             marker.tx = (marker.lon - params.ullon) * (1 / wdpp) - 7 - tx;
-            marker.ty = - (marker.lat - params.ullat) * (1 / hdpp) - 7 - ty;
+            marker.ty = -(marker.lat - params.ullat) * (1 / hdpp) - 7 - ty;
         }
     }
 
@@ -112,13 +120,13 @@ $(function() {
             async: true,
             url: raster_server,
             data: params,
-            success: function(data) {
+            success: function (data) {
                 console.log(data);
                 if (data.query_success) {
                     $loadingStatus.hide();
                     map.src = 'data:image/png;base64,' + data.b64_encoded_image_data;
                     console.log('Updating map with image length: ' +
-                                data.b64_encoded_image_data.length);
+                        data.b64_encoded_image_data.length);
                     ullon_bound = data.raster_ul_lon;
                     ullat_bound = data.raster_ul_lat;
                     lrlon_bound = data.raster_lr_lon;
@@ -129,10 +137,10 @@ $(function() {
                     wdpp = (lrlon_bound - ullon_bound) / img_w;
                     hdpp = (ullat_bound - lrlat_bound) / img_h;
                     // Compute initial transform
-                    tx = - (params.ullon - ullon_bound) * (1 / wdpp);
+                    tx = -(params.ullon - ullon_bound) * (1 / wdpp);
                     ty = (params.ullat - ullat_bound) * (1 / hdpp);
                     rtx = (route_params.end_lon - params.ullon) * (1 / wdpp) - dest.width / 2 - tx;
-                    rty = - (route_params.end_lat - params.ullat) * (1 / hdpp) - dest.height - ty;
+                    rty = -(route_params.end_lat - params.ullat) * (1 / hdpp) - dest.height - ty;
                     updateMarkers();
                     getInProgress = false;
                     if (successCallback) {
@@ -142,10 +150,10 @@ $(function() {
                     $loadingstatus.hide();
                 }
             },
-            error: function() {
+            error: function () {
                 getInProgress = false;
                 $errorStatus.show();
-                setTimeout(function() {
+                setTimeout(function () {
                     $errorStatus.fadeOut();
                 }, 4000);
             },
@@ -155,11 +163,11 @@ $(function() {
 
     function updateT() {
         map.style.transform = 'translateX(' + tx + 'px) translateY(' + ty + 'px)';
-        dest.style.transform = 'translateX(' + (tx+rtx) + 'px) translateY(' + (ty+rty) + 'px)';
+        dest.style.transform = 'translateX(' + (tx + rtx) + 'px) translateY(' + (ty + rty) + 'px)';
         for (var i = 0; i < markers.length; i++) {
             const marker = markers[i];
-            marker.element.css('transform', 'translateX(' + (tx+marker.tx) + 'px) translateY(' +
-            (ty + marker.ty) + 'px)');
+            marker.element.css('transform', 'translateX(' + (tx + marker.tx) + 'px) translateY(' +
+                (ty + marker.ty) + 'px)');
         }
         // validate transform - true if img needs updating
         return params.ullon < ullon_bound || params.ullat > ullat_bound ||
@@ -171,7 +179,7 @@ $(function() {
             async: true,
             url: route_server,
             data: route_params,
-            success: function(data) {
+            success: function (data) {
                 data = JSON.parse(data);
                 updateImg();
                 if (data.directions_success) {
@@ -208,7 +216,7 @@ $(function() {
         // Try several times .hse didn't zoom enough
         // Simulate a for loop using a closure
         var i = 0;
-        var zoomCallback = function() {
+        var zoomCallback = function () {
             updateT();
             if (!(i < 3 && starting_level === current_level)) {
                 params.lrlon = real_lrlon();
@@ -294,11 +302,11 @@ $(function() {
         const date = new Date();
         // Expire 7 days from now
         date.setTime(date.getTime() + 604800000);
-        document.cookie = 'expires='+date.toGMTString();
+        document.cookie = 'expires=' + date.toGMTString();
     }
 
     function setTheme() {
-        themeableElements.forEach(function(elem) {
+        themeableElements.forEach(function (elem) {
             $(elem).removeClass('cal');
             $(elem).removeClass('solarized');
             $(elem).removeClass('eighties');
@@ -325,89 +333,91 @@ $(function() {
 
     /* Make search bar do autocomplete things */
     $('#tags').autocomplete({
-          source: search,
-          minLength: 2,
-          select: function (event, ui) {
-              $.get({
-                  async: true,
-                  url: search,
-                  dataType: 'json',
-                  data: { term: ui.item.value, full: true},
-                  success: function(data) {
-                      removeMarkers();
-                      for (var i = 0; i < data.length; i++) {
-                          console.log(data[i]);
-                          const ele = $('<img/>', {
-                              id: data[i].id,
-                              src: 'round_marker.gif',
-                              class: 'rmarker'
-                          });
-                          ele.appendTo($('#markers'));
-                          markers.push({lat: data[i].lat, lon: data[i].lon,
-                                        tx: 0, ty: 0, element: ele});
-                      }
-                      update();
-                  },
-              });
-          }
+        source: search,
+        minLength: 2,
+        select: function (event, ui) {
+            $.get({
+                async: true,
+                url: search,
+                dataType: 'json',
+                data: {term: ui.item.value, full: true},
+                success: function (data) {
+                    removeMarkers();
+                    for (var i = 0; i < data.length; i++) {
+                        console.log(data[i]);
+                        const ele = $('<img/>', {
+                            id: data[i].id,
+                            src: 'round_marker.gif',
+                            class: 'rmarker'
+                        });
+                        ele.appendTo($('#markers'));
+                        markers.push({
+                            lat: data[i].lat, lon: data[i].lon,
+                            tx: 0, ty: 0, element: ele
+                        });
+                    }
+                    update();
+                },
+            });
+        }
     });
     setTheme();
 
     /* ══════════════════════════════════ ೋღ EVENTS ღೋ ════════════════════════════════ */
 
-    $('.ui-autocomplete').mouseenter(function() {
+    $('.ui-autocomplete').mouseenter(function () {
         $('.actions').addClass('active');
-    }).mouseleave(function() {
+    }).mouseleave(function () {
         $('.actions').removeClass('active');
     });
 
     /* Enables drag functionality */
-    $body.on('mousedown', function(event) {
-      var startX = event.pageX;
-      var startY = event.pageY;
-      var tmpX = startX;
-      var tmpY = startY;
-      var moved = false;
+    $body.on('mousedown', function (event) {
+        var startX = event.pageX;
+        var startY = event.pageY;
+        var tmpX = startX;
+        var tmpY = startY;
+        var moved = false;
 
-      $body.on('mousemove', function(event) {
-        const dx = event.pageX - tmpX;
-        const dy = event.pageY - tmpY;
-        tx += dx;
-        ty += dy;
-        tmpX = event.pageX;
-        tmpY = event.pageY;
-        moved = true;
-        updateT();
-      });
+        $body.on('mousemove', function (event) {
+            const dx = event.pageX - tmpX;
+            const dy = event.pageY - tmpY;
+            tx += dx;
+            ty += dy;
+            tmpX = event.pageX;
+            tmpY = event.pageY;
+            moved = true;
+            updateT();
+        });
 
-      $body.on('mouseup', function(event) {
-        $body.off('mousemove');
-        $body.off('mouseup');
-        if (moved) {
-            const dx = event.pageX - startX;
-            const dy = event.pageY - startY;
-            params.ullon -= dx * wdpp;
-            params.lrlon -= dx * wdpp;
-            params.ullat += dy * hdpp;
-            params.lrlat += dy * hdpp;
-            conditionalUpdate();
-        }
-      });
+        $body.on('mouseup', function (event) {
+            $body.off('mousemove');
+            $body.off('mouseup');
+            if (moved) {
+                const dx = event.pageX - startX;
+                const dy = event.pageY - startY;
+                params.ullon -= dx * wdpp;
+                params.lrlon -= dx * wdpp;
+                params.ullat += dy * hdpp;
+                params.lrlat += dy * hdpp;
+                conditionalUpdate();
+            }
+        });
     });
 
-    $('.zoomin').click(function() {
-       zoomIn();
+    $('.zoomin').click(function () {
+        zoomIn();
     });
 
-    $('.zoomout').click(function() {
-       zoomOut();
+    $('.zoomout').click(function () {
+        zoomOut();
     });
 
-    $('.clear').click(function() {
+    $('.clear').click(function () {
         $.get({
             async: true,
             url: clear_route,
-            success: function() {
+            success: function () {
                 dest.style.visibility = 'hidden';
                 $directionsText.html('No routing directions to display.');
                 update();
@@ -415,11 +425,11 @@ $(function() {
         });
     });
 
-    $('.info').click(function() {
+    $('.info').click(function () {
         $(this).toggleClass('active');
         $('.settings-container').removeClass('active');
     });
-    $('.fa-cog').click(function() {
+    $('.fa-cog').click(function () {
         $('.settings-container').addClass('active');
         if (constrain) {
             $('#constrain-input').prop('checked', true);
@@ -427,14 +437,14 @@ $(function() {
         $('input[name=theme][value=' + theme + ']').prop('checked', true);
         $('.info').removeClass('active');
     });
-    $('.close-settings').click(function() {
+    $('.close-settings').click(function () {
         $('.settings-container').removeClass('active');
     });
 
-    $('.fa-map-signs').click(function() {
+    $('.fa-map-signs').click(function () {
         $('.directions-container').addClass('active');
     });
-    $('.close-directions').click(function() {
+    $('.close-directions').click(function () {
         $('.directions-container').removeClass('active');
     });
 
@@ -458,7 +468,7 @@ $(function() {
     });
 
     /* Enables scroll wheel zoom */
-    $(window).bind('mousewheel DOMMouseScroll', function(event){
+    $(window).bind('mousewheel DOMMouseScroll', function (event) {
         if (event.originalEvent.wheelDelta > 0 || event.originalEvent.detail < 0) {
             zoomIn();
         } else {
@@ -467,29 +477,31 @@ $(function() {
     });
 
     /* Prevent image dragging */
-    $('img').on('dragstart', function(event) { event.preventDefault(); });
+    $('img').on('dragstart', function (event) {
+        event.preventDefault();
+    });
 
     // Allow for window resizing
-    window.onresize = function() {
+    window.onresize = function () {
         handleDimensionChange();
         update();
     };
 
-    $('#constrain-input').change(function() {
+    $('#constrain-input').change(function () {
         constrain = $(this).is(':checked');
         updateConstrain();
         setCookie('constrain', constrain);
         update();
     });
 
-    $('input[type=radio][name=theme]').change(function() {
+    $('input[type=radio][name=theme]').change(function () {
         theme = this.value;
         setCookie('theme', this.value);
         setTheme();
     });
 
     /* Keyboard navigation callbacks */
-    document.onkeydown = function(e) {
+    document.onkeydown = function (e) {
         var delta = base_move_delta / (Math.pow(2, current_level));
         switch (e.keyCode) {
             case 37: //left
