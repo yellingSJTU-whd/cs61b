@@ -6,7 +6,14 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -18,12 +25,78 @@ import java.util.ArrayList;
  * @author Alan Yao, Josh Hug
  */
 public class GraphDB {
-    /** Your instance variables for storing the graph. You should consider
-     * creating helper classes, e.g. Node, Edge, etc. */
+    /**
+     * Your instance variables for storing the graph. You should consider
+     * creating helper classes, e.g. Node, Edge, etc.
+     */
+    private final Map<Long, Node> graph = new LinkedHashMap<>();
+
+    static class Node {
+        private final long id;
+        private final double longitude;
+        private final double latitude;
+        private final Set<Edge> out;
+        private final Set<Edge> in;
+
+        Node(long id, double lon, double lat) {
+            this.id = id;
+            longitude = lon;
+            latitude = lat;
+            out = new HashSet<>();
+            in = new HashSet<>();
+        }
+
+        public void addEdgeIn(Edge edge) {
+            in.add(edge);
+        }
+
+        public void addEdgeOut(Edge edge) {
+            out.add(edge);
+        }
+
+        public Set<Edge> fetchEdgesOut() {
+            return out;
+        }
+
+        public Set<Edge> fetchEdgeIn() {
+            return in;
+        }
+    }
+
+    static class Edge {
+        private final long source;
+        private final long sink;
+        private boolean doubleWay;
+        Map<String, String> extraInfo;
+
+        Edge(long source, long sink) {
+            this.source = source;
+            this.sink = sink;
+            doubleWay = true;
+            extraInfo = new HashMap<>();
+        }
+
+        public long fetchSource() {
+            return source;
+        }
+
+        public long fetchSink() {
+            return sink;
+        }
+
+        public void oneway() {
+            doubleWay = false;
+        }
+
+        public void setExtraInfo(Map<String, String> infoMap) {
+            extraInfo = infoMap;
+        }
+    }
 
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
+     *
      * @param dbPath Path to the XML file to be parsed.
      */
     public GraphDB(String dbPath) {
@@ -44,6 +117,7 @@ public class GraphDB {
 
     /**
      * Helper to process strings into their "cleaned" form, ignoring punctuation and capitalization.
+     *
      * @param s Input string.
      * @return Cleaned string.
      */
@@ -52,36 +126,56 @@ public class GraphDB {
     }
 
     /**
-     *  Remove nodes with no connections from the graph.
-     *  While this does not guarantee that any two nodes in the remaining graph are connected,
-     *  we can reasonably assume this since typically roads are connected.
+     * Remove nodes with no connections from the graph.
+     * While this does not guarantee that any two nodes in the remaining graph are connected,
+     * we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
         // TODO: Your code here.
+        Collection<Node> nodes = graph.values();
+        for (Node node : nodes) {
+            clean(node, nodes);
+        }
+    }
+
+    private void clean(Node node, Collection<Node> nodes) {
+        if (node.in.isEmpty()) {
+            nodes.remove(node);
+            for (Edge outgoingEdge : node.out) {
+                Node sink = graph.get(outgoingEdge.sink);
+                sink.in.remove(outgoingEdge);
+                clean(sink, nodes);
+            }
+        }
     }
 
     /**
      * Returns an iterable of all vertex IDs in the graph.
+     *
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
-        //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return new HashSet<>(graph.keySet());
     }
 
     /**
      * Returns ids of all vertices adjacent to v.
+     *
      * @param v The id of the vertex we are looking adjacent to.
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        Node curr = graph.get(v);
+        Set<Long> adj = curr.in.stream().map(Edge::fetchSource).collect(Collectors.toSet());
+        curr.out.stream().map(Edge::fetchSink).forEach(adj::add);
+        return Collections.unmodifiableSet(adj);
     }
 
     /**
      * Returns the great-circle distance between vertices v and w in miles.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
+     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The great-circle distance between the two locations from the graph.
@@ -109,6 +203,7 @@ public class GraphDB {
      * end point.
      * Assumes the lon/lat methods are implemented properly.
      * <a href="https://www.movable-type.co.uk/scripts/latlong.html">Source</a>.
+     *
      * @param v The id of the first vertex.
      * @param w The id of the second vertex.
      * @return The initial bearing between the vertices.
@@ -131,29 +226,69 @@ public class GraphDB {
 
     /**
      * Returns the vertex closest to the given longitude and latitude.
+     *
      * @param lon The target longitude.
      * @param lat The target latitude.
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        if (graph.isEmpty()) {
+            return -1;
+        }
+
+        long candidate = -1;
+        double min = Long.MAX_VALUE;
+        for (Map.Entry<Long, Node> entry : graph.entrySet()) {
+            Node curr = entry.getValue();
+            double dist = distance(curr.longitude, curr.latitude, lon, lat);
+            if (dist < min) {
+                candidate = entry.getKey();
+                min = dist;
+            }
+        }
+
+        return candidate;
     }
 
     /**
      * Gets the longitude of a vertex.
+     *
      * @param v The id of the vertex.
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        return graph.get(v).longitude;
     }
 
     /**
      * Gets the latitude of a vertex.
+     *
      * @param v The id of the vertex.
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        return graph.get(v).latitude;
+    }
+
+    void addNode(Node node) {
+        graph.put(node.id, node);
+    }
+
+    void addWay(Set<Edge> edges, Map<String, String> infoMap) {
+        for (Edge edge : edges) {
+            edge.setExtraInfo(infoMap);
+            Node source = graph.get(edge.source);
+            Node sink = graph.get(edge.sink);
+            source.out.add(edge);
+            sink.in.add(edge);
+            System.out.println(source.id + " " + source.out);
+
+            if (edge.doubleWay) {
+                Edge reverse = new Edge(sink.id, source.id);
+                reverse.setExtraInfo(infoMap);
+                source.in.add(reverse);
+                sink.out.add(reverse);
+            }
+        }
     }
 }
