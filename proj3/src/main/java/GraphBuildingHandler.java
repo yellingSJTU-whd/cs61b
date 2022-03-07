@@ -45,7 +45,6 @@ public class GraphBuildingHandler extends DefaultHandler {
     private Set<GraphDB.Edge> edges;
     private Map<String, String> infoMap;
     private boolean highwayAllowed;
-    private boolean douleway;
 
     /**
      * Create a new GraphBuildingHandler.
@@ -57,8 +56,7 @@ public class GraphBuildingHandler extends DefaultHandler {
         lastNode = null;
         edges = new HashSet<>();
         infoMap = new HashMap<>();
-        highwayAllowed = true;
-        douleway = true;
+        highwayAllowed = false;
     }
 
     /**
@@ -111,42 +109,36 @@ public class GraphBuildingHandler extends DefaultHandler {
             remember whether this way is valid or not. */
 
             String currNode = attributes.getValue("ref");
-            if (lastNode == null) {
-                lastNode = currNode;
-            } else {
+            if (lastNode != null) {
                 long source = Long.parseLong(lastNode);
                 long sink = Long.parseLong(currNode);
                 edges.add(new GraphDB.Edge(source, sink));
             }
+            lastNode = currNode;
 
         } else if (activeState.equals("way") && qName.equals("tag")) {
             /* While looking at a way, we found a <tag...> tag. */
             String k = attributes.getValue("k");
             String v = attributes.getValue("v");
             switch (k) {
+                case "name":
+//                    System.out.println("Way Name: " + v);
                 case "maxspeed":
                     /* TODO set the max speed of the "current way" here. */
 //                    System.out.println("Max Speed: " + v);
                     infoMap.put(k, v);
                     break;
-                case "oneway":
-                    if (v.equalsIgnoreCase("yes")) {
-                        douleway = false;
-                    }
-                    break;
                 case "highway":
-                    System.out.println("Highway type: " + v);
+//                    System.out.println("Highway type: " + v);
                     /* TODO Figure out whether this way and its connections are valid. */
                     /* Hint: Setting a "flag" is good enough! */
-                    if (!ALLOWED_HIGHWAY_TYPES.contains(v)) {
-                        highwayAllowed = false;
+                    if (ALLOWED_HIGHWAY_TYPES.contains(v)) {
+                        highwayAllowed = true;
                     }
                     break;
-                case "name":
-//                    System.out.println("Way Name: " + v);
                 default:
             }
-            System.out.println("Tag with k=" + k + ", v=" + v + ".");
+//            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
                 .equals("name")) {
             /* While looking at a node, we found a <tag...> with k="name". */
@@ -154,6 +146,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             /* Hint: Since we found this <tag...> INSIDE a node, we should probably remember which
             node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
             last node that you looked at (check the first if-case). */
+
 //            System.out.println("Node's name: " + attributes.getValue("v"));
         }
     }
@@ -181,12 +174,11 @@ public class GraphBuildingHandler extends DefaultHandler {
                 g.addWay(edges, infoMap);
             }
             lastNode = null;
-            douleway = true;
             edges = new HashSet<>();
             infoMap = new HashMap<>();
-            highwayAllowed = true;
+            highwayAllowed = false;
 
-            System.out.println("Finishing a way...");
+//            System.out.println("Finishing a way...");
         }
     }
 

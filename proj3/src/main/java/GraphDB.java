@@ -6,13 +6,8 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.Set;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -29,67 +24,52 @@ public class GraphDB {
      * Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc.
      */
-    private final Map<Long, Node> graph = new LinkedHashMap<>();
+    private final Map<Long, Node> graph = new HashMap<>();
+
+    @Override
+    public String toString() {
+        if (graph.isEmpty()) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder("\n");
+        for (Node node : graph.values()) {
+            sb.append("id= ").append(node.id).append(" ,");
+            sb.append("longitude= ").append(node.longitude).append(" ,");
+            sb.append("latitude= ").append(node.latitude).append("\n");
+        }
+        return sb.toString();
+    }
 
     static class Node {
         private final long id;
-        private final double longitude;
         private final double latitude;
-        private final Set<Edge> out;
-        private final Set<Edge> in;
+        private final double longitude;
+        private final Map<Long, Map<String, String>> edges;
 
-        Node(long id, double lon, double lat) {
+        Node(long id, double lat, double lon) {
             this.id = id;
-            longitude = lon;
             latitude = lat;
-            out = new HashSet<>();
-            in = new HashSet<>();
-        }
-
-        public void addEdgeIn(Edge edge) {
-            in.add(edge);
-        }
-
-        public void addEdgeOut(Edge edge) {
-            out.add(edge);
-        }
-
-        public Set<Edge> fetchEdgesOut() {
-            return out;
-        }
-
-        public Set<Edge> fetchEdgeIn() {
-            return in;
+            longitude = lon;
+            edges = new HashMap<>();
         }
     }
 
     static class Edge {
         private final long source;
         private final long sink;
-        private boolean doubleWay;
         Map<String, String> extraInfo;
 
         Edge(long source, long sink) {
             this.source = source;
             this.sink = sink;
-            doubleWay = true;
             extraInfo = new HashMap<>();
         }
 
-        public long fetchSource() {
-            return source;
-        }
-
-        public long fetchSink() {
-            return sink;
-        }
-
-        public void oneway() {
-            doubleWay = false;
-        }
-
-        public void setExtraInfo(Map<String, String> infoMap) {
-            extraInfo = infoMap;
+        @Override
+        public String toString() {
+            return "source= " + source + " " +
+                    "sink= " + sink;
         }
     }
 
@@ -132,22 +112,19 @@ public class GraphDB {
      */
     private void clean() {
         // TODO: Your code here.
-        Collection<Node> nodes = graph.values();
-        for (Node node : nodes) {
-            clean(node, nodes);
-        }
+        graph.values().removeIf(node -> node.edges.isEmpty());
     }
 
-    private void clean(Node node, Collection<Node> nodes) {
-        if (node.in.isEmpty()) {
-            nodes.remove(node);
-            for (Edge outgoingEdge : node.out) {
-                Node sink = graph.get(outgoingEdge.sink);
-                sink.in.remove(outgoingEdge);
-                clean(sink, nodes);
-            }
-        }
-    }
+//    private void clean(Node node, Collection<Node> nodes) {
+//        if (node.in.isEmpty()) {
+//            nodes.remove(node);
+//            for (Edge outgoingEdge : node.out) {
+//                Node sink = graph.get(outgoingEdge.sink);
+//                sink.in.remove(outgoingEdge);
+//                clean(sink, nodes);
+//            }
+//        }
+//    }
 
     /**
      * Returns an iterable of all vertex IDs in the graph.
@@ -166,9 +143,7 @@ public class GraphDB {
      */
     Iterable<Long> adjacent(long v) {
         Node curr = graph.get(v);
-        Set<Long> adj = curr.in.stream().map(Edge::fetchSource).collect(Collectors.toSet());
-        curr.out.stream().map(Edge::fetchSink).forEach(adj::add);
-        return Collections.unmodifiableSet(adj);
+        return Collections.unmodifiableSet(curr.edges.keySet());
     }
 
     /**
@@ -276,19 +251,11 @@ public class GraphDB {
 
     void addWay(Set<Edge> edges, Map<String, String> infoMap) {
         for (Edge edge : edges) {
-            edge.setExtraInfo(infoMap);
+            edge.extraInfo = infoMap;
             Node source = graph.get(edge.source);
             Node sink = graph.get(edge.sink);
-            source.out.add(edge);
-            sink.in.add(edge);
-            System.out.println(source.id + " " + source.out);
-
-            if (edge.doubleWay) {
-                Edge reverse = new Edge(sink.id, source.id);
-                reverse.setExtraInfo(infoMap);
-                source.in.add(reverse);
-                sink.out.add(reverse);
-            }
+            source.edges.put(edge.sink, infoMap);
+            sink.edges.put(edge.source, infoMap);
         }
     }
 }

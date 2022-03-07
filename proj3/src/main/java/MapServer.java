@@ -213,9 +213,9 @@ public class MapServer {
         Graphics graphic = img.getGraphics();
         int x = 0, y = 0;
 
-        for (int r = 0; r < numVertTiles; r += 1) {
+        for (String[] strings : renderGrid) {
             for (int c = 0; c < numHorizTiles; c += 1) {
-                graphic.drawImage(getImage(IMG_ROOT + renderGrid[r][c]), x, y, null);
+                graphic.drawImage(getImage(IMG_ROOT + strings[c]), x, y, null);
                 x += MapServer.TILE_SIZE;
                 if (x >= img.getWidth()) {
                     x = 0;
