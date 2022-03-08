@@ -43,12 +43,14 @@ public class Rasterer {
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
         //construct response map
         Map<String, Object> results = new HashMap<>();
-        results.put("render_grid", new String[0][0]);
-        results.put("raster_ul_lon", Double.NaN);
-        results.put("raster_ul_lat", Double.NaN);
-        results.put("raster_lr_lon", Double.NaN);
-        results.put("raster_lr_lat", Double.NaN);
-        results.put("depth", -1.0);
+        String[][] initial = new String[1][1];
+        initial[0][0] = "d0_x0_y0.png";
+        results.put("render_grid", initial);
+        results.put("raster_ul_lon", MapServer.ROOT_ULLON);
+        results.put("raster_ul_lat", MapServer.ROOT_ULLAT);
+        results.put("raster_lr_lon", MapServer.ROOT_LRLON);
+        results.put("raster_lr_lat", MapServer.ROOT_LRLAT);
+        results.put("depth", 0);
         results.put("query_success", false);
 
 
@@ -69,7 +71,7 @@ public class Rasterer {
         int depth = 0;
         double desired = Math.abs(ullon - lrlon) / w;
         double curr = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / MapServer.TILE_SIZE;
-        while (curr > desired && depth <= 7) {
+        while (curr > desired && depth < 7) {
             curr /= 2;
             depth++;
         }
@@ -88,10 +90,11 @@ public class Rasterer {
         int yEnd = (int) Math.ceil((MapServer.ROOT_ULLAT - lrlat) / meta) - 1;
         results.put("raster_lr_lat", MapServer.ROOT_ULLAT - (yEnd + 1) * meta);
 
-        String[][] matrix = new String[xEnd - xStart + 1][yEnd - yStart + 1];
+        String[][] matrix = new String[yEnd - yStart + 1][xEnd - xStart + 1];
         for (int y = yStart; y <= yEnd; y++) {
             for (int x = xStart; x <= xEnd; x++) {
-                matrix[x - xStart][y - yStart] = "d" + depth + "_" + "x" + x + "_" + "y" + y + ".png";
+                matrix[y - yStart][x - xStart] =
+                        "d" + depth + "_" + "x" + x + "_" + "y" + y + ".png";
             }
         }
         results.put("render_grid", matrix);
