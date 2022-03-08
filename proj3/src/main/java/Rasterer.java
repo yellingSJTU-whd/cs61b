@@ -76,14 +76,13 @@ public class Rasterer {
         results.put("depth", depth);
 
         //generate render grid matrix
-        int degree = 2 ^ depth;
-        double meta = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / degree;
+        double meta = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / Math.pow(2, depth);
         int xStart = (int) Math.ceil((ullon - MapServer.ROOT_ULLON) / meta) - 1;
         results.put("raster_ul_lon", MapServer.ROOT_ULLON + xStart * meta);
         int xEnd = (int) Math.ceil((lrlon - MapServer.ROOT_ULLON) / meta) - 1;
         results.put("raster_lr_lon", MapServer.ROOT_ULLON + (xEnd + 1) * meta);
 
-        meta = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / degree;
+        meta = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / Math.pow(2, depth);
         int yStart = (int) Math.ceil((MapServer.ROOT_ULLAT - ullat) / meta) - 1;
         results.put("raster_ul_lat", MapServer.ROOT_ULLAT - yStart * meta);
         int yEnd = (int) Math.ceil((MapServer.ROOT_ULLAT - lrlat) / meta) - 1;

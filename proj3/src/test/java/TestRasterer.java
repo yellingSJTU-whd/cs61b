@@ -47,6 +47,15 @@ public class TestRasterer {
         }
     }
 
+    @Test
+    public void testCalc() {
+        double ullon = -122.23995662778569;
+        int degree = 2^4;
+        double meta = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / degree;
+        System.out.println(degree);
+//        System.out.println(meta);
+    }
+
     private List<Map<String, Double>> paramsFromFile() throws Exception {
         List<String> lines = Files.readAllLines(Paths.get(PARAMS_FILE), Charset.defaultCharset());
         List<Map<String, Double>> testParams = new ArrayList<>();
