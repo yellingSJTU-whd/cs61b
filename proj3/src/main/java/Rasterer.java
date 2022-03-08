@@ -41,11 +41,71 @@ public class Rasterer {
      * forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        System.out.println(params);
+        //construct response map
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                + "your browser.");
+        results.put("render_grid", new String[0][0]);
+        results.put("raster_ul_lon", Double.NaN);
+        results.put("raster_ul_lat", Double.NaN);
+        results.put("raster_lr_lon", Double.NaN);
+        results.put("raster_lr_lat", Double.NaN);
+        results.put("depth", -1.0);
+        results.put("query_success", false);
+
+
+        //pre-processing: handle request parameters
+        System.out.println(params);
+        double ullat = params.get("ullat");
+        double ullon = params.get("ullon");
+        double lrlat = params.get("lrlat");
+        double lrlon = params.get("lrlon");
+        double w = params.get("w");
+        double h = params.get("h");
+        if (validateParams(ullat, ullon, lrlat, lrlon, w, h)) {
+            return results;
+        }
+        results.put("query_success", true);
+
+        //evaluate the fittest depth
+        int depth = 0;
+        double desired = Math.abs(ullon - lrlon) / w;
+        double curr = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / MapServer.TILE_SIZE;
+        while (curr > desired && depth <= 7) {
+            curr /= 2;
+            depth++;
+        }
+        results.put("depth", depth);
+
+        //generate render grid matrix
+        int degree = 2 ^ depth;
+        double meta = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / degree;
+        int xStart = (int) Math.ceil((ullon - MapServer.ROOT_ULLON) / meta) - 1;
+        results.put("raster_ul_lon", MapServer.ROOT_ULLON + xStart * meta);
+        int xEnd = (int) Math.ceil((lrlon - MapServer.ROOT_ULLON) / meta) - 1;
+        results.put("raster_lr_lon", MapServer.ROOT_ULLON + (xEnd + 1) * meta);
+
+        meta = (MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT) / degree;
+        int yStart = (int) Math.ceil((MapServer.ROOT_ULLAT - ullat) / meta) - 1;
+        results.put("raster_ul_lat", MapServer.ROOT_ULLAT - yStart * meta);
+        int yEnd = (int) Math.ceil((MapServer.ROOT_ULLAT - lrlat) / meta) - 1;
+        results.put("raster_lr_lat", MapServer.ROOT_ULLAT - (yEnd + 1) * meta);
+
+        String[][] matrix = new String[xEnd - xStart + 1][yEnd - yStart + 1];
+        for (int y = yStart; y <= yEnd; y++) {
+            for (int x = xStart; x <= xEnd; x++) {
+                matrix[x - xStart][y - yStart] = "d" + depth + "_" + "x" + x + "_" + "y" + y + ".png";
+            }
+        }
+        results.put("render_grid", matrix);
+
         return results;
+    }
+
+    private boolean validateParams(double ullat, double ullon,
+                                   double lrlat, double lrlon,
+                                   double w, double h) {
+        return (ullon > MapServer.ROOT_LRLON) || (lrlon < MapServer.ROOT_ULLON)
+                || (ullat > MapServer.ROOT_ULLAT) || (lrlat < MapServer.ROOT_LRLAT)
+                || (w <= 0) || (h <= 0);
     }
 
 }
