@@ -139,15 +139,6 @@ public class GraphBuildingHandler extends DefaultHandler {
                 default:
             }
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
-        } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
-                .equals("name")) {
-            /* While looking at a node, we found a <tag...> with k="name". */
-            /* TODO Create a location. */
-            /* Hint: Since we found this <tag...> INSIDE a node, we should probably remember which
-            node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
-            last node that you looked at (check the first if-case). */
-
-//            System.out.println("Node's name: " + attributes.getValue("v"));
         }
     }
 

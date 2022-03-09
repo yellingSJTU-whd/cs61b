@@ -45,14 +45,14 @@ public class Router {
         Map<Long, Long> preMap = new HashMap<>();
         PriorityQueue<Long> idMinHeap =
                 new PriorityQueue<>(Comparator.comparingDouble(distMap::get));
-        distMap.put(startID, 0.0);
         for (Long id : g.vertices()) {
-            if (id != startID) {
-                distMap.put(id, Double.POSITIVE_INFINITY);
-            }
+            distMap.put(id, Double.POSITIVE_INFINITY);
             preMap.put(id, -1L);
             idMinHeap.add(id);
         }
+        distMap.put(startID, 0.0);
+        idMinHeap.remove(startID);
+        idMinHeap.add(startID);
 
 
         //Dijkstra
@@ -65,6 +65,8 @@ public class Router {
                 if (ref + delta < distMap.get(adjID)) {
                     distMap.put(adjID, ref + delta);
                     preMap.put(adjID, currID);
+                    idMinHeap.remove(adjID);
+                    idMinHeap.add(adjID);
                 }
             }
         }
@@ -78,6 +80,7 @@ public class Router {
             path.add(ptr);
         }
         Collections.reverse(path);
+        System.out.println(preMap.get(92721185L));
 
         return path;
     }
