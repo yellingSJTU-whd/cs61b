@@ -34,34 +34,42 @@ public class Router {
                                           double destlon, double destlat) {
         //pre-processing
         long startID = g.closest(stlon, stlat);
+        System.out.println("Starting ID = " + startID);
         long desID = g.closest(destlon, destlat);
+        System.out.println("Destination ID = " + desID);
         if (startID == desID) {
             List<Long> path = new ArrayList<>(1);
             path.add(startID);
             return path;
         }
 
-        Map<Long, Double> distMap = new HashMap<>();
+        Map<Long, Double> costMap = new HashMap<>();
         Map<Long, Long> preMap = new HashMap<>();
         PriorityQueue<Long> idMinHeap = new PriorityQueue<>(
-                Comparator.comparingDouble(l -> distMap.get(l) + g.distance(l, desID)));
-        for (Long id : g.vertices()) {
-            distMap.put(id, Double.POSITIVE_INFINITY);
-            preMap.put(id, -1L);
-            idMinHeap.add(id);
-        }
-        distMap.put(startID, 0.0);
-        idMinHeap.remove(startID);
+                Comparator.comparingDouble(l -> costMap.get(l) + g.distance(l, desID)));
+        costMap.put(startID, 0.0);
         idMinHeap.add(startID);
 
         long lastID = -1;
-        //main loop finding the shortest path
+        long currID;
         while (!idMinHeap.isEmpty()) {
-            long currID = idMinHeap.poll();
+            currID = idMinHeap.poll();
+            System.out.println("current ID = " + currID);
+
             if (currID == desID) {
                 break;
             }
-            preMap.put(currID, lastID);
+
+            double ref = costMap.get(currID);
+            for (Long adjID : g.adjacent(currID)) {
+                if (preMap.containsKey(adjID)) {
+                    continue;
+                }
+                System.out.println("adjacent ID = " + adjID + " ,cost = " + ref + g.distance(currID, adjID));
+                costMap.put(adjID, ref + g.distance(currID, adjID));
+                preMap.put(adjID, currID);
+                idMinHeap.add(adjID);
+            }
             lastID = currID;
         }
         preMap.put(desID, lastID);
