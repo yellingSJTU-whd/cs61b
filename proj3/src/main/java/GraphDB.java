@@ -6,9 +6,11 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Collections;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -68,8 +70,7 @@ public class GraphDB {
 
         @Override
         public String toString() {
-            return "source= " + source + " " +
-                    "sink= " + sink;
+            return "source= " + source + " " + "sink= " + sink;
         }
     }
 
@@ -111,20 +112,8 @@ public class GraphDB {
      * we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        // TODO: Your code here.
         graph.values().removeIf(node -> node.edges.isEmpty());
     }
-
-//    private void clean(Node node, Collection<Node> nodes) {
-//        if (node.in.isEmpty()) {
-//            nodes.remove(node);
-//            for (Edge outgoingEdge : node.out) {
-//                Node sink = graph.get(outgoingEdge.sink);
-//                sink.in.remove(outgoingEdge);
-//                clean(sink, nodes);
-//            }
-//        }
-//    }
 
     /**
      * Returns an iterable of all vertex IDs in the graph.
