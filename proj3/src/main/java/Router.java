@@ -44,7 +44,7 @@ public class Router {
         Map<Long, Double> distMap = new HashMap<>();
         Map<Long, Long> preMap = new HashMap<>();
         PriorityQueue<Long> idMinHeap =
-                new PriorityQueue<>(Comparator.comparingDouble(distMap::get));
+                new PriorityQueue<>(Comparator.comparingDouble(l -> g.distance(l, desID)));
         for (Long id : g.vertices()) {
             distMap.put(id, Double.POSITIVE_INFINITY);
             preMap.put(id, -1L);
@@ -55,7 +55,7 @@ public class Router {
         idMinHeap.add(startID);
 
 
-        //Dijkstra
+        //main loop finding the shortest path
         while (!idMinHeap.isEmpty()) {
             long currID = idMinHeap.poll();
             for (long adjID : g.adjacent(currID)) {
@@ -80,7 +80,6 @@ public class Router {
             path.add(ptr);
         }
         Collections.reverse(path);
-        System.out.println(preMap.get(92721185L));
 
         return path;
     }
