@@ -43,8 +43,8 @@ public class Router {
 
         Map<Long, Double> distMap = new HashMap<>();
         Map<Long, Long> preMap = new HashMap<>();
-        PriorityQueue<Long> idMinHeap =
-                new PriorityQueue<>(Comparator.comparingDouble(l -> g.distance(l, desID)));
+        PriorityQueue<Long> idMinHeap = new PriorityQueue<>(
+                Comparator.comparingDouble(l -> distMap.get(l) + g.distance(l, desID)));
         for (Long id : g.vertices()) {
             distMap.put(id, Double.POSITIVE_INFINITY);
             preMap.put(id, -1L);
