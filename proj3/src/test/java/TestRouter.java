@@ -4,10 +4,7 @@ import org.junit.Test;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,7 +37,10 @@ public class TestRouter {
                     params.get("start_lon"), params.get("start_lat"),
                     params.get("end_lon"), params.get("end_lat"));
             List<Long> expected = expectedResults.get(i);
-            assertEquals("Your results did not match the expected results", expected, actual);
+            Collections.reverse(expected);
+            Collections.reverse(actual);
+            String errMsg = "\nexpected = " + expected + "\nactual = " + actual;
+            assertEquals(errMsg, expected, actual);
         }
     }
 

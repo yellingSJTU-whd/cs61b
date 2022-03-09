@@ -54,32 +54,29 @@ public class Router {
         idMinHeap.remove(startID);
         idMinHeap.add(startID);
 
-
+        long lastID = -1;
         //main loop finding the shortest path
         while (!idMinHeap.isEmpty()) {
             long currID = idMinHeap.poll();
-            for (long adjID : g.adjacent(currID)) {
-                double ref = distMap.get(currID);
-                double delta = g.distance(currID, adjID);
-
-                if (ref + delta < distMap.get(adjID)) {
-                    distMap.put(adjID, ref + delta);
-                    preMap.put(adjID, currID);
-                    idMinHeap.remove(adjID);
-                    idMinHeap.add(adjID);
-                }
+            if (currID == desID) {
+                break;
             }
+            preMap.put(currID, lastID);
+            lastID = currID;
         }
+        preMap.put(desID, lastID);
 
         //construct the shortest path
         List<Long> path = new ArrayList<>();
         path.add(desID);
         long ptr = desID;
-        while (preMap.get(ptr) != -1) {
+        while (preMap.get(ptr) != startID) {
             ptr = preMap.get(ptr);
             path.add(ptr);
         }
+        path.add(startID);
         Collections.reverse(path);
+//        System.out.println(path);
 
         return path;
     }
