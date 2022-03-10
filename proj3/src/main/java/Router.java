@@ -70,7 +70,7 @@ public class Router {
         }
         preMap.put(desID, lastID);
 
-        //construct the shortest path
+        //construct the shortest path: [start --> ... --> end]
         List<Long> path = new ArrayList<>();
         path.add(desID);
         long ptr = desID;
@@ -94,7 +94,40 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        List<NavigationDirection> res = new ArrayList<>();
+        if (route == null || route.size() < 2) {
+            return res;
+        }
+
+        long lastNode = route.remove(0);
+        String lastWay = null;
+        double miles = 0.0;
+        double lastBearing = -1.0;
+        int dir = 0;
+        NavigationDirection navi = new NavigationDirection();
+
+        while (!route.isEmpty()) {
+            long currNode = route.remove(0);
+            String currWay = g.fetchName(lastNode, currNode);
+            double mile = g.distance(lastNode, currNode);
+            double currBearing = g.bearing(lastNode, currNode);
+
+            if (lastWay != null && !lastWay.equals(currWay)) {
+                navi.direction = dir;
+                dir = NavigationDirection.evalDir(currBearing, lastBearing);
+                navi.way = lastWay;
+                navi.distance = miles;
+                miles = 0;
+                res.add(navi);
+            }
+
+            lastNode = currNode;
+            lastBearing = currBearing;
+            lastWay = currWay;
+            miles += mile;
+        }
+
+        return res; // FIXME
     }
 
 
@@ -165,6 +198,24 @@ public class Router {
             this.distance = 0.0;
         }
 
+        static int evalDir(double currBearing, double lastBearing) {
+            if (lastBearing < 0.0) {
+                return START;
+            }
+            double delta = currBearing - lastBearing;
+            boolean positive = delta > 0.0;
+            double absDelta = Math.abs(delta);
+            if (absDelta <= 15) {
+                return STRAIGHT;
+            } else if (absDelta <= 30) {
+                return positive ? SLIGHT_RIGHT : SLIGHT_LEFT;
+            } else if (absDelta <= 100) {
+                return positive ? RIGHT : LEFT;
+            } else {
+                return positive ? SHARP_RIGHT : SHARP_LEFT;
+            }
+        }
+
         public String toString() {
             return String.format("%s on %s and continue for %.3f miles.",
                     DIRECTIONS[direction], way, distance);
@@ -184,24 +235,33 @@ public class Router {
             NavigationDirection nd = new NavigationDirection();
             if (m.matches()) {
                 String direction = m.group(1);
-                if (direction.equals("Start")) {
-                    nd.direction = NavigationDirection.START;
-                } else if (direction.equals("Go straight")) {
-                    nd.direction = NavigationDirection.STRAIGHT;
-                } else if (direction.equals("Slight left")) {
-                    nd.direction = NavigationDirection.SLIGHT_LEFT;
-                } else if (direction.equals("Slight right")) {
-                    nd.direction = NavigationDirection.SLIGHT_RIGHT;
-                } else if (direction.equals("Turn right")) {
-                    nd.direction = NavigationDirection.RIGHT;
-                } else if (direction.equals("Turn left")) {
-                    nd.direction = NavigationDirection.LEFT;
-                } else if (direction.equals("Sharp left")) {
-                    nd.direction = NavigationDirection.SHARP_LEFT;
-                } else if (direction.equals("Sharp right")) {
-                    nd.direction = NavigationDirection.SHARP_RIGHT;
-                } else {
-                    return null;
+                switch (direction) {
+                    case "Start":
+                        nd.direction = NavigationDirection.START;
+                        break;
+                    case "Go straight":
+                        nd.direction = NavigationDirection.STRAIGHT;
+                        break;
+                    case "Slight left":
+                        nd.direction = NavigationDirection.SLIGHT_LEFT;
+                        break;
+                    case "Slight right":
+                        nd.direction = NavigationDirection.SLIGHT_RIGHT;
+                        break;
+                    case "Turn right":
+                        nd.direction = NavigationDirection.RIGHT;
+                        break;
+                    case "Turn left":
+                        nd.direction = NavigationDirection.LEFT;
+                        break;
+                    case "Sharp left":
+                        nd.direction = NavigationDirection.SHARP_LEFT;
+                        break;
+                    case "Sharp right":
+                        nd.direction = NavigationDirection.SHARP_RIGHT;
+                        break;
+                    default:
+                        return null;
                 }
 
                 nd.way = m.group(2);

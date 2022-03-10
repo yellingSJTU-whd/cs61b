@@ -247,4 +247,16 @@ public class GraphDB {
             sink.edges.put(edge.source, infoMap);
         }
     }
+
+    String fetchName(long v, long w) {
+        if (graph.isEmpty() || !graph.containsKey(v)) {
+            return "";
+        }
+        Node node = graph.get(v);
+        Map<String, String> map = node.edges.get(w);
+        if (!map.containsKey("name")) {
+            return Router.NavigationDirection.UNKNOWN_ROAD;
+        }
+        return map.get("name");
+    }
 }
