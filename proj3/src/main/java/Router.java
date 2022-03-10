@@ -34,9 +34,7 @@ public class Router {
                                           double destlon, double destlat) {
         //pre-processing
         long startID = g.closest(stlon, stlat);
-        System.out.println("Starting ID = " + startID);
         long desID = g.closest(destlon, destlat);
-        System.out.println("Destination ID = " + desID);
         if (startID == desID) {
             List<Long> path = new ArrayList<>(1);
             path.add(startID);
@@ -45,30 +43,28 @@ public class Router {
 
         Map<Long, Double> costMap = new HashMap<>();
         Map<Long, Long> preMap = new HashMap<>();
-        PriorityQueue<Long> idMinHeap = new PriorityQueue<>(
+        PriorityQueue<Long> heap = new PriorityQueue<>(
                 Comparator.comparingDouble(l -> costMap.get(l) + g.distance(l, desID)));
         costMap.put(startID, 0.0);
-        idMinHeap.add(startID);
+        heap.add(startID);
 
         long lastID = -1;
         long currID;
-        while (!idMinHeap.isEmpty()) {
-            currID = idMinHeap.poll();
-            System.out.println("current ID = " + currID);
-
+        while (!heap.isEmpty()) {
+            currID = heap.poll();
             if (currID == desID) {
                 break;
             }
 
             double ref = costMap.get(currID);
             for (Long adjID : g.adjacent(currID)) {
-                if (preMap.containsKey(adjID)) {
+                double delta = g.distance(currID, adjID);
+                if (preMap.containsKey(adjID) && costMap.get(adjID) <= ref + delta) {
                     continue;
                 }
-                System.out.println("adjacent ID = " + adjID + " ,cost = " + ref + g.distance(currID, adjID));
-                costMap.put(adjID, ref + g.distance(currID, adjID));
+                costMap.put(adjID, ref + delta);
                 preMap.put(adjID, currID);
-                idMinHeap.add(adjID);
+                heap.add(adjID);
             }
             lastID = currID;
         }
@@ -84,7 +80,6 @@ public class Router {
         }
         path.add(startID);
         Collections.reverse(path);
-//        System.out.println(path);
 
         return path;
     }
