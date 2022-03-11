@@ -4,12 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -71,7 +66,7 @@ public class MapServer {
      * w : user viewport window width in pixels,<br> h : user viewport height in pixels.
      **/
     private static final String[] REQUIRED_RASTER_REQUEST_PARAMS = {"ullat", "ullon", "lrlat",
-        "lrlon", "w", "h"};
+            "lrlon", "w", "h"};
     /**
      * Each route request to the server will have the following parameters
      * as keys in the params map.<br>
@@ -79,14 +74,14 @@ public class MapServer {
      * end_lat : end point latitude, <br>end_lon : end point longitude.
      **/
     private static final String[] REQUIRED_ROUTE_REQUEST_PARAMS = {"start_lat", "start_lon",
-        "end_lat", "end_lon"};
+            "end_lat", "end_lon"};
 
     /**
      * The result of rastering must be a map containing all of the
      * fields listed in the comments for getMapRaster in Rasterer.java.
      **/
     private static final String[] REQUIRED_RASTER_RESULT_PARAMS = {"render_grid", "raster_ul_lon",
-        "raster_ul_lat", "raster_lr_lon", "raster_lr_lat", "depth", "query_success"};
+            "raster_ul_lat", "raster_lr_lon", "raster_lr_lat", "depth", "query_success"};
 
     private static Rasterer rasterer;
     private static GraphDB graph;
@@ -301,6 +296,99 @@ public class MapServer {
         return new LinkedList<>();
     }
 
+    class TrieNode {
+        TrieNode[] children;
+        boolean isWord;
+
+        public TrieNode() {
+            children = new TrieNode[26];
+        }
+    }
+
+    class Trie {
+        private TrieNode root;
+
+        public Trie() {
+            root = new TrieNode();
+        }
+
+        public List<String> startsWith(String prefix) {
+            Objects.requireNonNull(prefix);
+            List<String> candidates = new ArrayList<>();
+            TrieNode curr = root;
+            int index;
+            for (int level = 0; level < prefix.length(); level++) {
+                index = prefix.charAt(level) - 'a';
+                if (curr.children[index] == null) {
+                    return candidates;
+                }
+                curr = curr.children[index];
+            }
+
+            candidates = dfs(curr, candidates, new StringBuilder(prefix));
+            return candidates;
+        }
+
+        private List<String> dfs(TrieNode currNode, List<String> candidates, StringBuilder currWord) {
+            if (currNode.isWord) {
+                candidates.add(currWord.toString());
+            }
+
+            for (int i = 0; i < 26; i++) {
+                if (currNode.children[i] != null) {
+                    currWord.append((char) i);
+                }
+            }
+
+            return null;
+        }
+
+        public void insert(String key) {
+            Objects.requireNonNull(key);
+            TrieNode curr = root;
+            int index;
+            for (int level = 0; level < key.length(); level++) {
+                index = key.charAt(level) - 'a';
+                if (curr.children[index] == null) {
+                    TrieNode child = new TrieNode();
+                    curr.children[index] = child;
+                    curr = child;
+                } else {
+                    curr = curr.children[index];
+                }
+            }
+            curr.isWord = true;
+        }
+
+        public boolean search(String key) {
+            Objects.requireNonNull(key);
+            TrieNode curr = root;
+            int index;
+            for (int level = 0; level < key.length(); level++) {
+                index = key.charAt(level) - 'a';
+                if (curr.children[index] == null) {
+                    return false;
+                }
+                curr = curr.children[index];
+            }
+            return curr.isWord;
+        }
+
+        public void remove(String key) {
+            Objects.requireNonNull(key);
+            TrieNode curr = root;
+            int index;
+            for (int level = 0; level < key.length(); level++) {
+                index = key.charAt(level) - 'a';
+                if (curr.children[index] == null) {
+                    return;
+                }
+                curr = curr.children[index];
+            }
+            curr = null;
+        }
+    }
+
     /**
      * Collect all locations that match a cleaned <code>locationName</code>, and return
      * information about each node that matches.
@@ -346,7 +434,7 @@ public class MapServer {
      */
     private static String getDirectionsText() {
         List<Router.NavigationDirection> directions = Router.routeDirections(graph, route);
-        if (directions == null || directions.isEmpty()) {
+        if (directions.isEmpty()) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
