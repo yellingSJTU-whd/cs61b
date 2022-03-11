@@ -102,7 +102,7 @@ public class Router {
         long lastNode = route.remove(0);
         String lastWay = null;
         double miles = 0.0;
-        double lastBearing = -1.0;
+        double lastBearing = Double.NEGATIVE_INFINITY;
         int dir = 0;
         NavigationDirection navi = new NavigationDirection();
 
@@ -114,11 +114,12 @@ public class Router {
 
             if (lastWay != null && !lastWay.equals(currWay)) {
                 navi.direction = dir;
-                dir = NavigationDirection.evalDir(currBearing, lastBearing);
                 navi.way = lastWay;
                 navi.distance = miles;
                 miles = 0;
                 res.add(navi);
+                navi = new NavigationDirection();
+                dir = NavigationDirection.evalDir(currBearing, lastBearing);
             }
 
             lastNode = currNode;
@@ -126,6 +127,10 @@ public class Router {
             lastWay = currWay;
             miles += mile;
         }
+        navi.direction = dir;
+        navi.way = lastWay;
+        navi.distance = miles;
+        res.add(navi);
 
         return res; // FIXME
     }
@@ -199,10 +204,18 @@ public class Router {
         }
 
         static int evalDir(double currBearing, double lastBearing) {
-            if (lastBearing < 0.0) {
+            if (lastBearing == Double.NEGATIVE_INFINITY) {
                 return START;
             }
+
             double delta = currBearing - lastBearing;
+            if (delta > 180) {
+                delta -= 360;
+            }
+            if (delta < -180) {
+                delta += 360;
+            }
+
             boolean positive = delta > 0.0;
             double absDelta = Math.abs(delta);
             if (absDelta <= 15) {

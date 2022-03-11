@@ -255,7 +255,8 @@ public class GraphDB {
         Node node = graph.get(v);
         Map<String, String> map = node.edges.get(w);
         if (!map.containsKey("name")) {
-            return Router.NavigationDirection.UNKNOWN_ROAD;
+//            return Router.NavigationDirection.UNKNOWN_ROAD;
+            return "";
         }
         return map.get("name");
     }
