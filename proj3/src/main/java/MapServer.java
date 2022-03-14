@@ -93,8 +93,6 @@ public class MapServer {
     private static Rasterer rasterer;
     private static GraphDB graph;
     private static List<Long> route = new LinkedList<>();
-    private static boolean initialized;
-    private static Trie trie = null;
     /* Define any static variables here. Do not define any instance variables of MapServer. */
 
 
@@ -104,11 +102,8 @@ public class MapServer {
      * This is for testing purposes, and you may fail tests otherwise.
      **/
     public static void initialize() {
-        if (!initialized) {
             graph = new GraphDB(OSM_DB_PATH);
             rasterer = new Rasterer();
-            initialized = true;
-        }
     }
 
     public static void main(String[] args) {
@@ -306,7 +301,7 @@ public class MapServer {
      */
     public static List<String> getLocationsByPrefix(String prefix) {
         initialize();
-        trie = new Trie();
+        Trie trie = new Trie();
         for (Long vertex : graph.vertices()) {
             String name = graph.fetchNodeName(vertex);
             if (name != null) {
