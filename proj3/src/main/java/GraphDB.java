@@ -44,6 +44,7 @@ public class GraphDB {
     }
 
     static class Node {
+        private String name;
         private final long id;
         private final double latitude;
         private final double longitude;
@@ -54,7 +55,14 @@ public class GraphDB {
             latitude = lat;
             longitude = lon;
             edges = new HashMap<>();
+            name = null;
         }
+    }
+
+    void setNodeName(long id, String name) {
+        Node node = graph.remove(id);
+        node.name = name;
+        graph.put(id, node);
     }
 
     static class Edge {
@@ -248,7 +256,7 @@ public class GraphDB {
         }
     }
 
-    String fetchName(long v, long w) {
+    String fetchWayName(long v, long w) {
         if (graph.isEmpty() || !graph.containsKey(v)) {
             return "";
         }
@@ -259,5 +267,13 @@ public class GraphDB {
             return "";
         }
         return map.get("name");
+    }
+
+    String fetchNodeName(long v) {
+        Node node = graph.get(v);
+        if (node.name == null) {
+            return null;
+        }
+        return node.name;
     }
 }

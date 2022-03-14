@@ -92,7 +92,16 @@ public class GraphBuildingHandler extends DefaultHandler {
             /* Hint: A graph-like structure would be nice. */
             GraphDB.Node n = new GraphDB.Node(id, lat, lon);
             g.addNode(n);
+            lastNode = attributes.getValue("id");
 
+        } else if (activeState.equals("node") && qName.equals("tag")) {
+            String k = attributes.getValue("k");
+            String v = attributes.getValue("v");
+            if (k.equals("name")) {
+//                System.out.println("setting node name, node id = " + lastNode + ", name = " + v);
+                g.setNodeName(Long.parseLong(lastNode), v);
+//                System.out.println("done setting " + g.fetchNodeName(Long.parseLong(lastNode)));
+            }
         } else if (qName.equals("way")) {
             /* We encountered a new <way...> tag. */
             activeState = "way";
@@ -170,6 +179,8 @@ public class GraphBuildingHandler extends DefaultHandler {
             highwayAllowed = false;
 
 //            System.out.println("Finishing a way...");
+        } else if (qName.equals("node")) {
+            lastNode = null;
         }
     }
 

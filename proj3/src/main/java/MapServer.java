@@ -73,7 +73,7 @@ public class MapServer {
      * w : user viewport window width in pixels,<br> h : user viewport height in pixels.
      **/
     private static final String[] REQUIRED_RASTER_REQUEST_PARAMS = {"ullat", "ullon", "lrlat",
-        "lrlon", "w", "h"};
+            "lrlon", "w", "h"};
     /**
      * Each route request to the server will have the following parameters
      * as keys in the params map.<br>
@@ -81,14 +81,14 @@ public class MapServer {
      * end_lat : end point latitude, <br>end_lon : end point longitude.
      **/
     private static final String[] REQUIRED_ROUTE_REQUEST_PARAMS = {"start_lat", "start_lon",
-        "end_lat", "end_lon"};
+            "end_lat", "end_lon"};
 
     /**
      * The result of rastering must be a map containing all of the
      * fields listed in the comments for getMapRaster in Rasterer.java.
      **/
     private static final String[] REQUIRED_RASTER_RESULT_PARAMS = {"render_grid", "raster_ul_lon",
-        "raster_ul_lat", "raster_lr_lon", "raster_lr_lat", "depth", "query_success"};
+            "raster_ul_lat", "raster_lr_lon", "raster_lr_lat", "depth", "query_success"};
 
     private static Rasterer rasterer;
     private static GraphDB graph;
@@ -306,13 +306,12 @@ public class MapServer {
      */
     public static List<String> getLocationsByPrefix(String prefix) {
         initialize();
-        if (trie == null) {
-            trie = new Trie();
-            for (Long vertex : graph.vertices()) {
-                for (Long adj : graph.adjacent(vertex)) {
-                    String way = GraphDB.cleanString(graph.fetchName(vertex, adj));
-                    trie.insert(way);
-                }
+        trie = new Trie();
+        for (Long vertex : graph.vertices()) {
+            String name = graph.fetchNodeName(vertex);
+            if (name != null) {
+                System.out.println();
+                trie.insert(GraphDB.cleanString(name));
             }
         }
         return trie.startsWith(prefix);
@@ -357,7 +356,7 @@ public class MapServer {
             for (Map.Entry<Character, TrieNode> entry : currNode.children.entrySet()) {
                 char key = entry.getKey();
                 TrieNode value = entry.getValue();
-                words = dfs(value, currWord.append(key), words);
+                words = dfs(value, new StringBuilder(currWord).append(key), words);
             }
 
             return words;

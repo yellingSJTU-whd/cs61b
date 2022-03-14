@@ -108,7 +108,7 @@ public class Router {
 
         while (!route.isEmpty()) {
             long currNode = route.remove(0);
-            String currWay = g.fetchName(lastNode, currNode);
+            String currWay = g.fetchWayName(lastNode, currNode);
             double mile = g.distance(lastNode, currNode);
             double currBearing = g.bearing(lastNode, currNode);
 
