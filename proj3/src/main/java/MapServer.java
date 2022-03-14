@@ -4,10 +4,17 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Base64;
+import java.util.Set;
+import java.util.Objects;
+import java.util.ArrayList;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.util.Map;
 
 
 /* Maven is used to pull in these dependencies. */
@@ -66,7 +73,7 @@ public class MapServer {
      * w : user viewport window width in pixels,<br> h : user viewport height in pixels.
      **/
     private static final String[] REQUIRED_RASTER_REQUEST_PARAMS = {"ullat", "ullon", "lrlat",
-            "lrlon", "w", "h"};
+        "lrlon", "w", "h"};
     /**
      * Each route request to the server will have the following parameters
      * as keys in the params map.<br>
@@ -74,18 +81,20 @@ public class MapServer {
      * end_lat : end point latitude, <br>end_lon : end point longitude.
      **/
     private static final String[] REQUIRED_ROUTE_REQUEST_PARAMS = {"start_lat", "start_lon",
-            "end_lat", "end_lon"};
+        "end_lat", "end_lon"};
 
     /**
      * The result of rastering must be a map containing all of the
      * fields listed in the comments for getMapRaster in Rasterer.java.
      **/
     private static final String[] REQUIRED_RASTER_RESULT_PARAMS = {"render_grid", "raster_ul_lon",
-            "raster_ul_lat", "raster_lr_lon", "raster_lr_lat", "depth", "query_success"};
+        "raster_ul_lat", "raster_lr_lon", "raster_lr_lat", "depth", "query_success"};
 
     private static Rasterer rasterer;
     private static GraphDB graph;
     private static List<Long> route = new LinkedList<>();
+    private static boolean initialized;
+    private static Trie trie = null;
     /* Define any static variables here. Do not define any instance variables of MapServer. */
 
 
@@ -95,8 +104,11 @@ public class MapServer {
      * This is for testing purposes, and you may fail tests otherwise.
      **/
     public static void initialize() {
-        graph = new GraphDB(OSM_DB_PATH);
-        rasterer = new Rasterer();
+        if (!initialized) {
+            graph = new GraphDB(OSM_DB_PATH);
+            rasterer = new Rasterer();
+            initialized = true;
+        }
     }
 
     public static void main(String[] args) {
@@ -293,68 +305,102 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        return new LinkedList<>();
+        initialize();
+        if (trie == null) {
+            trie = new Trie();
+            for (Long vertex : graph.vertices()) {
+                for (Long adj : graph.adjacent(vertex)) {
+                    String way = GraphDB.cleanString(graph.fetchName(vertex, adj));
+                    trie.insert(way);
+                }
+            }
+        }
+        return trie.startsWith(prefix);
     }
 
-    class TrieNode {
-        TrieNode[] children;
+    static class TrieNode {
+        char c;
         boolean isWord;
+        Map<Character, TrieNode> children;
 
-        public TrieNode() {
-            children = new TrieNode[26];
+        TrieNode(char c) {
+            this.c = c;
+            children = new HashMap<>();
+            isWord = false;
         }
     }
 
-    class Trie {
+    static class Trie {
         private TrieNode root;
 
-        public Trie() {
-            root = new TrieNode();
+        Trie() {
+            root = new TrieNode(' ');
         }
 
         public List<String> startsWith(String prefix) {
             Objects.requireNonNull(prefix);
-            List<String> candidates = new ArrayList<>();
-            TrieNode curr = root;
-            int index;
-            for (int level = 0; level < prefix.length(); level++) {
-                index = prefix.charAt(level) - 'a';
-                if (curr.children[index] == null) {
-                    return candidates;
-                }
-                curr = curr.children[index];
+            List<String> words = new ArrayList<>();
+            TrieNode curr = searchNode(prefix);
+            if (curr == null) {
+                return words;
             }
 
-            candidates = dfs(curr, candidates, new StringBuilder(prefix));
-            return candidates;
+            words = dfs(curr, new StringBuilder(prefix), words);
+            return words;
         }
 
-        private List<String> dfs(TrieNode currNode, List<String> candidates, StringBuilder currWord) {
+        private List<String> dfs(TrieNode currNode, StringBuilder currWord, List<String> words) {
             if (currNode.isWord) {
-                candidates.add(currWord.toString());
+                words.add(captain(currWord.toString()));
             }
 
-            for (int i = 0; i < 26; i++) {
-                if (currNode.children[i] != null) {
-                    currWord.append((char) i);
+            for (Map.Entry<Character, TrieNode> entry : currNode.children.entrySet()) {
+                char key = entry.getKey();
+                TrieNode value = entry.getValue();
+                words = dfs(value, currWord.append(key), words);
+            }
+
+            return words;
+        }
+
+        private static String captain(String s) {
+            String[] parts = s.split(" ");
+            StringBuilder sb = new StringBuilder();
+            for (String part : parts) {
+                char[] charArr = part.toCharArray();
+                charArr[0] -= 32;
+                sb.append(charArr).append(" ");
+            }
+            return sb.toString().trim();
+        }
+
+        private TrieNode searchNode(String key) {
+            Objects.requireNonNull(key);
+            TrieNode curr = root;
+            int length = key.length();
+            for (int i = 0; i < length; i++) {
+                char ch = key.charAt(i);
+                if (curr.children.containsKey(ch)) {
+                    curr = curr.children.get(ch);
+                } else {
+                    return null;
                 }
             }
-
-            return null;
+            return curr;
         }
 
         public void insert(String key) {
             Objects.requireNonNull(key);
             TrieNode curr = root;
-            int index;
-            for (int level = 0; level < key.length(); level++) {
-                index = key.charAt(level) - 'a';
-                if (curr.children[index] == null) {
-                    TrieNode child = new TrieNode();
-                    curr.children[index] = child;
-                    curr = child;
+            int length = key.length();
+            for (int i = 0; i < length; i++) {
+                char ch = key.charAt(i);
+                if (curr.children.containsKey(ch)) {
+                    curr = curr.children.get(ch);
                 } else {
-                    curr = curr.children[index];
+                    TrieNode node = new TrieNode(ch);
+                    curr.children.put(ch, node);
+                    curr = node;
                 }
             }
             curr.isWord = true;
@@ -362,30 +408,11 @@ public class MapServer {
 
         public boolean search(String key) {
             Objects.requireNonNull(key);
-            TrieNode curr = root;
-            int index;
-            for (int level = 0; level < key.length(); level++) {
-                index = key.charAt(level) - 'a';
-                if (curr.children[index] == null) {
-                    return false;
-                }
-                curr = curr.children[index];
+            if (key.length() == 0) {
+                return false;
             }
-            return curr.isWord;
-        }
-
-        public void remove(String key) {
-            Objects.requireNonNull(key);
-            TrieNode curr = root;
-            int index;
-            for (int level = 0; level < key.length(); level++) {
-                index = key.charAt(level) - 'a';
-                if (curr.children[index] == null) {
-                    return;
-                }
-                curr = curr.children[index];
-            }
-            curr = null;
+            TrieNode node = searchNode(key);
+            return node != null;
         }
     }
 
