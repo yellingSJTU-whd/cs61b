@@ -27,6 +27,7 @@ public class GraphDB {
      * creating helper classes, e.g. Node, Edge, etc.
      */
     private final Map<Long, Node> graph = new HashMap<>();
+    private final Map<Long, Node> uncleaned = new HashMap<>();
 
     @Override
     public String toString() {
@@ -60,9 +61,10 @@ public class GraphDB {
     }
 
     void setNodeName(long id, String name) {
-        Node node = graph.remove(id);
-        node.name = name;
-        graph.put(id, node);
+        Node node = uncleaned.remove(id);
+        Node replace = new Node(node.id, node.latitude, node.longitude);
+        replace.name = name;
+        uncleaned.put(id, replace);
     }
 
     static class Edge {
@@ -102,6 +104,7 @@ public class GraphDB {
             e.printStackTrace();
         }
         clean();
+        System.out.println(graph.size() + " " + uncleaned.size());
     }
 
     /**
@@ -244,6 +247,7 @@ public class GraphDB {
 
     void addNode(Node node) {
         graph.put(node.id, node);
+        uncleaned.put(node.id, new Node(node.id, node.latitude, node.longitude));
     }
 
     void addWay(Set<Edge> edges, Map<String, String> infoMap) {
@@ -251,6 +255,11 @@ public class GraphDB {
             edge.extraInfo = infoMap;
             Node source = graph.get(edge.source);
             Node sink = graph.get(edge.sink);
+            source.edges.put(edge.sink, infoMap);
+            sink.edges.put(edge.source, infoMap);
+
+            source = uncleaned.get(edge.source);
+            sink = graph.get(edge.sink);
             source.edges.put(edge.sink, infoMap);
             sink.edges.put(edge.source, infoMap);
         }
@@ -270,10 +279,11 @@ public class GraphDB {
     }
 
     String fetchNodeName(long v) {
-        Node node = graph.get(v);
+        Node node = uncleaned.get(v);
         if (node.name == null) {
             return null;
         }
+        System.out.println(node.name);
         return node.name;
     }
 }

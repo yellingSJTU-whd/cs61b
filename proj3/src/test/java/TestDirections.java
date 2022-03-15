@@ -43,8 +43,6 @@ public class TestDirections {
                         actualDir.toString());
             }
         }
-        MapServer.initialize();
-        System.out.println(MapServer.getLocationsByPrefix("super"));
     }
 
     private List<List<Long>> pathsFromFile() throws Exception {

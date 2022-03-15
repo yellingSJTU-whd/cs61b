@@ -93,6 +93,7 @@ public class MapServer {
     private static Rasterer rasterer;
     private static GraphDB graph;
     private static List<Long> route = new LinkedList<>();
+    private static boolean initialized = false;
     /* Define any static variables here. Do not define any instance variables of MapServer. */
 
 
@@ -102,8 +103,11 @@ public class MapServer {
      * This is for testing purposes, and you may fail tests otherwise.
      **/
     public static void initialize() {
+        if (!initialized) {
             graph = new GraphDB(OSM_DB_PATH);
             rasterer = new Rasterer();
+            initialized = true;
+        }
     }
 
     public static void main(String[] args) {
@@ -305,7 +309,6 @@ public class MapServer {
         for (Long vertex : graph.vertices()) {
             String name = graph.fetchNodeName(vertex);
             if (name != null) {
-                System.out.println();
                 trie.insert(GraphDB.cleanString(name));
             }
         }
@@ -334,6 +337,9 @@ public class MapServer {
         public List<String> startsWith(String prefix) {
             Objects.requireNonNull(prefix);
             List<String> words = new ArrayList<>();
+            if (prefix.length() < 1) {
+                return words;
+            }
             TrieNode curr = searchNode(prefix);
             if (curr == null) {
                 return words;
@@ -358,11 +364,17 @@ public class MapServer {
         }
 
         private static String captain(String s) {
+            Objects.requireNonNull(s);
+            if (s.length() < 1) {
+                return s;
+            }
             String[] parts = s.split(" ");
             StringBuilder sb = new StringBuilder();
             for (String part : parts) {
                 char[] charArr = part.toCharArray();
-                charArr[0] -= 32;
+                if (charArr.length > 0 && charArr[0] >= 'a' && charArr[0] <= 'z') {
+                    charArr[0] -= 32;
+                }
                 sb.append(charArr).append(" ");
             }
             return sb.toString().trim();
@@ -385,6 +397,9 @@ public class MapServer {
 
         public void insert(String key) {
             Objects.requireNonNull(key);
+            if (key.length() < 1) {
+                return;
+            }
             TrieNode curr = root;
             int length = key.length();
             for (int i = 0; i < length; i++) {
