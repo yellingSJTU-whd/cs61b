@@ -55,6 +55,15 @@ public class TestRouter {
     }
 
     @Test
+    public void testGetLocationsByPrefixWithSpace() {
+        String prefix = "los ";
+        String[] arr = {"Los Canteros taqueria", "Los Cilantros", "Los Conteros Taqueria", "Los Moles"};
+        List<String> expected = Arrays.asList(arr);
+        List<String> actual = graph.getLocationsByPrefix(prefix);
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testGetLocations() {
         String location = "stuffed inn";
         Map<String, Object> infoMap = new HashMap<>();

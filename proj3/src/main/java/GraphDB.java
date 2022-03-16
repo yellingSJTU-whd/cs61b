@@ -106,7 +106,7 @@ public class GraphDB {
 
         private List<String> dfs(TrieNode currNode, StringBuilder currWord, List<String> words) {
             if (currNode.isWord) {
-                words.add(captain(currWord.toString()));
+                words.add(currWord.toString());
             }
 
             for (Map.Entry<Character, TrieNode> entry : currNode.children.entrySet()) {
@@ -214,9 +214,9 @@ public class GraphDB {
         node.name = cleanedName;
         List<Node> nodes = named.getOrDefault(cleanedName, new ArrayList<>());
         nodes.add(node);
-        named.put(name.toLowerCase(), nodes);
+        named.put(cleanedName.toLowerCase(), nodes);
 
-        trie.insert(name.toLowerCase());
+        trie.insert(name);
     }
 
     static class Edge {
