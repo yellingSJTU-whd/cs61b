@@ -44,6 +44,32 @@ public class TestRouter {
         }
     }
 
+    @Test
+    public void testGetLocationsByPrefix() {
+        String prefix = "de";
+        String[] arr = {"De Afghanan Kabob House", "De Visu", "De La Salle Hall", "Derby Food Center", "Designer Cuts",
+                "Deliverance Temple Church", "Dentist Bryan D. Haynes", "Dentistry"};
+        List<String> expected = Arrays.asList(arr);
+        List<String> actual = graph.getLocationsByPrefix(prefix);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetLocations() {
+        String location = "stuffed inn";
+        Map<String, Object> infoMap = new HashMap<>();
+        infoMap.put("name", "Stuffed Inn");
+        infoMap.put("lon", -122.2601117);
+        infoMap.put("id", 318886225L);
+        infoMap.put("lat", 37.8756956);
+        List<Map<String, Object>> expect = new ArrayList<>();
+        expect.add(infoMap);
+
+        List<Map<String, Object>> actual = graph.getLocations(location);
+        assertEquals(expect.size(), actual.size());
+        assertEquals(expect, actual);
+    }
+
     private List<Map<String, Double>> paramsFromFile() throws Exception {
         List<String> lines = Files.readAllLines(Paths.get(PARAMS_FILE), Charset.defaultCharset());
         List<Map<String, Double>> testParams = new ArrayList<>();

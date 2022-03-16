@@ -186,12 +186,11 @@ public class GraphDB {
     }
 
     public List<String> getLocationsByPrefix(String prefix) {
-        System.out.println("trie size = " + trie.num);
         return trie.startsWith(prefix);
     }
 
     public List<Map<String, Object>> getLocations(String locationName) {
-        List<Node> nodes = named.get(cleanString(locationName));
+        List<Node> nodes = named.get(cleanString(locationName).toLowerCase());
         List<Map<String, Object>> res = new ArrayList<>();
         if (nodes == null) {
             return res;
@@ -215,9 +214,9 @@ public class GraphDB {
         node.name = cleanedName;
         List<Node> nodes = named.getOrDefault(cleanedName, new ArrayList<>());
         nodes.add(node);
-        named.put(name, nodes);
+        named.put(name.toLowerCase(), nodes);
 
-        trie.insert(cleanedName.toLowerCase());
+        trie.insert(name.toLowerCase());
     }
 
     static class Edge {
