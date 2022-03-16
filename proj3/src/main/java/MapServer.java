@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Base64;
 import java.util.Set;
-import java.util.Objects;
-import java.util.ArrayList;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -304,125 +302,7 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        initialize();
-        Trie trie = new Trie();
-        for (Long vertex : graph.vertices()) {
-            String name = graph.fetchNodeName(vertex);
-            if (name != null) {
-                trie.insert(GraphDB.cleanString(name));
-            }
-        }
-        return trie.startsWith(prefix);
-    }
-
-    static class TrieNode {
-        char c;
-        boolean isWord;
-        Map<Character, TrieNode> children;
-
-        TrieNode(char c) {
-            this.c = c;
-            children = new HashMap<>();
-            isWord = false;
-        }
-    }
-
-    static class Trie {
-        private TrieNode root;
-
-        Trie() {
-            root = new TrieNode(' ');
-        }
-
-        public List<String> startsWith(String prefix) {
-            Objects.requireNonNull(prefix);
-            List<String> words = new ArrayList<>();
-            if (prefix.length() < 1) {
-                return words;
-            }
-            TrieNode curr = searchNode(prefix);
-            if (curr == null) {
-                return words;
-            }
-
-            words = dfs(curr, new StringBuilder(prefix), words);
-            return words;
-        }
-
-        private List<String> dfs(TrieNode currNode, StringBuilder currWord, List<String> words) {
-            if (currNode.isWord) {
-                words.add(captain(currWord.toString()));
-            }
-
-            for (Map.Entry<Character, TrieNode> entry : currNode.children.entrySet()) {
-                char key = entry.getKey();
-                TrieNode value = entry.getValue();
-                words = dfs(value, new StringBuilder(currWord).append(key), words);
-            }
-
-            return words;
-        }
-
-        private static String captain(String s) {
-            Objects.requireNonNull(s);
-            if (s.length() < 1) {
-                return s;
-            }
-            String[] parts = s.split(" ");
-            StringBuilder sb = new StringBuilder();
-            for (String part : parts) {
-                char[] charArr = part.toCharArray();
-                if (charArr.length > 0 && charArr[0] >= 'a' && charArr[0] <= 'z') {
-                    charArr[0] -= 32;
-                }
-                sb.append(charArr).append(" ");
-            }
-            return sb.toString().trim();
-        }
-
-        private TrieNode searchNode(String key) {
-            Objects.requireNonNull(key);
-            TrieNode curr = root;
-            int length = key.length();
-            for (int i = 0; i < length; i++) {
-                char ch = key.charAt(i);
-                if (curr.children.containsKey(ch)) {
-                    curr = curr.children.get(ch);
-                } else {
-                    return null;
-                }
-            }
-            return curr;
-        }
-
-        public void insert(String key) {
-            Objects.requireNonNull(key);
-            if (key.length() < 1) {
-                return;
-            }
-            TrieNode curr = root;
-            int length = key.length();
-            for (int i = 0; i < length; i++) {
-                char ch = key.charAt(i);
-                if (curr.children.containsKey(ch)) {
-                    curr = curr.children.get(ch);
-                } else {
-                    TrieNode node = new TrieNode(ch);
-                    curr.children.put(ch, node);
-                    curr = node;
-                }
-            }
-            curr.isWord = true;
-        }
-
-        public boolean search(String key) {
-            Objects.requireNonNull(key);
-            if (key.length() == 0) {
-                return false;
-            }
-            TrieNode node = searchNode(key);
-            return node != null;
-        }
+        return graph.getLocationsByPrefix(prefix);
     }
 
     /**
