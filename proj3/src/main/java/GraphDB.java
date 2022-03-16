@@ -6,7 +6,15 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.Set;
+
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -23,6 +31,7 @@ public class GraphDB {
      * creating helper classes, e.g. Node, Edge, etc.
      */
     private final Map<Long, Node> graph = new HashMap<>();
+    private final Map<String, List<Node>> named = new HashMap<>();
     private final Trie trie = new Trie();
 
     @Override
@@ -89,7 +98,6 @@ public class GraphDB {
                 if (curr.children.containsKey(ch)) {
                     curr = curr.children.get(ch);
                 } else {
-                    System.out.println("search failed: key = " + key + " char = " + ch);
                     return null;
                 }
             }
@@ -108,23 +116,6 @@ public class GraphDB {
             }
 
             return words;
-        }
-
-        private static String captain(String s) {
-            Objects.requireNonNull(s);
-            if (s.length() < 1) {
-                return s;
-            }
-            String[] parts = s.split(" ");
-            StringBuilder sb = new StringBuilder();
-            for (String part : parts) {
-                char[] charArr = part.toCharArray();
-                if (charArr.length > 0 && charArr[0] >= 'a' && charArr[0] <= 'z') {
-                    charArr[0] -= 32;
-                }
-                sb.append(charArr).append(" ");
-            }
-            return sb.toString().trim();
         }
 
         public void insert(String key) {
@@ -177,17 +168,56 @@ public class GraphDB {
         }
     }
 
-    List<String> getLocationsByPrefix(String prefix) {
+    private static String captain(String s) {
+        Objects.requireNonNull(s);
+        if (s.length() < 1) {
+            return s;
+        }
+        String[] parts = s.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            char[] charArr = part.toCharArray();
+            if (charArr.length > 0 && charArr[0] >= 'a' && charArr[0] <= 'z') {
+                charArr[0] -= 32;
+            }
+            sb.append(charArr).append(" ");
+        }
+        return sb.toString().trim();
+    }
+
+    public List<String> getLocationsByPrefix(String prefix) {
         System.out.println("trie size = " + trie.num);
         return trie.startsWith(prefix);
     }
 
+    public List<Map<String, Object>> getLocations(String locationName) {
+        List<Node> nodes = named.get(cleanString(locationName));
+        List<Map<String, Object>> res = new ArrayList<>();
+        if (nodes == null) {
+            return res;
+        }
+        for (Node node : nodes) {
+            Map<String, Object> infoMap = new HashMap<>(4);
+            infoMap.put("lat", node.latitude);
+            infoMap.put("lon", node.longitude);
+            infoMap.put("name", captain(node.name));
+            infoMap.put("id", node.id);
+            res.add(infoMap);
+        }
+
+        return res;
+    }
+
     void setNodeName(long id, String name) {
-        Node node = graph.remove(id);
-        node.name = name;
-        graph.put(id, node);
-        trie.insert(cleanString(name).toLowerCase());
-        System.out.println("inserting -->" + name);
+        Node node = graph.get(id);
+        String cleanedName = cleanString(name);
+
+        node.name = cleanedName;
+        List<Node> nodes = named.getOrDefault(cleanedName, new ArrayList<>());
+        nodes.add(node);
+        named.put(name, nodes);
+
+        trie.insert(cleanedName.toLowerCase());
     }
 
     static class Edge {
