@@ -4,7 +4,12 @@ import org.junit.Test;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Map;
+import java.util.List;
+import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -47,8 +52,9 @@ public class TestRouter {
     @Test
     public void testGetLocationsByPrefix() {
         String prefix = "de";
-        String[] arr = {"De Afghanan Kabob House", "De Visu", "De La Salle Hall", "Derby Food Center", "Designer Cuts",
-                "Deliverance Temple Church", "Dentist Bryan D. Haynes", "Dentistry"};
+        String[] arr = {"De Afghanan Kabob House", "De Visu", "De La Salle Hall",
+            "Derby Food Center", "Designer Cuts", "Deliverance Temple Church",
+            "Dentist Bryan D. Haynes", "Dentistry"};
         List<String> expected = Arrays.asList(arr);
         List<String> actual = graph.getLocationsByPrefix(prefix);
         assertEquals(expected, actual);
@@ -57,7 +63,8 @@ public class TestRouter {
     @Test
     public void testGetLocationsByPrefixWithSpace() {
         String prefix = "los ";
-        String[] arr = {"Los Canteros taqueria", "Los Cilantros", "Los Conteros Taqueria", "Los Moles"};
+        String[] arr = {"Los Canteros taqueria", "Los Cilantros",
+            "Los Conteros Taqueria", "Los Moles"};
         List<String> expected = Arrays.asList(arr);
         List<String> actual = graph.getLocationsByPrefix(prefix);
         assertEquals(expected, actual);
@@ -71,6 +78,22 @@ public class TestRouter {
         infoMap.put("lon", -122.2601117);
         infoMap.put("id", 318886225L);
         infoMap.put("lat", 37.8756956);
+        List<Map<String, Object>> expect = new ArrayList<>();
+        expect.add(infoMap);
+
+        List<Map<String, Object>> actual = graph.getLocations(location);
+        assertEquals(expect.size(), actual.size());
+        assertEquals(expect, actual);
+    }
+
+    @Test
+    public void testGetLocationsWithSpace() {
+        String location = "style ";
+        Map<String, Object> infoMap = new HashMap<>();
+        infoMap.put("name", "Style 2000");
+        infoMap.put("lon", -122.2885637);
+        infoMap.put("id", 2370938232L);
+        infoMap.put("lat", 37.8905967);
         List<Map<String, Object>> expect = new ArrayList<>();
         expect.add(infoMap);
 

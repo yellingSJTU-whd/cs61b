@@ -50,28 +50,20 @@ public class GraphDB {
     }
 
     static class TrieNode {
-        char c;
-        boolean isWord;
+        List<String> nodeNames;
         Map<Character, TrieNode> children;
 
         TrieNode() {
             children = new HashMap<>();
-            isWord = false;
-        }
-
-        TrieNode(char c) {
-            this();
-            this.c = c;
+            nodeNames = new ArrayList<>();
         }
     }
 
     static class Trie {
         private final TrieNode root;
-        private int num;
 
         Trie() {
             root = new TrieNode();
-            num = 0;
         }
 
         public List<String> startsWith(String prefix) {
@@ -85,7 +77,7 @@ public class GraphDB {
                 return words;
             }
 
-            words = dfs(curr, new StringBuilder(prefix), words);
+            words = dfs(curr, words);
             return words;
         }
 
@@ -104,42 +96,38 @@ public class GraphDB {
             return curr;
         }
 
-        private List<String> dfs(TrieNode currNode, StringBuilder currWord, List<String> words) {
-            if (currNode.isWord) {
-                words.add(currWord.toString());
+        private List<String> dfs(TrieNode currNode, List<String> words) {
+            if (!currNode.nodeNames.isEmpty()) {
+                words.addAll(currNode.nodeNames);
             }
 
             for (Map.Entry<Character, TrieNode> entry : currNode.children.entrySet()) {
-                char key = entry.getKey();
                 TrieNode value = entry.getValue();
-                words = dfs(value, new StringBuilder(currWord).append(key), words);
+                words = dfs(value, words);
             }
 
             return words;
         }
 
-        public void insert(String key) {
-            Objects.requireNonNull(key);
-            if (key.length() < 1) {
+        public void insert(String cleaned, String name) {
+            Objects.requireNonNull(cleaned);
+            if (cleaned.length() < 1) {
                 return;
             }
             TrieNode curr = root;
-            int length = key.length();
+            int length = cleaned.length();
             for (int i = 0; i < length; i++) {
-                char ch = key.charAt(i);
+                char ch = cleaned.charAt(i);
                 if (curr.children.containsKey(ch)) {
                     curr = curr.children.get(ch);
                 } else {
-                    TrieNode node = new TrieNode(ch);
+                    TrieNode node = new TrieNode();
                     curr.children.put(ch, node);
                     curr = node;
                 }
             }
-            if (!curr.isWord) {
-                curr.isWord = true;
-                num++;
-            }
 
+            curr.nodeNames.add(name);
         }
 
         public boolean search(String key) {
@@ -199,7 +187,7 @@ public class GraphDB {
             Map<String, Object> infoMap = new HashMap<>(4);
             infoMap.put("lat", node.latitude);
             infoMap.put("lon", node.longitude);
-            infoMap.put("name", captain(node.name));
+            infoMap.put("name", node.name);
             infoMap.put("id", node.id);
             res.add(infoMap);
         }
@@ -211,12 +199,12 @@ public class GraphDB {
         Node node = graph.get(id);
         String cleanedName = cleanString(name);
 
-        node.name = cleanedName;
+        node.name = name;
         List<Node> nodes = named.getOrDefault(cleanedName, new ArrayList<>());
         nodes.add(node);
         named.put(cleanedName.toLowerCase(), nodes);
 
-        trie.insert(name);
+        trie.insert(cleanedName, name);
     }
 
     static class Edge {
