@@ -2,12 +2,12 @@ package lab14;
 
 import lab14lib.Generator;
 
-public class AcceleratingSawTooth implements Generator {
+public class AcceleratingSawToothGenerator implements Generator {
     private int period;
     private int state;
     private final double factor;
 
-    public AcceleratingSawTooth(int initialPeriod, double accFactor) {
+    public AcceleratingSawToothGenerator(int initialPeriod, double accFactor) {
         period = initialPeriod;
         factor = accFactor;
         state = 0;
