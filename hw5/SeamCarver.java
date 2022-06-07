@@ -1,10 +1,11 @@
 import edu.princeton.cs.algs4.Picture;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public class SeamCarver {
 
-    private final Picture picture;
+    private Picture picture;
 
     public SeamCarver(Picture picture) {
         this.picture = new Picture(picture);
@@ -56,15 +57,25 @@ public class SeamCarver {
     }
 
     public int[] findHorizontalSeam() {
-        return null;
+        Picture invertPic = new Picture(height(), width());
+        for (int col = 0; col < width(); col++) {
+            for (int row = 0; row < height(); row++) {
+                invertPic.set(row, col, picture.get(col, row));
+            }
+        }
+        Picture save = picture;
+        picture = invertPic;
+        int[] horizontalSeam = findVerticalSeam();
+        picture = save;
+        return horizontalSeam;
     }
 
     public int[] findVerticalSeam() {
         int[][] preIndex = new int[width()][height()];
 
         double[] minCostLastRow = new double[width()];
-        for (int i = 0; i < width(); i++) {
-            minCostLastRow[i] = energy(0, i);
+        for (int x = 0; x < width(); x++) {
+            minCostLastRow[x] = energy(x, 0);
         }
 
         double[] minCostThisRow = new double[width()];
@@ -106,19 +117,49 @@ public class SeamCarver {
                     }
                 }
             }
-            minCostLastRow = minCostThisRow;
+            minCostLastRow = Arrays.copyOf(minCostThisRow, width());
         }
 
         int minIndex = -1;
-        double minEnergySum = 0.0;
+        double minEnergySum = Double.MAX_VALUE;
         for (int i = 0; i < width(); i++) {
-
+            if (minCostThisRow[i] < minEnergySum) {
+                minEnergySum = minCostThisRow[i];
+                minIndex = i;
+            }
         }
+
+        int[] verticalSeam = new int[height()];
+        verticalSeam[height() - 1] = minIndex;
+        for (int y = height() - 1; y > 0; y--) {
+            int lastRowIndex = preIndex[minIndex][y];
+            verticalSeam[y - 1] = lastRowIndex;
+            minIndex = lastRowIndex;
+        }
+        return verticalSeam;
     }
 
     public void removeHorizontalSeam(int[] seam) {
+        Picture afterRemoval = new Picture(width(), height() - 1);
+        for (int col = 0; col < width(); col++) {
+            for (int row = 0; row < height() - 1; row++) {
+                if (row != seam[col]) {
+                    afterRemoval.set(col, row, picture.get(col, row));
+                }
+            }
+        }
+        picture = afterRemoval;
     }
 
     public void removeVerticalSeam(int[] seam) {
+        Picture afterRemoval = new Picture(width() - 1, height());
+        for (int row = 0; row < height(); row++) {
+            for (int col = 0; col < width(); col++) {
+                if (col != seam[row]) {
+                    afterRemoval.set(col, row, picture.get(col, row));
+                }
+            }
+        }
+        picture = afterRemoval;
     }
 }
