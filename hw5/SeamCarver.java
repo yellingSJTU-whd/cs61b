@@ -1,6 +1,6 @@
 import edu.princeton.cs.algs4.Picture;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Arrays;
 
 public class SeamCarver {
@@ -71,6 +71,9 @@ public class SeamCarver {
     }
 
     public int[] findVerticalSeam() {
+        if (width() == 1) {
+            return new int[height()];
+        }
         int[][] preIndex = new int[width()][height()];
 
         double[] minCostLastRow = new double[width()];
