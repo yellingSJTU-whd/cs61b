@@ -155,8 +155,11 @@ public class SeamCarver {
         Picture afterRemoval = new Picture(width(), height() - 1);
         for (int col = 0; col < width(); col++) {
             for (int row = 0; row < height() - 1; row++) {
-                if (row != seam[col]) {
+                int skipIndex = seam[col];
+                if (row < skipIndex) {
                     afterRemoval.set(col, row, picture.get(col, row));
+                } else if (row > skipIndex) {
+                    afterRemoval.set(col, row - 1, picture.get(col, row));
                 }
             }
         }
@@ -167,8 +170,11 @@ public class SeamCarver {
         Picture afterRemoval = new Picture(width() - 1, height());
         for (int row = 0; row < height(); row++) {
             for (int col = 0; col < width(); col++) {
-                if (col != seam[row]) {
+                int skipIndex = seam[row];
+                if (col < skipIndex) {
                     afterRemoval.set(col, row, picture.get(col, row));
+                } else if (col > skipIndex) {
+                    afterRemoval.set(col - 1, row, picture.get(col, row));
                 }
             }
         }
