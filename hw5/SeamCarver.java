@@ -75,15 +75,14 @@ public class SeamCarver {
             return new int[height()];
         }
         int[][] preIndex = new int[width()][height()];
-
         double[] minCostLastRow = new double[width()];
-
         int minForSingleRow = -1;
         double min = Double.MAX_VALUE;
         for (int x = 0; x < width(); x++) {
             double e = energy(x, 0);
             if (e < min) {
                 minForSingleRow = x;
+                min = e;
             }
             minCostLastRow[x] = e;
         }
