@@ -45,10 +45,7 @@ public class Grid {
 
     /** Returns true if X and Y are in bounds */
     private boolean inBounds(int x, int y) {
-        if (x < 0 || y < 0 || x >= N || y >= N) {
-            return false;
-        }
-        return true;
+        return x >= 0 && y >= 0 && x < N && y < N;
     }
 
     /** Returns true if X, Y is empty */
