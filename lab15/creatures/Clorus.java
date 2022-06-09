@@ -15,7 +15,6 @@ public class Clorus extends Creature {
      * Red, green and blue color.
      */
     private int r, g, b;
-
     /**
      * Cloruses should lose 0.03 units of energy on a MOVE action
      */
