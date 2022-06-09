@@ -104,7 +104,7 @@ public class Clorus extends Creature {
             return new Action(Action.ActionType.REPLICATE, HugLifeUtils.randomEntry(empties));
         }
 
-        return new Action(Action.ActionType.STAY);
+        return new Action(Action.ActionType.MOVE, HugLifeUtils.randomEntry(empties));
     }
 
     /**
