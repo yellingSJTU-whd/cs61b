@@ -1,3 +1,6 @@
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.MinPQ;
+
 import java.util.List;
 
 public class Boggle {
@@ -17,6 +20,10 @@ public class Boggle {
      */
     public static List<String> solve(int k, String boardFilePath) {
         // YOUR CODE HERE
+        In in = new In(dictPath);
+        String[] dict = in.readAllStrings();
+        MinPQ<String> heap = new MinPQ<>((String s1,String s2)->Integer.compare(s2.length(),s1.length()));
+        Trie trie = new Trie(dict);
         return null;
     }
 }
