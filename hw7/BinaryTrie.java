@@ -1,4 +1,3 @@
-import edu.princeton.cs.algs4.BinaryStdOut;
 import edu.princeton.cs.algs4.MinPQ;
 
 import java.io.Serializable;
@@ -42,21 +41,22 @@ public class BinaryTrie implements Serializable {
                 return new Match(bs, curr.ch);
             }
         }
-        return new Match(querySequence, null);
+        return new Match(querySequence, curr.ch);
     }
 
     public Map<Character, BitSequence> buildLookupTable() {
         Map<Character, BitSequence> map = new HashMap<>();
-        return DFS(root, new BitSequence(), map);
+        return dfs(root, new BitSequence(), map);
     }
 
-    private Map<Character, BitSequence> DFS(Node node, BitSequence bs, Map<Character, BitSequence> map) {
-        if (node.isLeaf()) {
-            map.put(node.ch, bs);
+    private Map<Character, BitSequence> dfs(
+            Node x, BitSequence bs, Map<Character, BitSequence> map) {
+        if (x.isLeaf()) {
+            map.put(x.ch, bs);
             return map;
         }
-        DFS(node.left, bs.appended(0), map);
-        DFS(node.right, bs.appended(1), map);
+        dfs(x.left, bs.appended(0), map);
+        dfs(x.right, bs.appended(1), map);
         return map;
     }
 

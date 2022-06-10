@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public class HuffmanDecoder {
     public static void main(String[] args) {
@@ -11,13 +14,11 @@ public class HuffmanDecoder {
          */
         ObjectReader reader = new ObjectReader(encodedFile);
         BinaryTrie trie = (BinaryTrie) reader.readObject();
-        System.out.println("read trie object");
 
         /*
          2: If applicable, read the number of symbols.
          */
         Integer symbolNum = (Integer) reader.readObject();
-        System.out.println("symbol number = " + symbolNum);
 
         /*
          3: Read the massive bit sequence corresponding to the original txt.
@@ -31,14 +32,14 @@ public class HuffmanDecoder {
             4c: Create a new bit sequence containing the remaining unmatched bits.
          */
         int length = bitSequence.length();
-        System.out.println("length= " + length);
-        char[] chars = new char[length];
+//        char[] chars = new char[length];
+        List<Character> chars = new ArrayList<>(length);
         int i = 0;
         while (length > 0) {
             Match match = trie.longestPrefixMatch(bitSequence);
-            chars[i++] = match.getSymbol();
+            chars.add(match.getSymbol());
+//            chars[i++] = match.getSymbol();
             int matchSize = match.getSequence().length();
-            System.out.println("i= " + i + " " + "match size= " + matchSize);
             bitSequence = bitSequence.allButFirstNBits(matchSize);
             length -= matchSize;
         }
@@ -46,6 +47,8 @@ public class HuffmanDecoder {
         /*
          5: Write the symbols in some data structure to the specified file.
          */
-        FileUtils.writeCharArray(decodedFile, chars);
+        char[] array = new char[chars.size()];
+        IntStream.range(0, chars.size()).forEachOrdered(j -> array[j] = chars.get(j));
+        FileUtils.writeCharArray(decodedFile, array);
     }
 }
