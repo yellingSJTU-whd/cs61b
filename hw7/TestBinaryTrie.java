@@ -7,7 +7,7 @@ import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestBinaryTrie {
-/* Uncomment when you are ready. 
+/* Uncomment when you are ready. */
     @Test
     public void bestPrefixMatchWithExactMatches() {
         System.out.println("Testing that bestPrefixMatch works with exact matches.");
@@ -67,7 +67,7 @@ public class TestBinaryTrie {
     @Test
     public void testYourLookupTable() {   
         System.out.println("Testing that your code outputs the right lookup table."); 
-        Map<Character, Integer> frequencyTable = new HashMap<Character, Integer>();
+        Map<Character, Integer> frequencyTable = new HashMap<>();
         frequencyTable.put('a', 1);
         frequencyTable.put('b', 2);
         frequencyTable.put('c', 4);
@@ -76,7 +76,7 @@ public class TestBinaryTrie {
         BinaryTrie trie = new BinaryTrie(frequencyTable);
         Map<Character, BitSequence> yourTable = trie.buildLookupTable();
 
-        HashMap<Character, BitSequence> expected = new HashMap<Character, BitSequence>();
+        HashMap<Character, BitSequence> expected = new HashMap<>();
         expected.put('a', new BitSequence("000"));
         expected.put('b', new BitSequence("001"));
         expected.put('c', new BitSequence("01"));
@@ -87,6 +87,7 @@ public class TestBinaryTrie {
 
     public static void main(String[] args) {
         jh61b.junit.textui.runClasses(TestBinaryTrie.class);
-    }    
+    }
+    /*
     */
 } 
