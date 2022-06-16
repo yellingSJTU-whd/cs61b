@@ -47,6 +47,9 @@ public class Trie {
     }
 
     private void add(String s) {
+        if (s.contains("'")) {
+            return;
+        }
         Node curr = root;
         String lowerCase = s.toLowerCase();
         for (int i = 0; i < s.length(); i++) {

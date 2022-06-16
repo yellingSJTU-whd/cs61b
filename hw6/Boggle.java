@@ -49,7 +49,7 @@ public class Boggle {
         }
 
         List<String> solution = new ArrayList<>(k);
-        while (solution.size() < k) {
+        while (solution.size() < k && heap.size() > 0) {
             String str = heap.delMin();
             if (solution.contains(str)) {
                 continue;
