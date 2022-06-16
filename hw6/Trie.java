@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Trie {
 
@@ -7,6 +8,42 @@ public class Trie {
     public Trie(String[] dict) {
         root = new Node();
         Arrays.stream(dict).forEach(this::add);
+    }
+
+    public boolean contained(String word) {
+        Objects.requireNonNull(word, "NULL");
+        String lowerCase = word.toLowerCase();
+        Node curr = root;
+        for (int i = 0; i < lowerCase.length(); i++) {
+            char ch = lowerCase.charAt(i);
+            int index = ch - 'a';
+            if (index < 0 || index > 25) {
+                continue;
+            }
+            curr = curr.children[index];
+            if (curr == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isWord(String str) {
+        Objects.requireNonNull(str);
+        String lowerCase = str.toLowerCase();
+        Node curr = root;
+        for (int i = 0; i < lowerCase.length(); i++) {
+            char ch = lowerCase.charAt(i);
+            int index = ch - 'a';
+            if (index < 0 || index > 25) {
+                continue;
+            }
+            curr = curr.children[index];
+            if (curr == null) {
+                return false;
+            }
+        }
+        return curr.isWord;
     }
 
     private void add(String s) {
@@ -21,6 +58,7 @@ public class Trie {
             curr.setChild(index);
             curr = curr.children[index];
         }
+        curr.setWord();
     }
 
     private static class Node {
@@ -37,9 +75,8 @@ public class Trie {
         }
 
         private void setChild(int index) {
-            Node child = children[index];
-            if (child == null) {
-                child = new Node();
+            if (children[index] == null) {
+                children[index] = new Node();
             }
         }
     }
