@@ -12,13 +12,12 @@ public class Trie {
 
     public boolean contained(String word) {
         Objects.requireNonNull(word, "NULL");
-        String lowerCase = word.toLowerCase();
         Node curr = root;
-        for (int i = 0; i < lowerCase.length(); i++) {
-            char ch = lowerCase.charAt(i);
+        for (int i = 0; i < word.length(); i++) {
+            char ch = word.charAt(i);
             int index = ch - 'a';
-            if (index < 0 || index > 25) {
-                continue;
+            if (index < 0) {
+                index = ch - 'A' + 26;
             }
             curr = curr.children[index];
             if (curr == null) {
@@ -30,13 +29,12 @@ public class Trie {
 
     public boolean isWord(String str) {
         Objects.requireNonNull(str);
-        String lowerCase = str.toLowerCase();
         Node curr = root;
-        for (int i = 0; i < lowerCase.length(); i++) {
-            char ch = lowerCase.charAt(i);
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
             int index = ch - 'a';
-            if (index < 0 || index > 25) {
-                continue;
+            if (index < 0) {
+                index = ch - 'A' + 26;
             }
             curr = curr.children[index];
             if (curr == null) {
@@ -47,16 +45,15 @@ public class Trie {
     }
 
     private void add(String s) {
-        if (s.contains("'")) {
-            return;
-        }
         Node curr = root;
-        String lowerCase = s.toLowerCase();
         for (int i = 0; i < s.length(); i++) {
-            char ch = lowerCase.charAt(i);
+            char ch = s.charAt(i);
+            if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
+                return;
+            }
             int index = ch - 'a';
-            if (index < 0 || index > 25) {
-                continue;
+            if (index < 0) {
+                index = ch - 'A' + 26;
             }
             curr.setChild(index);
             curr = curr.children[index];
@@ -70,7 +67,7 @@ public class Trie {
 
         private Node() {
             isWord = false;
-            children = new Node[26];
+            children = new Node[52];
         }
 
         private void setWord() {
