@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Queue;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,11 +27,11 @@ public class Boggle {
         if (k < 1) {
             throw new IllegalArgumentException("non-positive parameter: " + k);
         }
-
         File file = new File(dictPath);
         if (!file.exists()) {
             throw new IllegalArgumentException("The dictionary file does not exist: " + dictPath);
         }
+
         In in = new In(dictPath);
         String[] dict = in.readAllStrings();
         MinPQ<String> heap = new MinPQ<>(k, Comparator.comparingInt(String::length).
@@ -41,10 +42,16 @@ public class Boggle {
         String[] board = in.readAllStrings();
         int height = board.length;
         int width = board[0].length();
+        Queue<Session> queue = new Queue<>();
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                bfs(board, x, y, heap, new StringBuffer(), new boolean[height][width], trie);
+                queue.enqueue(new Session(x, y, new StringBuilder(), new boolean[height][width]));
+                while (!queue.isEmpty()) {
+                    Session session = queue.dequeue();
+                    apply(session, heap, board, trie);
+                    search(queue, session, trie);
+                }
             }
         }
 
@@ -115,8 +122,39 @@ public class Boggle {
     }
 
     public static void main(String[] args) {
-        String boardPath = "exampleBoard.txt";
+        long start = System.currentTimeMillis();
+        String boardPath = "smallBoard.txt";
         List<String> solution = solve(7, boardPath);
         System.out.println(solution);
+        long end = System.currentTimeMillis();
+        System.out.println("time elapsed :" + (end - start));
+    }
+
+    private static class Session {
+        int col;
+        int row;
+        StringBuilder preSequence;
+        boolean[][] visited;
+
+        private Session(int col, int row, StringBuilder preSequence, boolean[][] visited) {
+            this.col = col;
+            this.row = row;
+            this.preSequence = preSequence;
+            this.visited = visited;
+        }
+    }
+
+    private static void apply(Session session, MinPQ<String> heap, String[] board, Trie trie) {
+
+        char ch = board[session.row].charAt(session.col);
+        String str = session.preSequence.append(ch).toString();
+        if (trie.isWord(str)) {
+            heap.insert(str);
+        }
+    }
+
+    private static void search(Queue<Session> queue, Session session, Trie trie) {
+        boolean[][] visited = session.visited;
+        visited[session.row][session.col] = true;
     }
 }

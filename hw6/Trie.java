@@ -3,48 +3,48 @@ import java.util.Objects;
 
 public class Trie {
 
-    private Node root;
+    private final Node root;
 
+    /**
+     * Construct a trie using an array of Strings.
+     */
     public Trie(String[] dict) {
         root = new Node();
-        Arrays.stream(dict).forEach(this::add);
+        Arrays.stream(dict).forEach(this::insert);
+    }
+
+    /**
+     * Inner method to search the corresponding node, according to input String.
+     */
+    private Node search(String str) {
+        Node curr = root;
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+            if (ch < 'A' || (ch > 'Z' && ch < 'a') || ch > 'z') {
+                return null;
+            }
+            int index = ch - 'a' < 0 ? ch - 'A' + 26 : ch - 'a';
+            curr = curr.children[index];
+            if (curr == null) {
+                return null;
+            }
+        }
+        return curr;
     }
 
     public boolean contained(String word) {
         Objects.requireNonNull(word, "NULL");
-        Node curr = root;
-        for (int i = 0; i < word.length(); i++) {
-            char ch = word.charAt(i);
-            int index = ch - 'a';
-            if (index < 0) {
-                index = ch - 'A' + 26;
-            }
-            curr = curr.children[index];
-            if (curr == null) {
-                return false;
-            }
-        }
-        return true;
+        Node node = search(word);
+        return node != null;
     }
 
     public boolean isWord(String str) {
         Objects.requireNonNull(str);
-        Node curr = root;
-        for (int i = 0; i < str.length(); i++) {
-            char ch = str.charAt(i);
-            int index = ch - 'a';
-            if (index < 0) {
-                index = ch - 'A' + 26;
-            }
-            curr = curr.children[index];
-            if (curr == null) {
-                return false;
-            }
-        }
-        return curr.isWord;
+        Node node = search(str);
+        return node != null && node.isWord;
     }
 
-    private void add(String s) {
+    private void insert(String s) {
         Node curr = root;
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);
