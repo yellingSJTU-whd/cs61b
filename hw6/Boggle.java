@@ -50,7 +50,7 @@ public class Boggle {
                 while (!queue.isEmpty()) {
                     Session session = queue.dequeue();
                     apply(session, heap, board, trie);
-                    search(queue, session, trie);
+                    search(queue, session, trie, board);
                 }
             }
         }
@@ -64,51 +64,6 @@ public class Boggle {
             solution.add(str);
         }
         return solution;
-    }
-
-    private static void bfs(String[] board, int x, int y, MinPQ<String> heap,
-                            StringBuffer stringBuffer, boolean[][] visited, Trie trie) {
-        int height = board.length;
-        int width = board[0].length();
-        char curr = board[y].charAt(x);
-        if (visited[y][x]) {
-            return;
-        }
-        boolean[][] reposition = copyMatrix(visited);
-        reposition[y][x] = true;
-        StringBuffer sb = new StringBuffer(stringBuffer).append(curr);
-        if (!trie.contained(stringBuffer.toString())) {
-            return;
-        }
-
-        if (trie.isWord(sb.toString())) {
-            heap.insert(sb.toString());
-        }
-
-        if (x > 0) {
-            bfs(board, x - 1, y, heap, sb, reposition, trie);
-        }
-        if (x < width - 1) {
-            bfs(board, x + 1, y, heap, sb, reposition, trie);
-        }
-        if (y > 0) {
-            bfs(board, x, y - 1, heap, sb, reposition, trie);
-        }
-        if (y < height - 1) {
-            bfs(board, x, y + 1, heap, sb, reposition, trie);
-        }
-        if (x > 0 && y > 0) {
-            bfs(board, x - 1, y - 1, heap, sb, reposition, trie);
-        }
-        if (x > 0 && y < height - 1) {
-            bfs(board, x - 1, y + 1, heap, sb, reposition, trie);
-        }
-        if (x < width - 1 && y > 0) {
-            bfs(board, x + 1, y - 1, heap, sb, reposition, trie);
-        }
-        if (x < width - 1 && y < height - 1) {
-            bfs(board, x + 1, y + 1, heap, sb, reposition, trie);
-        }
     }
 
     public static boolean[][] copyMatrix(boolean[][] original) {
@@ -145,16 +100,42 @@ public class Boggle {
     }
 
     private static void apply(Session session, MinPQ<String> heap, String[] board, Trie trie) {
-
-        char ch = board[session.row].charAt(session.col);
+        int x = session.col;
+        int y = session.row;
+        char ch = board[y].charAt(x);
         String str = session.preSequence.append(ch).toString();
         if (trie.isWord(str)) {
             heap.insert(str);
         }
+        session.visited[y][x] = true;
     }
 
-    private static void search(Queue<Session> queue, Session session, Trie trie) {
+    private static void search(Queue<Session> queue, Session session, Trie trie, String[] board) {
         boolean[][] visited = session.visited;
-        visited[session.row][session.col] = true;
+        StringBuilder sb = session.preSequence;
+        int x = session.col;
+        int y = session.row;
+        int height = board.length;
+        int width = board[0].length();
+        visited[y][x] = true;
+
+        check(x > 0, visited, y, x - 1, trie, sb, board, queue);
+        check(x < width - 1, visited, y, x + 1, trie, sb, board, queue);
+        check(y > 0, visited, y - 1, x, trie, sb, board, queue);
+        check(y < height - 1, visited, y + 1, x, trie, sb, board, queue);
+        check(x > 0 && y > 0, visited, y - 1, x - 1, trie, sb, board, queue);
+        check(x > 0 && y < height - 1, visited, y + 1, x - 1, trie, sb, board, queue);
+        check(x < width - 1 && y > 0, visited, y - 1, x + 1, trie, sb, board, queue);
+        check(x < width - 1 && y < height - 1, visited, y + 1, x + 1, trie, sb, board, queue);
     }
+
+    private static void check(boolean x, boolean[][] visited, int y, int x1,
+                              Trie trie, StringBuilder sb, String[] board, Queue<Session> queue) {
+        if (x && !visited[y][x1]) {
+            if (trie.contained(sb.toString() + board[y].charAt(x1))) {
+                queue.enqueue(new Session(x1, y, new StringBuilder(sb), copyMatrix(visited)));
+            }
+        }
+    }
+
 }
