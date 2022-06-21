@@ -16,11 +16,11 @@ public class Trie {
     /**
      * Inner method to search the corresponding node, according to input String.
      */
-    private Node search(String str) {
+    private Node search(String key) {
         Node curr = root;
-        for (int i = 0; i < str.length(); i++) {
-            char ch = str.charAt(i);
-            if (ch < 'A' || (ch > 'Z' && ch < 'a') || ch > 'z') {
+        for (int i = 0; i < key.length(); i++) {
+            char ch = key.charAt(i);
+            if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
                 return null;
             }
             int index = ch - 'a' < 0 ? ch - 'A' + 26 : ch - 'a';
