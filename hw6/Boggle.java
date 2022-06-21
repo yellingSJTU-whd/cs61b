@@ -1,11 +1,12 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
-import edu.princeton.cs.algs4.Queue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Boggle {
 
@@ -15,6 +16,7 @@ public class Boggle {
     static String board;
     static int height;
     static int width;
+    //    static Queue<Session> queue;
     static Queue<Session> queue;
 
     /**
@@ -44,13 +46,13 @@ public class Boggle {
         board = String.join("", lines);
         height = lines.length;
         width = lines[0].length();
-        queue = new Queue<>();
+        queue = new LinkedList<>();
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                queue.enqueue(new Session(x, y, new StringBuilder(), new boolean[width * height]));
+                queue.offer(new Session(x, y, new StringBuilder(), new boolean[width * height]));
                 while (!queue.isEmpty()) {
-                    Session session = queue.dequeue();
+                    Session session = queue.poll();
                     apply(session, heap);
                     search(session);
                 }
@@ -124,7 +126,7 @@ public class Boggle {
             return;
         }
         if (trie.contained(sb.toString() + board.charAt(row * width + col))) {
-            queue.enqueue(new Session(col, row, sb, visited));
+            queue.offer(new Session(col, row, sb, visited));
         }
     }
 }
