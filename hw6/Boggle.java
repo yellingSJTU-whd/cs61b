@@ -68,14 +68,13 @@ public class Boggle {
         return solution;
     }
 
-    public static void main(String[] args) {
-        long start = System.currentTimeMillis();
-        String boardPath = "smallBoard.txt";
-        List<String> solution = solve(10, boardPath);
-        System.out.println(solution);
-        long end = System.currentTimeMillis();
-        System.out.println("time elapsed :" + (end - start));
-    }
+//    public static void main(String[] args) {
+//        long start = System.currentTimeMillis();
+//        String boardPath = "smallBoard.txt";
+//        List<String> solution = solve(10, boardPath);
+//        System.out.println(solution);
+//        long end = System.currentTimeMillis();
+//    }
 
     private static class Session {
         int col;

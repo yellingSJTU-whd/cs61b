@@ -32,18 +32,30 @@ public class Trie {
         return curr;
     }
 
+    /**
+     * Returns true if and only if the trie contains the input String.
+     * Throws exception if input String is NULL.
+     */
     public boolean contained(String word) {
         Objects.requireNonNull(word, "NULL");
         Node node = search(word);
         return node != null;
     }
 
+    /**
+     * Returns true if and only if the trie contains the input String,
+     * AND the String is a word in dictionary.
+     * Throws exception if input String is NULL.
+     */
     public boolean isWord(String str) {
         Objects.requireNonNull(str);
         Node node = search(str);
         return node != null && node.isWord;
     }
 
+    /**
+     * Insert a String into the trie.
+     */
     private void insert(String s) {
         Node curr = root;
         for (int i = 0; i < s.length(); i++) {
@@ -61,6 +73,9 @@ public class Trie {
         curr.setWord();
     }
 
+    /**
+     * Inner class for convenience, representing a node in trie.
+     */
     private static class Node {
         boolean isWord;
         Node[] children;
