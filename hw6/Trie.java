@@ -4,7 +4,6 @@ import java.util.Objects;
 public class Trie {
 
     private final Node root;
-    private static final int ASCII_VOLUME = 256;
 
     /**
      * Construct a trie using an array of Strings.
@@ -21,11 +20,11 @@ public class Trie {
         Node curr = root;
         for (int i = 0; i < key.length(); i++) {
             char ch = key.charAt(i);
-//            if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
-//                return null;
-//            }
-//            int index = ch - 'a' < 0 ? ch - 'A' + 26 : ch - 'a';
-            curr = curr.children[ch];
+            if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
+                return null;
+            }
+            int index = ch - 'a' < 0 ? ch - 'A' + 26 : ch - 'a';
+            curr = curr.children[index];
             if (curr == null) {
                 return null;
             }
@@ -49,15 +48,15 @@ public class Trie {
         Node curr = root;
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);
-//            if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
-//                return;
-//            }
-//            int index = ch - 'a';
-//            if (index < 0) {
-//                index = ch - 'A' + 26;
-//            }
-            curr.setChild(ch);
-            curr = curr.children[ch];
+            if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
+                return;
+            }
+            int index = ch - 'a';
+            if (index < 0) {
+                index = ch - 'A' + 26;
+            }
+            curr.setChild(index);
+            curr = curr.children[index];
         }
         curr.setWord();
     }
@@ -68,8 +67,7 @@ public class Trie {
 
         private Node() {
             isWord = false;
-//            children = new Node[52];
-            children = new Node[ASCII_VOLUME];
+            children = new Node[52];
         }
 
         private void setWord() {
